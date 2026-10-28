@@ -1,0 +1,25 @@
+@import 'tailwindcss';
+@import 'lenis/dist/lenis.css';
+@import '../styles/tokens.css';
+
+@layer base {
+  html {
+    scroll-padding-block-start: 2rem;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 4px;
+  }
+
+  ::selection {
+    background: var(--foreground);
+    color: var(--background);
+  }
+}

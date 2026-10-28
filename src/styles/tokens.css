@@ -1,0 +1,19 @@
+/* Neutral setup defaults. Final branding and typography require a design decision. */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --muted: #525252;
+  --border: #e5e5e5;
+  --focus: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-focus: var(--focus);
+  --font-sans: var(--font-geist-sans), Arial, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+  --container-site: 80rem;
+}
