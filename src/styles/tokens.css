@@ -1,13 +1,23 @@
-/* Neutral setup defaults. Final branding and typography require a design decision. */
+/* Approved brand palette. Ink is a dark blue derived for readable text. */
 :root {
+  --primary: #5b8dfb;
+  --secondary: #f8fa55;
+  --accent-warm: #f3d061;
+  --accent-rose: #e43468;
+  --ink: #17284f;
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: var(--ink);
   --muted: #525252;
   --border: #e5e5e5;
-  --focus: #171717;
+  --focus: var(--ink);
 }
 
 @theme inline {
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent-warm: var(--accent-warm);
+  --color-accent-rose: var(--accent-rose);
+  --color-ink: var(--ink);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);

@@ -1,6 +1,6 @@
 # Osama Abdelnaser — Portfolio
 
-Next.js foundation for a Product Designer portfolio. The current page is a temporary placeholder; visual design and final content are the next stage.
+Next.js portfolio for a Product Designer. The Onlines-reference hero integrates the supplied Waving Portfolio centerpiece, animated loader, and footer with the approved brand palette. Project sections and case-study content are the next stage.
 
 ## Requirements
 
@@ -74,6 +74,6 @@ Read [the foundation notes](docs/FOUNDATION.md) before adding motion, changing t
 
 The [master brief](docs/OSAMA_ABDELNASER_PORTFOLIO_MASTER_BRIEF.md) is the content reference. It distinguishes facts, proposals, analysis, and items requiring confirmation. Do not publish unconfirmed metrics, roles, prices, testimonials, or contact details.
 
-English and neutral styling are temporary defaults. Final branding, typography, bilingual scope, domain, selected work, social imagery, and case-study content still need decisions.
+The approved colors are blue `#5B8DFB`, yellow `#F8FA55`, warm accent `#F3D061`, and rose `#E43468`. English and the starter page layout are temporary defaults. Final typography, bilingual scope, domain, selected work, social imagery, and case-study content still need decisions.
 
 This foundation has no analytics, database, CMS, or contact-form backend. Add integrations when the intended experience requires them.

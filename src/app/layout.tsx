@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { MotionProvider } from '@/components/providers/motion-provider';
+import { SiteIntro } from '@/components/providers/site-intro';
+import { SiteFooter } from '@/components/sections/site-footer';
 import { siteConfig } from '@/config/site';
 import './globals.css';
 
@@ -27,7 +29,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       dir={siteConfig.direction}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col font-sans">
+      <body className="flex min-h-full flex-col font-sans" suppressHydrationWarning>
         <a
           href="#main-content"
           className="sr-only z-50 rounded bg-foreground px-4 py-3 text-background focus:not-sr-only focus:fixed focus:start-4 focus:top-4"
@@ -35,7 +37,10 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
           Skip to content
         </a>
         <MotionProvider />
-        {children}
+        <SiteIntro>
+          {children}
+          <SiteFooter />
+        </SiteIntro>
       </body>
     </html>
   );

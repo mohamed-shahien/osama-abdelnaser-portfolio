@@ -11,11 +11,13 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Portfolio scope
 
 - This repository is a Next.js portfolio for Osama Abdelnaser, a Product Designer.
-- The initial foundation is complete; do not infer an approved visual design from neutral starter styles.
+- The approved palette is primary `#5B8DFB`, secondary `#F8FA55`, warm accent `#F3D061`, and rose accent `#E43468`. `#17284F` is derived ink for readable text.
+- Preserve the supplied Amour Sunrise Preloader and Sticker Slap Footer designs, geometry, timing, and interactions. The user requested color and text adaptation only. Necessary TypeScript guards and integration wrappers may be added without changing their intended behavior.
+- Apply the same rule to future UI code supplied by the user: adapt brand colors and text, and preserve its design and behavior unless a later request changes that scope.
 - Read `README.md` and `docs/FOUNDATION.md` before changing the foundation.
 - Use `docs/OSAMA_ABDELNASER_PORTFOLIO_MASTER_BRIEF.md` as a content reference. Preserve its distinction between source facts, proposals, analysis, and unconfirmed details. Do not modify the supplied brief while implementing the site.
 - Do not invent testimonials, project metrics, roles, links, availability, or assets. Do not publish personal contact details or prices without a decision.
-- English is the temporary setup language. Full bilingual routing, final branding, fonts, domain, featured projects, and case-study scope remain open decisions.
+- English is the temporary setup language. Full bilingual routing, final fonts, domain, featured projects, and case-study scope remain open decisions. The supplied loader/footer and palette are approved references; the remaining page design is open.
 
 ## Implementation
 
@@ -31,7 +33,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Motion
 
 - Import `gsap`, `ScrollTrigger`, and `useGSAP` from `@/lib/motion/gsap`.
-- The root motion runtime owns the sole Lenis instance and RAF integration. Do not initialize another Lenis, a second RAF loop, or CSS smooth scrolling.
+- The root motion runtime owns the sole Lenis instance and scrolling RAF integration. Do not initialize another Lenis, a second scrolling driver, or CSS smooth scrolling. Preserve the supplied loader/footer's own illustration and interaction loops as requested.
 - Use scoped `useGSAP` and `gsap.matchMedia` for section animations. Honor `motionConfig.queries.full`; keep content readable under reduced motion and without JavaScript.
 - Clean up listeners, observers, tickers, timelines, and ScrollTriggers. Never call `ScrollTrigger.killAll()` from a component.
 - Native touch scrolling remains enabled. Nested scrolling surfaces can opt out with `data-lenis-prevent`.
