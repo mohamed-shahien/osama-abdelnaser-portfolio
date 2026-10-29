@@ -22,6 +22,8 @@ export type Ring = {
   /** Fraction of a turn (0–1) to offset the starting rotation. */
   phase: number;
   reverse: boolean;
+  /** True when this ring is the interactive center CTA marquee. */
+  isCta?: boolean;
 };
 
 export type TangleFooterOptions = {
@@ -46,6 +48,16 @@ export type TangleFooterOptions = {
   seed?: number;
   /** Accessible label. */
   label?: string;
+  /** Label for the center semicircle action button filling the innermost ring. */
+  ctaLabel?: string;
+  /** Handler when the center semicircle button is clicked. */
+  onCtaClick?: () => void;
+  /** Optional handler to preload the target modal on hover/focus. */
+  onCtaPreload?: () => void;
+  /** Whether the controlled dialog/overlay is currently open. */
+  ctaExpanded?: boolean;
+  /** ID of the dialog/overlay controlled by the button. */
+  ctaControls?: string;
 };
 
 export const RING_COUNT = 5;
@@ -175,9 +187,14 @@ export function TangleFooter({
   height,
   seed = 23,
   label = 'Osama’s design practice',
+  ctaLabel,
+  onCtaClick,
+  onCtaPreload,
+  ctaExpanded,
+  ctaControls,
 }: TangleFooterProps) {
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '');
-  const rootRef = useRef<HTMLElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
@@ -192,15 +209,48 @@ export function TangleFooter({
   }, []);
 
   const bandHeight = height ?? width / 2;
-  const rings = useMemo(
-    () => (width > 0 && bandHeight > 0 ? buildRings(width, bandHeight, lines, seed) : []),
-    [width, bandHeight, lines, seed],
-  );
+  const { allRings, ctaHitRadius } = useMemo(() => {
+    if (width <= 0 || bandHeight <= 0) {
+      return { allRings: [] as Ring[], ctaHitRadius: 0 };
+    }
+    const baseRings = buildRings(width, bandHeight, lines, seed);
+    const innerRing = baseRings[0];
+    if (!ctaLabel || !innerRing) {
+      return { allRings: baseRings, ctaHitRadius: 0 };
+    }
+
+    const innerEdge = Math.max(0, innerRing.radius - innerRing.strokeWidth / 2);
+    const strokeWidth = Math.min(STROKE, Math.max(12, Math.round(innerRing.radius * 0.2)));
+    const radius = Math.max(
+      strokeWidth * 0.75,
+      Math.round(Math.min(innerRing.radius * 0.52, innerEdge - strokeWidth * 0.85) * 10) / 10,
+    );
+    const fontSize = Math.min(innerRing.fontSize, Math.max(10, Math.round(strokeWidth * 0.64)));
+    const circumference = 2 * Math.PI * radius;
+    const ctaRing: Ring = {
+      d: circlePath(innerRing.cx, innerRing.cy, radius),
+      radius,
+      cx: innerRing.cx,
+      cy: innerRing.cy,
+      strokeWidth,
+      fontSize,
+      text: buildRingCopy(ctaLabel, ctaLabel, false, circumference, fontSize),
+      duration: 34,
+      phase: 0.12,
+      reverse: !innerRing.reverse,
+      isCta: true,
+    };
+
+    return {
+      allRings: [ctaRing, ...baseRings],
+      ctaHitRadius: Math.round((radius + strokeWidth / 2) * 10) / 10,
+    };
+  }, [width, bandHeight, lines, seed, ctaLabel]);
 
   useGSAP(
     () => {
       const root = rootRef.current;
-      if (!root || !rings.length) return;
+      if (!root || !allRings.length) return;
 
       const media = gsap.matchMedia();
       media.add(
@@ -219,8 +269,8 @@ export function TangleFooter({
 
           // Outer arch leads; each pair grows upward from both feet on the footer seam.
           const reveals: gsap.core.Tween[] = [];
-          [...rings].reverse().forEach((_ring, order) => {
-            const index = rings.length - 1 - order;
+          [...allRings].reverse().forEach((_ring, order) => {
+            const index = allRings.length - 1 - order;
             const paths = root.querySelectorAll<SVGPathElement>(
               '[data-tangle-reveal="' + index + '"]',
             );
@@ -240,7 +290,7 @@ export function TangleFooter({
           // drawn ring costs no repaint at all.
           const syncs: (() => void)[] = [];
           const restores: (() => void)[] = [];
-          const spins = rings.flatMap((ring, index) => {
+          const spins = allRings.flatMap((ring, index) => {
             const layer = root.querySelector<HTMLElement>('[data-tangle-spin="' + index + '"]');
             const masked = root.querySelector<SVGGElement>('[data-tangle-mask="' + index + '"]');
             const counter = root.querySelector<SVGGElement>(
@@ -304,15 +354,16 @@ export function TangleFooter({
 
       return () => media.revert();
     },
-    { scope: rootRef, dependencies: [rings, uid], revertOnUpdate: true },
+    { scope: rootRef, dependencies: [allRings, uid], revertOnUpdate: true },
   );
 
   return (
-    <section
+    <div
       ref={rootRef}
+      role="region"
       data-slot="tangle-footer"
       aria-label={label}
-      className={cn('relative w-full shrink-0 overflow-hidden', className)}
+      className={cn('group/tangle relative w-full shrink-0 overflow-hidden', className)}
       style={{
         background,
         height: bandHeight > 0 ? bandHeight : undefined,
@@ -320,11 +371,11 @@ export function TangleFooter({
       }}
     >
       {width > 0 && bandHeight > 0
-        ? rings.map((ring, index) => (
+        ? allRings.map((ring, index) => (
             // One layer per ring, painted in the same inner-to-outer order as before.
             <div
               key={index}
-              className="absolute inset-0 will-change-transform"
+              className="pointer-events-none absolute inset-0 will-change-transform"
               data-tangle-spin={index}
             >
               <svg
@@ -369,7 +420,12 @@ export function TangleFooter({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     fill="none"
-                    style={{ stroke: ribbon }}
+                    className={
+                      ring.isCta
+                        ? '[stroke:var(--ink)] [transition:stroke_220ms_ease] group-has-[[data-tangle-cta]:focus-visible]/tangle:[stroke:var(--accent-rose)] group-has-[[data-tangle-cta]:hover]/tangle:[stroke:var(--accent-rose)]'
+                        : undefined
+                    }
+                    style={ring.isCta ? undefined : { stroke: ribbon }}
                   />
                   <text
                     fontSize={ring.fontSize}
@@ -377,7 +433,11 @@ export function TangleFooter({
                     fontWeight={700}
                     letterSpacing="0.05em"
                     dominantBaseline="central"
-                    style={{ fill: textColor, userSelect: 'none', pointerEvents: 'none' }}
+                    style={{
+                      fill: ring.isCta ? 'var(--secondary)' : textColor,
+                      userSelect: 'none',
+                      pointerEvents: 'none',
+                    }}
                   >
                     <textPath href={'#' + uid + '-path-' + index} startOffset="0" method="align">
                       {ring.text}
@@ -388,8 +448,24 @@ export function TangleFooter({
             </div>
           ))
         : null}
+      {ctaLabel && ctaHitRadius > 0 ? (
+        <button
+          type="button"
+          data-tangle-cta
+          onClick={onCtaClick}
+          onPointerEnter={onCtaPreload}
+          onFocus={onCtaPreload}
+          aria-haspopup="dialog"
+          aria-expanded={ctaExpanded}
+          aria-controls={ctaControls}
+          style={{ width: ctaHitRadius * 2, height: ctaHitRadius }}
+          className="absolute bottom-0 left-1/2 z-10 -translate-x-1/2 cursor-pointer rounded-t-full bg-transparent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-rose"
+        >
+          <span className="sr-only">{ctaLabel}</span>
+        </button>
+      ) : null}
       <p className="sr-only">{(lines.length ? lines : DEFAULT_LINES).join(' ')}</p>
-    </section>
+    </div>
   );
 }
 

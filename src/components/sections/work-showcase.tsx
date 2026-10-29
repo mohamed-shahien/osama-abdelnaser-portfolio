@@ -1,26 +1,36 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { useSiteIntroReady } from '@/components/providers/site-intro-context';
-import { workContent } from '@/content/work-copy';
 import { motionConfig } from '@/lib/motion/config';
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/motion/gsap';
+import { mountPushCharacter } from '@/lib/motion/push-character';
+import { scrollPageTo } from '@/lib/motion/page-scroll';
 import type { WorkProject } from '@/types/work';
 
 const WorkGallery = dynamic(() => import('./work-gallery'));
 
-export function WorkShowcase({ projects }: { projects: readonly WorkProject[] }) {
+export function WorkShowcase({
+  projects,
+  total,
+  children,
+}: {
+  projects: readonly WorkProject[];
+  total: number;
+  children: ReactNode;
+}) {
   const rootRef = useRef<HTMLDivElement>(null);
   const introDone = useSiteIntroReady();
   const [nearby, setNearby] = useState(false);
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
   const mounted = nearby && introDone;
 
   useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
+    const marker = rootRef.current?.querySelector('[data-push-start]');
+    if (!marker) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return;
@@ -29,7 +39,7 @@ export function WorkShowcase({ projects }: { projects: readonly WorkProject[] })
       },
       { rootMargin: '100% 0px' },
     );
-    observer.observe(root);
+    observer.observe(marker);
     return () => observer.disconnect();
   }, []);
 
@@ -37,111 +47,190 @@ export function WorkShowcase({ projects }: { projects: readonly WorkProject[] })
     () => {
       const root = rootRef.current;
       if (!root || !mounted) return;
-      const frame = root.querySelector<HTMLElement>('[data-work-frame]');
-      const panel = root.querySelector<HTMLElement>('[data-work-curtain]');
+      const plate = root.querySelector<HTMLElement>('[data-work-plate]');
       const actor = root.querySelector<HTMLElement>('[data-work-actor]');
-      const counter = root.querySelector<HTMLElement>('[data-work-counter]');
-      const graphic = root.querySelector<HTMLElement>('[data-work-sprite]');
-      if (!frame || !panel || !actor || !counter || !graphic) return;
+      const graphic = root.querySelector<HTMLElement>('[data-work-vector]');
+      const exitPanel = root.querySelector<HTMLElement>('[data-work-exit-panel]');
+      const exitActor = root.querySelector<HTMLElement>('[data-work-exit-actor]');
+      const exitGraphic = root.querySelector<HTMLElement>('[data-work-exit-vector]');
+      if (!plate || !actor || !graphic || !exitPanel || !exitActor || !exitGraphic) return;
       const media = gsap.matchMedia();
       media.add(
-        { full: motionConfig.queries.full, reduced: motionConfig.queries.reduced },
+        {
+          full: motionConfig.queries.full,
+          reduced: motionConfig.queries.reduced,
+          mobile: '(max-width: 767px)',
+        },
         (context) => {
           if (context.conditions?.reduced) {
-            gsap.set([panel, actor, counter], { autoAlpha: 0 });
             setOpen(true);
-            if (root.dataset.workOpen !== 'true') root.dataset.workOpen = 'true';
-            ScrollTrigger.refresh();
+            setClosing(false);
+            root.dataset.workOpen = 'true';
             return;
           }
-          setOpen(false);
-          if (root.dataset.workOpen !== 'false') root.dataset.workOpen = 'false';
-          let width = frame.clientWidth;
-          let actorSize = window.innerWidth < 768 ? 176 : 256;
+          let disposed = false;
+          let seek: ((progress: number) => void) | undefined;
+          let exitSeek: ((progress: number) => void) | undefined;
+          const position = { value: 0 };
           let previousX = Number.NaN;
-          let previousCounterX = Number.NaN;
-          let previousFrame = -1;
-          let previousPercent = -1;
+          let previousOpacity = '';
           let wasOpen = false;
-          const progress = { value: 0 };
+          let width = root.clientWidth;
+          const mobile = Boolean(context.conditions?.mobile);
           const paint = () => {
-            const value = progress.value;
+            const value = position.value;
+            const scale = mobile ? 0.58 : width >= 1920 ? 1.6 : 1.14;
+            const offset = mobile ? 31 : width >= 1920 ? 80 : 60;
             const x = Math.round(value * width * 100) / 100;
             if (x !== previousX) {
-              panel.style.transform = `translate3d(${x}px,0,0)`;
-              actor.style.transform = `translate3d(${x - actorSize * 0.87}px,-50%,0)`;
+              plate.style.transform = `translate3d(${Math.min(x, width * (mobile ? 1.4 : 1.12))}px,0,0)`;
+              actor.style.transform = `translate3d(${x - 429 * scale + offset}px,-50%,0)`;
               previousX = x;
             }
-            const counterX = Math.max(0, x - width + 180);
-            if (counterX !== previousCounterX) {
-              counter.style.transform = `translate3d(${counterX}px,-50%,0)`;
-              previousCounterX = counterX;
+            const opacity = value > 0.001 && value < (mobile ? 1.4 : 1.28) ? '1' : '0';
+            if (opacity !== previousOpacity) {
+              actor.style.opacity = opacity;
+              previousOpacity = opacity;
             }
-            const frameIndex = Math.floor((value * 32 * 1.08) % 32);
-            if (frameIndex !== previousFrame) {
-              graphic.style.backgroundPosition = `${((frameIndex % 8) / 7) * 100}% ${(Math.floor(frameIndex / 8) / 3) * 100}%`;
-              previousFrame = frameIndex;
-            }
-            const percentage = Math.round(
-              value <= 0.6 ? value * 100 : 60 + ((value - 0.6) / 0.62) * 40,
-            );
-            if (percentage !== previousPercent) {
-              counter.textContent = String(Math.min(100, percentage));
-              previousPercent = percentage;
-            }
-            const nextOpen = value >= 1.17;
+            if (!document.hidden) seek?.(value);
+            const nextOpen = value >= (mobile ? 1.39 : 1.27);
             if (nextOpen !== wasOpen) {
               wasOpen = nextOpen;
               setOpen(nextOpen);
               root.dataset.workOpen = String(nextOpen);
             }
           };
-          const timeline = gsap.timeline({
-            paused: true,
-            onUpdate: paint,
-          });
+          void mountPushCharacter(graphic)
+            .then((render) => {
+              if (!disposed) {
+                seek = render;
+                paint();
+              }
+            })
+            .catch(() => {
+              /* The section remains navigable if the illustration fails. */
+            });
+          const timeline = gsap.timeline({ paused: true, onUpdate: paint });
           timeline
-            .to(progress, { value: 0.3, duration: 0.23, ease: 'power2.inOut' })
-            .to({}, { duration: 0.035 })
-            .to(progress, { value: 0.6, duration: 0.25, ease: 'power2.inOut' })
-            .to({}, { duration: 0.04 })
-            .to(progress, { value: 1.22, duration: 0.445, ease: 'power3.in' });
+            .to(position, { value: 0.3, duration: mobile ? 0.95 : 0.65, ease: 'power2.inOut' })
+            .to({}, { duration: 0.16 })
+            .to(position, { value: 0.6, duration: 0.72, ease: 'power2.inOut' })
+            .to({}, { duration: 0.2 })
+            .to(position, {
+              value: mobile ? 1.4 : 1.28,
+              duration: mobile ? 1.76 : 1.46,
+              ease: 'power2.inOut',
+            });
           const trigger = ScrollTrigger.create({
             id: 'selected-work-push',
             trigger: root,
             animation: timeline,
-            start: 'top top',
-            end: 'bottom bottom',
-            scrub: 0.25,
-            invalidateOnRefresh: true,
+            start: () => `top -${window.innerHeight * 0.75}px`,
+            end: () => `top -${window.innerHeight * 1.5}px`,
+            scrub: 0.18,
             onRefresh: paint,
+            onLeave: () => {
+              const end =
+                root.getBoundingClientRect().top + window.scrollY + window.innerHeight * 1.5;
+              // Cancel the root Lenis inertia when the local gallery takes input.
+              if (window.scrollY >= end && window.scrollY < end + window.innerHeight * 0.4)
+                scrollPageTo(end);
+            },
           });
-          paint();
-          const observer = new ResizeObserver(() => {
-            width = frame.clientWidth;
-            actorSize = window.innerWidth < 768 ? 176 : 256;
+          const exitPosition = { value: 0 };
+          let exitX = Number.NaN;
+          let exitOpacity = '';
+          let wasClosing = false;
+          const paintExit = () => {
+            const value = exitPosition.value;
+            const scale = mobile ? 0.58 : width >= 1920 ? 1.6 : 1.14;
+            const offset = mobile ? 31 : width >= 1920 ? 80 : 60;
+            const x = Math.round(width * (1 - value) * 100) / 100;
+            if (x !== exitX) {
+              exitPanel.style.transform = `translate3d(${Math.max(0, x)}px,0,0)`;
+              exitActor.style.transform = `translate3d(${x - offset}px,-50%,0)`;
+              exitActor.style.width = `${429 * scale}px`;
+              exitActor.style.height = `${451 * scale}px`;
+              exitX = x;
+            }
+            const opacity = value > 0.001 && value < 1.28 ? '1' : '0';
+            if (opacity !== exitOpacity) {
+              exitActor.style.opacity = opacity;
+              exitOpacity = opacity;
+            }
+            if (!document.hidden) exitSeek?.(value);
+            const nextClosing = value > 0.001;
+            if (nextClosing !== wasClosing) {
+              wasClosing = nextClosing;
+              setClosing(nextClosing);
+              root.dataset.workClosing = String(nextClosing);
+            }
+          };
+          void mountPushCharacter(exitGraphic)
+            .then((render) => {
+              if (!disposed) {
+                exitSeek = render;
+                paintExit();
+              }
+            })
+            .catch(() => {});
+          const exitTimeline = gsap.timeline({ paused: true, onUpdate: paintExit });
+          exitTimeline
+            .to(exitPosition, { value: 0.3, duration: 0.65, ease: 'power2.inOut' })
+            .to({}, { duration: 0.16 })
+            .to(exitPosition, { value: 0.6, duration: 0.72, ease: 'power2.inOut' })
+            .to({}, { duration: 0.2 })
+            .to(exitPosition, { value: 1.28, duration: 1.46, ease: 'power2.inOut' });
+          const exitTrigger = ScrollTrigger.create({
+            id: 'selected-work-close',
+            trigger: root,
+            animation: exitTimeline,
+            start: () => `top -${window.innerHeight * 1.5}px`,
+            end: () => `top -${window.innerHeight * 2.25}px`,
+            scrub: 0.18,
+            onRefresh: paintExit,
+          });
+          const resize = new ResizeObserver(() => {
+            width = root.clientWidth;
             previousX = Number.NaN;
+            exitX = Number.NaN;
             paint();
+            paintExit();
           });
-          observer.observe(frame);
-          ScrollTrigger.refresh();
-          timeline.progress(trigger.progress);
-          paint();
+          resize.observe(root);
           const visibility = () => {
-            const tween = timeline.scrollTrigger?.getTween();
-            if (document.hidden) tween?.pause();
+            const scrub = trigger.getTween();
+            if (document.hidden) scrub?.pause();
             else {
-              tween?.resume();
-              timeline.scrollTrigger?.update();
+              scrub?.resume();
+              trigger.update();
+              paint();
+            }
+            if (document.hidden) exitTrigger.getTween()?.pause();
+            else {
+              exitTrigger.getTween()?.resume();
+              exitTrigger.update();
+              paintExit();
             }
           };
           document.addEventListener('visibilitychange', visibility);
+          ScrollTrigger.refresh();
+          timeline.progress(trigger.progress);
+          exitTimeline.progress(exitTrigger.progress);
+          paint();
+          paintExit();
           return () => {
-            observer.disconnect();
+            disposed = true;
+            resize.disconnect();
             document.removeEventListener('visibilitychange', visibility);
-            panel.style.removeProperty('transform');
+            plate.style.removeProperty('transform');
             actor.style.removeProperty('transform');
-            counter.style.removeProperty('transform');
+            actor.style.removeProperty('opacity');
+            graphic.replaceChildren();
+            exitPanel.style.removeProperty('transform');
+            exitActor.style.removeProperty('transform');
+            exitActor.style.removeProperty('opacity');
+            exitGraphic.replaceChildren();
           };
         },
       );
@@ -155,50 +244,54 @@ export function WorkShowcase({ projects }: { projects: readonly WorkProject[] })
       ref={rootRef}
       data-work-open="false"
       data-work-intro-ready={introDone}
-      className="relative h-[175svh] motion-reduce:h-svh"
+      className="relative flex flex-col"
     >
+      <span data-push-start aria-hidden="true" className="absolute top-[75svh] size-px" />
       <span
         id="work-viewer"
         aria-hidden="true"
-        className="absolute top-[75svh] size-px motion-reduce:top-0"
+        className="absolute top-[150svh] size-px [scroll-margin-top:-2rem] motion-reduce:top-[175svh]"
       />
-      <div data-work-frame className="sticky top-0 h-svh overflow-hidden bg-[#ededed]">
-        {mounted ? (
-          <>
-            <div inert={!open} className="h-full">
-              <WorkGallery projects={projects} enabled={open} />
-            </div>
-            <div
-              data-work-curtain
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 z-40 bg-black will-change-transform"
-            />
-            <div
-              data-work-actor
-              aria-hidden="true"
-              className="pointer-events-none absolute start-0 top-1/2 z-50 size-44 [transform:translateY(-50%)] will-change-transform md:size-64"
-            >
-              <div
-                data-work-sprite
-                className="size-full [background-size:800%_400%] bg-no-repeat"
-                style={{ backgroundImage: `url(${workContent.sprite})` }}
-              />
-            </div>
-            <span
-              data-work-counter
-              aria-hidden="true"
-              className="pointer-events-none absolute end-6 top-1/2 z-50 [transform:translateY(-50%)] font-serif text-7xl leading-none tracking-tighter text-white md:text-8xl"
-            >
-              0
-            </span>
-          </>
-        ) : (
-          <div className="grid h-full place-content-center bg-black px-8 text-center text-white">
-            <h2 className="text-4xl tracking-tight sm:text-6xl">{workContent.title}</h2>
-            <p className="mt-4 text-sm text-white/60">{workContent.introLabel}</p>
-          </div>
-        )}
+      <div className="sticky top-0 order-1 -mb-[100svh] h-svh shrink-0 overflow-hidden bg-[#ededed] motion-reduce:static motion-reduce:order-3 motion-reduce:mb-0">
+        <div inert={!open} className="h-full">
+          {mounted ? (
+            <WorkGallery projects={projects} total={total} enabled={open && !closing} />
+          ) : null}
+        </div>
       </div>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none sticky top-0 z-50 order-1 -mb-[100svh] h-svh shrink-0 overflow-hidden motion-reduce:hidden"
+      >
+        <div
+          data-work-actor
+          className="absolute start-0 top-1/2 h-[261.58px] w-[248.82px] opacity-0 will-change-transform min-[1920px]:h-[721.6px] min-[1920px]:w-[686.4px] md:h-[514.14px] md:w-[489.06px]"
+        >
+          <div data-work-vector className="size-full" />
+        </div>
+      </div>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none sticky top-0 z-[60] order-1 -mb-[100svh] h-svh shrink-0 overflow-hidden motion-reduce:hidden"
+      >
+        <div
+          data-work-exit-panel
+          className="absolute inset-0 [transform:translateX(100%)] bg-black"
+        />
+        <div
+          data-work-exit-actor
+          className="absolute start-0 top-1/2 opacity-0 will-change-transform"
+        >
+          <div data-work-exit-vector className="size-full [transform:scaleX(-1)]" />
+        </div>
+      </div>
+      <div
+        data-work-plate
+        className="sticky top-[-75svh] z-40 order-2 shrink-0 will-change-transform motion-reduce:static"
+      >
+        {children}
+      </div>
+      <div aria-hidden="true" className="order-3 h-[150svh] shrink-0 motion-reduce:hidden" />
     </div>
   );
 }

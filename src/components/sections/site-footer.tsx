@@ -1,12 +1,14 @@
 import StickerSlapFooter from '@/components/ui/sticker-slap-footer';
-import { TangleFooter } from '@/components/ui/tangle-footer';
 import { footerSocials, footerWhatsappHref } from '@/content/footer';
+import { FooterTangleBooking } from './footer-tangle-booking';
 
 export function SiteFooter() {
   return (
-    <div className="w-full shrink-0 bg-secondary" data-site-footer>
-      <TangleFooter className="mx-auto max-w-7xl" />
-      <StickerSlapFooter chatHref={footerWhatsappHref} socials={footerSocials} />
-    </div>
+    <StickerSlapFooter
+      topSlot={<FooterTangleBooking />}
+      chatHref={footerWhatsappHref}
+      socials={footerSocials}
+      credits={[]}
+    />
   );
 }

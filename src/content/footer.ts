@@ -11,6 +11,8 @@ export const footerLines = [
 export const footerWhatsappHref =
   'https://api.whatsapp.com/send/?phone=%2B201223165082&text&type=phone_number&app_absent=0';
 
+export const footerBookLabel = 'Book a meeting';
+
 export const footerSocials: Social[] = [
   {
     kind: 'linkedin',
@@ -51,11 +53,6 @@ export const footerSocials: Social[] = [
     kind: 'facebook',
     href: 'https://www.facebook.com/osamaabdelnaser.official',
     label: 'Osama on Facebook',
-  },
-  {
-    kind: 'email',
-    href: 'mailto:osamaabdelnaser18@gmail.com',
-    label: 'Email Osama',
   },
   {
     kind: 'upwork',

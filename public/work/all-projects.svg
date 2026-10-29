@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="910" height="732" viewBox="0 0 910 732">
+  <rect width="910" height="732" fill="#5B8DFB"/>
+  <g fill="none" stroke="#17284F" stroke-width="2" opacity=".32">
+    <rect x="614" y="49" width="237" height="172" transform="rotate(14 732 135)"/>
+    <rect x="614" y="49" width="237" height="172" transform="rotate(7 732 135)"/>
+    <rect x="614" y="49" width="237" height="172"/>
+  </g>
+  <circle cx="735" cy="135" r="34" fill="#F8FA55"/>
+  <g fill="#17284F" font-family="Arial,Helvetica,sans-serif" font-weight="700" letter-spacing="-10">
+    <text x="46" y="363" font-size="180">ALL</text>
+    <text x="46" y="512" font-size="140">PROJECTS</text>
+  </g>
+  <path d="M50 600H860" stroke="#17284F" stroke-width="2"/>
+  <g fill="#17284F" font-family="Arial,Helvetica,sans-serif" font-size="22" letter-spacing="1">
+    <text x="50" y="652">MORE WORK. SAME CURIOSITY.</text>
+    <text x="860" y="652" text-anchor="end">OPEN COLLECTION +</text>
+  </g>
+</svg>

@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 
 import { motionConfig } from '@/lib/motion/config';
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/motion/gsap';
+import { registerPageScroll } from '@/lib/motion/page-scroll';
 
 function MotionRuntime() {
   const pathname = usePathname();
@@ -23,6 +24,9 @@ function MotionRuntime() {
           syncTouch: false,
           stopInertiaOnNavigate: true,
         });
+        const unregisterScroll = registerPageScroll((position) =>
+          lenis.scrollTo(position, { immediate: true, force: true }),
+        );
 
         let disposed = false;
         let refreshFrame = 0;
@@ -47,6 +51,7 @@ function MotionRuntime() {
         refresh();
 
         return () => {
+          unregisterScroll();
           disposed = true;
           cancelAnimationFrame(refreshFrame);
           document.removeEventListener('load', onAssetLoad, true);

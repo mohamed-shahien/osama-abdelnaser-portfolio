@@ -342,6 +342,8 @@ export interface StickerSlapFooterProps {
   accent?: string;
   fontSans?: string;
   onStickerMove?: (index: number, x: number, y: number) => void;
+  /** Optional header slot rendered inside the footer directly above `.ssf-panel`. */
+  topSlot?: React.ReactNode;
   className?: string;
 }
 
@@ -388,11 +390,6 @@ const DEFAULT_SOCIALS: Social[] = [
     label: 'Osama on Facebook',
   },
   {
-    kind: 'email',
-    href: 'mailto:osamaabdelnaser18@gmail.com',
-    label: 'Email Osama',
-  },
-  {
     kind: 'upwork',
     href: 'https://www.upwork.com/freelancers/~01bb3b2ee27ac86af8?mp_source=share',
     label: 'Osama on Upwork',
@@ -404,7 +401,7 @@ const DEFAULT_SOCIALS: Social[] = [
   },
 ];
 const DEFAULT_STICKERS: StickerSpec[] = ['burst', 'smiley', 'heart', 'daisy', 'bubble', 'camera'];
-const DEFAULT_CREDITS: Credit[] = [{ role: 'Product Designer', name: 'Osama Abdelnaser' }];
+const DEFAULT_CREDITS: Credit[] = [];
 
 const LABELS: Record<StickerKind, string> = {
   burst: 'UX burst sticker',
@@ -432,12 +429,7 @@ const ICONS: Record<SocialKind, React.ReactNode> = {
     />
   ),
   behance: (
-    <g transform="scale(1.5)">
-      <path
-        fillRule="evenodd"
-        d="M4.654 3c.461 0 .887.035 1.278.14.39.07.711.216.996.391.286.176.497.426.641.747.14.32.216.711.216 1.137 0 .496-.106.922-.356 1.242-.215.32-.566.606-.997.817.606.176 1.067.496 1.348.922.281.426.461.957.461 1.563 0 .496-.105.922-.285 1.278a2.317 2.317 0 0 1-.782.887c-.32.215-.711.39-1.137.496a5.329 5.329 0 0 1-1.278.176L0 12.803V3h4.654Zm-.285 3.978c.39 0 .71-.105.957-.285.246-.18.355-.497.355-.887 0-.216-.035-.426-.105-.567a.981.981 0 0 0-.32-.355 1.84 1.84 0 0 0-.461-.176c-.176-.035-.356-.035-.567-.035H2.17v2.31c0-.005 2.2-.005 2.2-.005Zm.105 4.193c.215 0 .426-.035.606-.07.176-.035.356-.106.496-.216s.25-.215.356-.39c.07-.176.14-.391.14-.641 0-.496-.14-.852-.426-1.102-.285-.215-.676-.32-1.137-.32H2.17v2.734h2.305v.005Zm6.858-.035c.286.285.711.426 1.278.426.39 0 .746-.106 1.032-.286.285-.215.46-.426.53-.64h1.74c-.286.851-.712 1.457-1.278 1.848-.566.355-1.243.566-2.06.566a4.135 4.135 0 0 1-1.527-.285 2.827 2.827 0 0 1-1.137-.782 2.851 2.851 0 0 1-.712-1.172c-.175-.461-.25-.957-.25-1.528 0-.531.07-1.032.25-1.493.18-.46.426-.852.747-1.207.32-.32.711-.606 1.137-.782a4.018 4.018 0 0 1 1.493-.285c.606 0 1.137.105 1.598.355.46.25.817.532 1.102.958.285.39.496.851.641 1.348.07.496.105.996.07 1.563h-5.15c0 .58.21 1.11.496 1.396Zm2.24-3.732c-.25-.25-.642-.391-1.103-.391-.32 0-.566.07-.781.176-.215.105-.356.25-.496.39a.957.957 0 0 0-.25.497c-.036.175-.07.32-.07.46h3.196c-.07-.526-.25-.882-.497-1.132Zm-3.127-3.728h3.978v.957h-3.978v-.957Z"
-      />
-    </g>
+    <path d="M22 7h-7V5h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H15.97c.13 3.211 3.483 3.312 4.588 2.029h3.168zm-7.686-4h4.965c-.105-1.547-1.136-2.219-2.477-2.219-1.466 0-2.277.768-2.488 2.219zm-9.574 6.988H0V5.021h6.953c5.476.081 5.58 5.444 2.72 6.906 3.461 1.26 3.577 8.061-3.207 8.061zM3 11h3.584c2.508 0 2.906-3-.312-3H3v3zm3.391 3H3v3.016h3.341c3.055 0 2.868-3.016.05-3.016z" />
   ),
   whatsapp: (
     <path
@@ -452,13 +444,7 @@ const ICONS: Record<SocialKind, React.ReactNode> = {
     />
   ),
   figma: (
-    <>
-      <path
-        data-stroke=""
-        d="M8.75 2.25H12v6.5H8.75a3.25 3.25 0 0 1 0-6.5ZM12 2.25h3.25a3.25 3.25 0 0 1 0 6.5H12v-6.5ZM8.75 8.75H12v6.5H8.75a3.25 3.25 0 0 1 0-6.5ZM8.75 15.25H12v3.25a3.25 3.25 0 1 1-3.25-3.25Z"
-      />
-      <circle data-stroke="" cx="15.25" cy="12" r="3.25" />
-    </>
+    <path d="M15.852 8.981h-4.588V0h4.588c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.491-4.49 4.491zM12.735 7.51h3.117c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-3.117V7.51zm0 1.471H8.148c-2.476 0-4.49-2.014-4.49-4.49S5.672 0 8.148 0h4.588v8.981zm-4.587-7.51c-1.665 0-3.019 1.355-3.019 3.019s1.354 3.02 3.019 3.02h3.117V1.471H8.148zm4.587 15.019H8.148c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h4.588v8.98zM8.148 8.981c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h3.117V8.981H8.148zM8.172 24c-2.489 0-4.515-2.014-4.515-4.49s2.014-4.49 4.49-4.49h4.588v4.441c0 2.503-2.047 4.539-4.563 4.539zm-.024-7.51a3.023 3.023 0 0 0-3.019 3.019c0 1.665 1.365 3.019 3.044 3.019 1.705 0 3.093-1.376 3.093-3.068v-2.97H8.148zm7.704 0h-.098c-2.476 0-4.49-2.014-4.49-4.49s2.014-4.49 4.49-4.49h.098c2.476 0 4.49 2.014 4.49 4.49s-2.014 4.49-4.49 4.49zm-.097-7.509c-1.665 0-3.019 1.355-3.019 3.019s1.355 3.019 3.019 3.019h.098c1.665 0 3.019-1.355 3.019-3.019s-1.355-3.019-3.019-3.019h-.098z" />
   ),
   instagram: (
     <path
@@ -485,19 +471,10 @@ const ICONS: Record<SocialKind, React.ReactNode> = {
     <path d="M13.54 12a6.8 6.8 0 0 1-6.77 6.82A6.8 6.8 0 0 1 0 12a6.8 6.8 0 0 1 6.77-6.82A6.8 6.8 0 0 1 13.54 12Zm7.42 0c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42ZM24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12Z" />
   ),
   youtube: (
-    <>
-      <rect data-stroke="" x="3" y="6" width="18" height="12.4" rx="4" />
-      <path data-stroke="" d="M10.4 9.6L14.6 12.2L10.4 14.8Z" />
-    </>
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
   ),
   dribbble: (
-    <>
-      <circle data-stroke="" cx="12" cy="12" r="8.5" />
-      <path
-        data-stroke=""
-        d="M7.4 4.9C11 9 13.6 14 15 20.2M3.6 10.6C9 11 14 9.6 18 6.2M5.6 17.6C8.6 14 13 12.6 20.4 13.4"
-      />
-    </>
+    <path d="M12 24C5.385 24 0 18.615 0 12S5.385 0 12 0s12 5.385 12 12-5.385 12-12 12zm10.12-10.358c-.35-.11-3.17-.953-6.384-.438 1.34 3.684 1.887 6.684 1.992 7.308 2.3-1.555 3.936-4.02 4.395-6.87zm-6.115 7.808c-.153-.9-.75-4.032-2.19-7.77l-.066.02c-5.79 2.015-7.86 6.025-8.04 6.4 1.73 1.358 3.92 2.166 6.29 2.166 1.42 0 2.77-.29 4-.814zm-11.62-2.58c.232-.4 3.045-5.055 8.332-6.765.135-.045.27-.084.405-.12-.26-.585-.54-1.167-.832-1.74C7.17 11.775 2.206 11.71 1.756 11.7l-.004.312c0 2.633.998 5.037 2.634 6.855zm-2.42-8.955c.46.008 4.683.026 9.477-1.248-1.698-3.018-3.53-5.558-3.8-5.928-2.868 1.35-5.01 3.99-5.676 7.17zM9.6 2.052c.282.38 2.145 2.914 3.822 6 3.645-1.365 5.19-3.44 5.373-3.702-1.81-1.61-4.19-2.586-6.795-2.586-.825 0-1.63.1-2.4.285zm10.335 3.483c-.218.29-1.935 2.493-5.724 4.04.24.49.47.985.68 1.486.08.18.15.36.22.53 3.41-.43 6.8.26 7.14.33-.02-2.42-.88-4.64-2.31-6.38z" />
   ),
 };
 
@@ -524,7 +501,9 @@ const CSS =
   '.ssf-chat svg{width:24px;height:24px}' +
   '.ssf-chat:hover{transform:rotate(-14deg) scale(1.12)}' +
   // panel
+  '.ssf [data-slot="tangle-footer"]{transform-origin:50% 100%}' +
   '.ssf-panel{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;overflow:hidden;overflow:clip;border-radius:clamp(14px,1.8cqw,24px);background:var(--ssf-panel);color:var(--ssf-ink);transform-origin:50% 100%}' +
+  '.ssf [data-slot="tangle-footer"]+.ssf-panel{transform-origin:50% 0%}' +
   '.ssf-cols{position:relative;z-index:2;display:grid;grid-template-columns:repeat(var(--ssf-n,3),minmax(0,1fr));gap:clamp(22px,3cqw,44px) clamp(16px,2.4cqw,36px);padding:clamp(26px,5.4cqw,72px) clamp(18px,1.8cqw,26px) clamp(20px,3cqw,40px)}' +
   '.ssf-col{display:flex;flex-direction:column;align-items:flex-start;min-width:0}' +
   '.ssf-tag{display:inline-block;margin-bottom:clamp(14px,1.6cqw,22px);padding:.28em .72em .32em;border-radius:999px;background:var(--ssf-cream);color:var(--ssf-ink);font-size:clamp(12px,1.05cqw,14px);font-weight:600;line-height:1.2;letter-spacing:-.005em}' +
@@ -587,6 +566,7 @@ const CSS =
   '@keyframes ssf-popin{from{opacity:0;transform:translateY(10px) scale(.7) rotate(4deg)}}' +
   // the storyboard: everything above is the finished state; motion only adds the way in
   '@media (prefers-reduced-motion: no-preference){' +
+  '.ssf [data-slot="tangle-footer"]{scale:calc(.9 + .1 * var(--ssf-sp,1))}' +
   '.ssf-panel{scale:calc(.9 + .1 * var(--ssf-sp,1));border-radius:calc(clamp(14px,1.8cqw,24px) + (1 - var(--ssf-sp,1)) * 60px)}' +
   '.ssf-stage-in{transform:translateY(calc((1 - var(--ssf-sp,1)) * 18%))}' +
   '.ssf-st{transform:translate(calc(var(--ssf-px,0) * var(--d) * 9px),calc(var(--ssf-py,0) * var(--d) * 6px));transition:transform .7s cubic-bezier(.2,.8,.2,1)}' +
@@ -937,9 +917,11 @@ export default function StickerSlapFooter({
   accent = '#E43468',
   fontSans = "'DM Sans', 'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
   onStickerMove,
+  topSlot,
   className = '',
 }: StickerSlapFooterProps) {
   const rootRef = React.useRef<HTMLElement>(null);
+  const panelRef = React.useRef<HTMLDivElement>(null);
   const stageRef = React.useRef<HTMLDivElement>(null);
   const popRef = React.useRef<HTMLDivElement>(null);
   const [seen, setSeen] = React.useState(false);
@@ -1009,7 +991,7 @@ export default function StickerSlapFooter({
 
   // The storyboard plays once, the first time a fifth of it is on screen.
   React.useEffect(() => {
-    const el = rootRef.current;
+    const el = panelRef.current ?? rootRef.current;
     if (!el || typeof IntersectionObserver === 'undefined') {
       setSeen(true);
       return;
@@ -1031,12 +1013,13 @@ export default function StickerSlapFooter({
   // the screen (or is entirely in view), eased into --ssf-sp.
   React.useEffect(() => {
     const el = rootRef.current;
-    if (!el) return;
+    const target = panelRef.current ?? el;
+    if (!el || !target) return;
     let raf = 0;
     let shown = '';
     const update = () => {
       raf = 0;
-      const r = el.getBoundingClientRect();
+      const r = target.getBoundingClientRect();
       const vh = document.documentElement.clientHeight || r.height;
       const span = Math.min(r.height, vh) || 1;
       const p = clamp((vh - r.top) / span, 0, 1);
@@ -1335,6 +1318,7 @@ export default function StickerSlapFooter({
   return (
     <footer
       ref={rootRef}
+      data-site-footer=""
       className={'ssf' + (seen ? ' is-in' : '') + (className ? ' ' + className : '')}
       style={style}
       onPointerMove={onPointer}
@@ -1342,7 +1326,9 @@ export default function StickerSlapFooter({
     >
       <style>{CSS}</style>
 
-      <div className="ssf-panel">
+      {topSlot}
+
+      <div ref={panelRef} className="ssf-panel">
         {cols.length > 0 && (
           <div className="ssf-cols" style={{ '--ssf-n': cols.length } as React.CSSProperties}>
             {cols.map((c, k) => (

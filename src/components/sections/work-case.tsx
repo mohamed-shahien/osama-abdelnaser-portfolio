@@ -1,7 +1,9 @@
 import Link from 'next/link';
 
 import type { WorkProject } from '@/types/work';
+import { workSans, workDisplay } from '@/config/work-fonts';
 import { WorkCaseGallery } from './work-case-gallery';
+import { WorkCaseEntrance, WorkPageLink } from './work-page-transition';
 
 export function WorkCase({
   project,
@@ -12,9 +14,12 @@ export function WorkCase({
 }) {
   const images = project.images.length ? project.images : [project.cover];
   return (
-    <article className="relative bg-[#ededed] text-[#181818]">
+    <article
+      className={`${workSans.variable} ${workDisplay.variable} relative bg-[#ededed] [font-family:var(--font-work-sans)] text-[#181818]`}
+    >
+      <WorkCaseEntrance key={project.slug} label={project.name} />
       <div className="pointer-events-none sticky top-0 z-20 -mb-[100svh] flex h-svh items-end justify-center overflow-hidden pb-5">
-        <h1 className="max-w-full text-center font-serif text-[clamp(2.75rem,9vw,10rem)] leading-[0.8] tracking-[-0.055em] [overflow-wrap:anywhere] text-primary uppercase max-lg:pb-5">
+        <h1 className="max-w-full text-center [font-family:var(--font-work-display)] text-[clamp(2.75rem,9vw,10rem)] leading-[0.8] tracking-[-0.055em] [overflow-wrap:anywhere] text-primary uppercase max-lg:pb-5">
           {project.name}
         </h1>
       </div>
@@ -70,16 +75,17 @@ export function WorkCase({
         </WorkCaseGallery>
       </div>
       {next ? (
-        <Link
+        <WorkPageLink
           href={`/work/${next.slug}`}
+          label={next.name}
           prefetch={false}
           className="relative z-30 flex min-h-[50svh] flex-col items-center justify-center gap-5 border-t border-ink/10 px-6 pb-12 text-center focus-visible:outline-2 focus-visible:outline-primary"
         >
           <span className="text-xs">Next project</span>
-          <span className="font-serif text-[clamp(2.5rem,6vw,7rem)] leading-none tracking-tight uppercase">
+          <span className="[font-family:var(--font-work-display)] text-[clamp(2.5rem,6vw,7rem)] leading-none tracking-tight uppercase">
             {next.name} ↗
           </span>
-        </Link>
+        </WorkPageLink>
       ) : null}
     </article>
   );
