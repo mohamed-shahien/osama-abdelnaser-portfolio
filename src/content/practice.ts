@@ -4,10 +4,7 @@ import type { OnyxGlyph } from '@/components/ui/onyx-glyph-preloader';
 // workflow described in the brief; swap each `d` for the final icon path.
 export const practiceContent = {
   eyebrow: 'What I do',
-  title: 'From research to handoff.',
   word: 'osama.',
-  caption: 'Research to handoff, one flow',
-  closing: 'Thoughtful UX. Interfaces built to work.',
   glyphs: [
     { d: 'M44 20 A24 24 0 1 0 44.1 20 Z M62 62 L82 82', stroke: 9, label: 'UX Research' },
     { d: 'M18 24 H82 V76 H18 Z M18 40 H82', stroke: 8, label: 'UI Design' },

@@ -279,7 +279,20 @@ export type StickerSpec =
       rotate?: number;
     };
 
-export type SocialKind = 'linkedin' | 'instagram' | 'tiktok' | 'x' | 'youtube' | 'dribbble';
+export type SocialKind =
+  | 'linkedin'
+  | 'behance'
+  | 'whatsapp'
+  | 'x'
+  | 'figma'
+  | 'instagram'
+  | 'tiktok'
+  | 'facebook'
+  | 'email'
+  | 'upwork'
+  | 'medium'
+  | 'youtube'
+  | 'dribbble';
 export type Social = { kind: SocialKind; href: string; label?: string };
 export type Job = { title: string; href?: string };
 export type Credit = { role: string; name: string };
@@ -340,11 +353,55 @@ const DEFAULT_SOCIALS: Social[] = [
     label: 'Osama on LinkedIn',
   },
   {
-    kind: 'instagram',
-    href: 'https://www.instagram.com/osamaabdelnaser.pg',
-    label: 'Osama’s photography on Instagram',
+    kind: 'behance',
+    href: 'https://www.behance.net/osamaabdelnaser1',
+    label: 'Osama on Behance',
   },
-  { kind: 'dribbble', href: 'https://dribbble.com/osamaabdelnaser1', label: 'Osama on Dribbble' },
+  {
+    kind: 'whatsapp',
+    href: 'https://api.whatsapp.com/send/?phone=%2B201223165082&text&type=phone_number&app_absent=0',
+    label: 'Message Osama on WhatsApp',
+  },
+  {
+    kind: 'x',
+    href: 'https://x.com/OsAAA98',
+    label: 'Osama on X',
+  },
+  {
+    kind: 'figma',
+    href: 'https://www.figma.com/@osamaabdelnaser',
+    label: 'Osama on Figma',
+  },
+  {
+    kind: 'instagram',
+    href: 'https://www.instagram.com/osamaabdelnaser.official/',
+    label: 'Osama on Instagram',
+  },
+  {
+    kind: 'tiktok',
+    href: 'https://www.tiktok.com/@osamaabdelnaser.official',
+    label: 'Osama on TikTok',
+  },
+  {
+    kind: 'facebook',
+    href: 'https://www.facebook.com/osamaabdelnaser.official',
+    label: 'Osama on Facebook',
+  },
+  {
+    kind: 'email',
+    href: 'mailto:osamaabdelnaser18@gmail.com',
+    label: 'Email Osama',
+  },
+  {
+    kind: 'upwork',
+    href: 'https://www.upwork.com/freelancers/~01bb3b2ee27ac86af8?mp_source=share',
+    label: 'Osama on Upwork',
+  },
+  {
+    kind: 'medium',
+    href: 'https://medium.com/@osamaabdelnaser',
+    label: 'Osama on Medium',
+  },
 ];
 const DEFAULT_STICKERS: StickerSpec[] = ['burst', 'smiley', 'heart', 'daisy', 'bubble', 'camera'];
 const DEFAULT_CREDITS: Credit[] = [{ role: 'Product Designer', name: 'Osama Abdelnaser' }];
@@ -369,31 +426,77 @@ const SQUIGGLE = 'M1 5C7 1 11 1 15 4S24 8 29 4S38 0 43 4S52 8 57 4S66 1 71 4S80 
 
 const ICONS: Record<SocialKind, React.ReactNode> = {
   linkedin: (
+    <path
+      fillRule="evenodd"
+      d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286ZM5.337 7.433a2.063 2.063 0 1 1 0-4.126 2.063 2.063 0 0 1 0 4.126Zm1.782 13.019H3.555V9h3.564v11.452ZM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003Z"
+    />
+  ),
+  behance: (
+    <g transform="scale(1.5)">
+      <path
+        fillRule="evenodd"
+        d="M4.654 3c.461 0 .887.035 1.278.14.39.07.711.216.996.391.286.176.497.426.641.747.14.32.216.711.216 1.137 0 .496-.106.922-.356 1.242-.215.32-.566.606-.997.817.606.176 1.067.496 1.348.922.281.426.461.957.461 1.563 0 .496-.105.922-.285 1.278a2.317 2.317 0 0 1-.782.887c-.32.215-.711.39-1.137.496a5.329 5.329 0 0 1-1.278.176L0 12.803V3h4.654Zm-.285 3.978c.39 0 .71-.105.957-.285.246-.18.355-.497.355-.887 0-.216-.035-.426-.105-.567a.981.981 0 0 0-.32-.355 1.84 1.84 0 0 0-.461-.176c-.176-.035-.356-.035-.567-.035H2.17v2.31c0-.005 2.2-.005 2.2-.005Zm.105 4.193c.215 0 .426-.035.606-.07.176-.035.356-.106.496-.216s.25-.215.356-.39c.07-.176.14-.391.14-.641 0-.496-.14-.852-.426-1.102-.285-.215-.676-.32-1.137-.32H2.17v2.734h2.305v.005Zm6.858-.035c.286.285.711.426 1.278.426.39 0 .746-.106 1.032-.286.285-.215.46-.426.53-.64h1.74c-.286.851-.712 1.457-1.278 1.848-.566.355-1.243.566-2.06.566a4.135 4.135 0 0 1-1.527-.285 2.827 2.827 0 0 1-1.137-.782 2.851 2.851 0 0 1-.712-1.172c-.175-.461-.25-.957-.25-1.528 0-.531.07-1.032.25-1.493.18-.46.426-.852.747-1.207.32-.32.711-.606 1.137-.782a4.018 4.018 0 0 1 1.493-.285c.606 0 1.137.105 1.598.355.46.25.817.532 1.102.958.285.39.496.851.641 1.348.07.496.105.996.07 1.563h-5.15c0 .58.21 1.11.496 1.396Zm2.24-3.732c-.25-.25-.642-.391-1.103-.391-.32 0-.566.07-.781.176-.215.105-.356.25-.496.39a.957.957 0 0 0-.25.497c-.036.175-.07.32-.07.46h3.196c-.07-.526-.25-.882-.497-1.132Zm-3.127-3.728h3.978v.957h-3.978v-.957Z"
+      />
+    </g>
+  ),
+  whatsapp: (
+    <path
+      fillRule="evenodd"
+      d="M17.472 14.382c-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.124-.272-.198-.57-.347Zm-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.847 9.847 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884Zm8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"
+    />
+  ),
+  x: (
+    <path
+      fillRule="evenodd"
+      d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"
+    />
+  ),
+  figma: (
     <>
-      <rect x="3.5" y="3.5" width="17" height="17" rx="3.5" />
-      <path d="M8 10.5V16.5M12 16.5V10.5M12 13.2C12 11.6 13.1 10.4 14.6 10.4C16.1 10.4 17 11.4 17 13.1V16.5" />
-      <path className="ssf-dot" d="M8 7.4L8 7.5" />
+      <path
+        data-stroke=""
+        d="M8.75 2.25H12v6.5H8.75a3.25 3.25 0 0 1 0-6.5ZM12 2.25h3.25a3.25 3.25 0 0 1 0 6.5H12v-6.5ZM8.75 8.75H12v6.5H8.75a3.25 3.25 0 0 1 0-6.5ZM8.75 15.25H12v3.25a3.25 3.25 0 1 1-3.25-3.25Z"
+      />
+      <circle data-stroke="" cx="15.25" cy="12" r="3.25" />
     </>
   ),
   instagram: (
-    <>
-      <rect x="3.5" y="3.5" width="17" height="17" rx="5.2" />
-      <circle cx="12" cy="12" r="3.8" />
-      <path className="ssf-dot" d="M16.9 7.1L16.9 7.2" />
-    </>
+    <path
+      fillRule="evenodd"
+      d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0Zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03Zm0 3.678a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324ZM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881Z"
+    />
   ),
-  tiktok: <path d="M13.6 4V15A3.3 3.3 0 1 1 10.3 11.7M13.6 4C14 6.6 15.8 8.2 18.4 8.4" />,
-  x: <path d="M5 4.5H8.8L19 19.5H15.2ZM18.6 4.5L13.3 10.5M5.4 19.5L10.7 13.5" />,
+  tiktok: (
+    <path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.34-3.23-3.67-5.52-.33-2.3.36-4.66 1.87-6.42 1.51-1.76 3.79-2.78 6.1-2.73.47 0 .94.04 1.4.12v4.33c-.47-.11-.95-.17-1.44-.17-1.34.03-2.61.64-3.45 1.67-.84 1.03-1.12 2.4-.76 3.68.36 1.28 1.34 2.29 2.62 2.65 1.28.36 2.65.02 3.63-.91.73-.68 1.16-1.64 1.18-2.65.03-3.07-.01-6.14.02-9.21V.02Z" />
+  ),
+  facebook: (
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073Z" />
+  ),
+  email: (
+    <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.818V11.734L12 16.636l-6.546-4.902v9.268H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L12 9.545l8.073-6.052C21.69 2.279 24 3.434 24 5.457Z" />
+  ),
+  upwork: (
+    <path
+      fillRule="evenodd"
+      d="M18.561 13.158c-1.102 0-2.135-.467-3.074-1.227l.228-1.076.008-.042c.207-1.143.849-3.06 2.839-3.06a2.705 2.705 0 0 1 2.703 2.703 2.707 2.707 0 0 1-2.704 2.702Zm0-8.14c-2.539 0-4.51 1.649-5.31 4.366-1.22-1.834-2.148-4.036-2.687-5.892H7.828v7.112a2.55 2.55 0 0 1-2.547 2.548 2.55 2.55 0 0 1-2.545-2.548V3.492H0v7.112c0 2.914 2.37 5.303 5.281 5.303 2.913 0 5.283-2.389 5.283-5.303v-1.19c.529 1.107 1.182 2.229 1.974 3.221l-1.673 7.873h2.797l1.213-5.71c1.063.679 2.285 1.109 3.686 1.109 3 0 5.439-2.452 5.439-5.45 0-3-2.439-5.439-5.439-5.439Z"
+    />
+  ),
+  medium: (
+    <path d="M13.54 12a6.8 6.8 0 0 1-6.77 6.82A6.8 6.8 0 0 1 0 12a6.8 6.8 0 0 1 6.77-6.82A6.8 6.8 0 0 1 13.54 12Zm7.42 0c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42ZM24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12Z" />
+  ),
   youtube: (
     <>
-      <rect x="3" y="6" width="18" height="12.4" rx="4" />
-      <path d="M10.4 9.6L14.6 12.2L10.4 14.8Z" />
+      <rect data-stroke="" x="3" y="6" width="18" height="12.4" rx="4" />
+      <path data-stroke="" d="M10.4 9.6L14.6 12.2L10.4 14.8Z" />
     </>
   ),
   dribbble: (
     <>
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="M7.4 4.9C11 9 13.6 14 15 20.2M3.6 10.6C9 11 14 9.6 18 6.2M5.6 17.6C8.6 14 13 12.6 20.4 13.4" />
+      <circle data-stroke="" cx="12" cy="12" r="8.5" />
+      <path
+        data-stroke=""
+        d="M7.4 4.9C11 9 13.6 14 15 20.2M3.6 10.6C9 11 14 9.6 18 6.2M5.6 17.6C8.6 14 13 12.6 20.4 13.4"
+      />
     </>
   ),
 };
@@ -443,11 +546,10 @@ const CSS =
   '.ssf-map path{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-dasharray:var(--l,120px) var(--l,120px);stroke-dashoffset:0}' +
   '.ssf-map:hover path,.ssf-map:focus-visible path{animation:ssf-rewrite .7s cubic-bezier(.6,0,.3,1)}' +
   '.ssf-note{margin-top:clamp(12px,1.3cqw,18px);max-width:34ch;font-size:clamp(11px,.92cqw,13px);line-height:1.45;opacity:.82}' +
-  '.ssf-socials{display:flex;gap:clamp(8px,.9cqw,12px);margin-top:clamp(16px,2cqw,26px)}' +
+  '.ssf-socials{display:flex;flex-wrap:wrap;gap:clamp(8px,.9cqw,12px);margin-top:clamp(16px,2cqw,26px)}' +
   '.ssf-soc{display:grid;place-items:center;width:clamp(34px,2.9cqw,40px);height:clamp(34px,2.9cqw,40px);border-radius:12px;color:var(--ssf-cream);box-shadow:inset 0 0 0 1.5px color-mix(in oklab,var(--ssf-cream) 45%,transparent);transition:background .25s,color .25s,box-shadow .25s,transform .45s cubic-bezier(.2,1.6,.3,1)}' +
-  '.ssf-soc svg{width:58%;height:58%}' +
-  '.ssf-soc svg *{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}' +
-  '.ssf-soc .ssf-dot{stroke-width:2.8}' +
+  '.ssf-soc svg{width:54%;height:54%;fill:currentColor}' +
+  '.ssf-soc svg [data-stroke]{fill:none;stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}' +
   '.ssf-soc:hover,.ssf-soc:focus-visible{background:var(--ssf-cream);color:var(--ssf-panel);box-shadow:inset 0 0 0 1.5px var(--ssf-cream);transform:translateY(-3px) rotate(-8deg)}' +
   // the wordmark stage
   '.ssf-stage{position:relative;z-index:1;margin-top:auto;width:min(100%,calc(var(--ssf-wmh) * var(--ssf-ar)));align-self:center;padding:0 clamp(6px,.8cqw,12px)}' +
@@ -496,7 +598,7 @@ const CSS =
   '.ssf.is-in .ssf-tag{animation:ssf-pop .7s cubic-bezier(.2,1.7,.3,1) both;animation-delay:calc(.45s + var(--c) * .1s)}' +
   '.ssf.is-in .ssf-line>*{animation:ssf-rise .8s cubic-bezier(.2,.9,.2,1) both;animation-delay:calc(.55s + var(--c) * .1s + var(--i) * .07s)}' +
   '.ssf.is-in .ssf-map,.ssf.is-in .ssf-note{animation:ssf-fade .7s ease both;animation-delay:calc(.85s + var(--c) * .1s)}' +
-  '.ssf.is-in .ssf-soc{animation:ssf-pop .6s cubic-bezier(.2,1.7,.3,1) both;animation-delay:calc(1s + var(--i) * .08s)}' +
+  '.ssf.is-in .ssf-soc{animation:ssf-pop .6s cubic-bezier(.2,1.7,.3,1) both;animation-delay:calc(1s + var(--i) * .05s)}' +
   '.ssf.is-in .ssf-pill{animation:ssf-pop .6s cubic-bezier(.2,1.7,.3,1) both;animation-delay:var(--end)}' +
   '.ssf .ssf-wm path{stroke-dasharray:var(--l,3000px) calc(var(--l,3000px) + 8px);stroke-dashoffset:calc(var(--l,3000px) + 4px)}' +
   '.ssf:not(.is-in) .ssf-wm path{visibility:hidden}' +
@@ -811,7 +913,7 @@ type Placed = { x: number; y: number };
 
 export default function StickerSlapFooter({
   wordmark = 'osama',
-  chatHref = 'https://www.linkedin.com/in/osama-abdelnaser/',
+  chatHref = 'https://api.whatsapp.com/send/?phone=%2B201223165082&text&type=phone_number&app_absent=0',
   chatLabel = 'Let’s connect',
   jobsLabel = 'expertise',
   jobs = DEFAULT_JOBS,
@@ -931,13 +1033,16 @@ export default function StickerSlapFooter({
     const el = rootRef.current;
     if (!el) return;
     let raf = 0;
+    let shown = '';
     const update = () => {
       raf = 0;
       const r = el.getBoundingClientRect();
       const vh = document.documentElement.clientHeight || r.height;
       const span = Math.min(r.height, vh) || 1;
       const p = clamp((vh - r.top) / span, 0, 1);
-      el.style.setProperty('--ssf-sp', (1 - Math.pow(1 - p, 2)).toFixed(4));
+      // Skip identical writes: while the footer is off screen the value sits at 0.
+      const next = (1 - Math.pow(1 - p, 2)).toFixed(4);
+      if (next !== shown) el.style.setProperty('--ssf-sp', (shown = next));
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -1236,7 +1341,6 @@ export default function StickerSlapFooter({
       onPointerLeave={onLeave}
     >
       <style>{CSS}</style>
-
 
       <div className="ssf-panel">
         {cols.length > 0 && (

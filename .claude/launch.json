@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "pnpm.cmd",
+      "runtimeArgs": ["dev", "--port", "3001"],
+      "port": 3001
+    },
+    {
+      "name": "prod",
+      "runtimeExecutable": "pnpm.cmd",
+      "runtimeArgs": ["start", "--port", "3002"],
+      "port": 3002
+    }
+  ]
+}

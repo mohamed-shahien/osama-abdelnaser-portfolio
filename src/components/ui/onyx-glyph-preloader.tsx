@@ -14,6 +14,8 @@
 
 import * as React from 'react';
 
+import { textureJobs, type TextureRequest } from './onyx-glyph-paint';
+
 export interface OnyxGlyph {
   /** SVG path data, drawn in a 100 × 100 box. */
   d: string;
@@ -39,7 +41,7 @@ export interface OnyxPalette {
 }
 
 export interface OnyxGlyphPreloaderProps {
-  /** Content revealed once the gate lifts. Ignored while `loop` is set. */
+  /** Content revealed once the gate lifts. Ignored while `loop` is set. Without it the gate holds on the reveal. */
   children?: React.ReactNode;
   /** Run forever as a showcase: children are never revealed, onComplete never fires. */
   loop?: boolean;
@@ -58,6 +60,8 @@ export interface OnyxGlyphPreloaderProps {
   markStyle?: 'cut' | 'deboss';
   /** Wordmark set under the hero tile. */
   word?: string;
+  /** Show the wordmark and caption under the hero tile. `word` still names the gate for assistive tech. Defaults to true. */
+  showTitle?: boolean;
   /** Line under the wordmark. */
   caption?: string;
   /** Colour overrides, merged over the defaults. */
@@ -187,22 +191,10 @@ export function ogpSlot(i: number, n: number) {
   return { x: Math.round(Math.cos(a) * 1e4) / 1e4, y: Math.round(Math.sin(a) * 1e4) / 1e4 };
 }
 
-// Seeded so every mount paints the same glitter.
-export function ogpRng(seed: number) {
-  let s = seed >>> 0;
-  return () => {
-    s = (s + 0x6d2b79f5) >>> 0;
-    let t = s;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
+export { ogpRng } from './onyx-glyph-paint';
 // #endregion
 
 // ---- procedural textures ------------------------------------------------------
-
-const FACE = 512;
 
 interface OgpTextures {
   faces: string[];
@@ -213,234 +205,84 @@ interface OgpTextures {
   grain: string;
 }
 
-function canvas(n: number) {
-  const c = document.createElement('canvas');
-  c.width = n;
-  c.height = n;
-  return c;
-}
+// Textures are painted once per look and page, and shared by every later mount
+// (scroll replays remount the gate). The worker does the painting and encoding
+// off the main thread; without worker canvas support the main thread paints one
+// texture per task. Null means no canvas at all: the CSS gradients stand in.
+const textureCache = new Map<string, Promise<OgpTextures | null>>();
 
-function ctx(c: HTMLCanvasElement) {
-  const g = c.getContext('2d');
-  if (!g) throw new Error('no 2d context');
-  return g;
-}
-
-function roundRect(g: CanvasRenderingContext2D, n: number, r: number) {
-  g.beginPath();
-  g.moveTo(r, 0);
-  g.arcTo(n, 0, n, n, r);
-  g.arcTo(n, n, 0, n, r);
-  g.arcTo(0, n, 0, 0, r);
-  g.arcTo(0, 0, n, 0, r);
-  g.closePath();
-}
-
-// Fine sandblast plus glitter, weighted toward the lit top-left corner.
-function sprinkle(
-  g: CanvasRenderingContext2D,
-  rnd: () => number,
-  n: number,
-  count: number,
-  color: string,
-  alpha: number,
-) {
-  g.fillStyle = color;
-  for (let k = 0; k < count; k++) {
-    const x = rnd() * n;
-    const y = rnd() * n;
-    const b = rnd();
-    const lit = 0.4 + 0.6 * (1 - (x + y) / (2 * n));
-    g.globalAlpha = alpha * lit * (b * b * 0.9 + 0.04);
-    const s = b > 0.99 ? 2.4 : b > 0.92 ? 1.6 : 1;
-    g.fillRect(x, y, s, s);
-  }
-  g.globalAlpha = 1;
-}
-
-function glyphMask(glyph: OnyxGlyph) {
-  const c = canvas(FACE);
-  const g = ctx(c);
-  const k = (FACE * 0.66) / 100;
-  g.setTransform(k, 0, 0, k, FACE * 0.17, FACE * 0.17);
-  const path = new Path2D(glyph.d);
-  g.fillStyle = '#fff';
-  g.strokeStyle = '#fff';
-  if (glyph.stroke) {
-    g.lineWidth = glyph.stroke;
-    g.lineCap = 'round';
-    g.lineJoin = 'round';
-    g.stroke(path);
-  } else {
-    g.fill(path, 'evenodd');
-  }
-  return c;
-}
-
-function paintFace(
-  glyph: OnyxGlyph | null,
-  mode: 'cut' | 'deboss',
-  pal: OnyxPalette,
-  density: number,
-  seed: number,
-) {
-  const rnd = ogpRng(seed);
-  const n = FACE;
-  const c = canvas(n);
-  const g = ctx(c);
-  roundRect(g, n, n * 0.2);
-  g.clip();
-
-  const base = g.createLinearGradient(0, 0, n, n);
-  base.addColorStop(0, pal.metal);
-  base.addColorStop(0.62, pal.shade);
-  base.addColorStop(1, pal.shade);
-  g.fillStyle = base;
-  g.fillRect(0, 0, n, n);
-  const bloom = g.createRadialGradient(n * 0.26, n * 0.2, 0, n * 0.26, n * 0.2, n * 0.85);
-  bloom.addColorStop(0, 'rgba(255,255,255,0.11)');
-  bloom.addColorStop(1, 'rgba(255,255,255,0)');
-  g.fillStyle = bloom;
-  g.fillRect(0, 0, n, n);
-
-  sprinkle(g, rnd, n, 14000, '#000', 0.5);
-  sprinkle(g, rnd, n, Math.round(16000 * density), pal.glitter, 0.95);
-
-  if (glyph) {
-    const mask = glyphMask(glyph);
-    // everything but the glyph: its shadow is what falls into the recess
-    const inv = canvas(n);
-    const ig = ctx(inv);
-    ig.fillStyle = '#fff';
-    ig.fillRect(0, 0, n, n);
-    ig.globalCompositeOperation = 'destination-out';
-    ig.drawImage(mask, 0, 0);
-
-    const well = canvas(n);
-    const w = ctx(well);
-    w.drawImage(mask, 0, 0);
-    w.globalCompositeOperation = 'source-in';
-    if (mode === 'cut') {
-      w.fillStyle = pal.stage;
-      w.fillRect(0, 0, n, n);
-    } else {
-      const floor = w.createLinearGradient(0, 0, n, n);
-      floor.addColorStop(0, '#0f1a36');
-      floor.addColorStop(1, '#1f3a78');
-      w.fillStyle = floor;
-      w.fillRect(0, 0, n, n);
-      w.globalCompositeOperation = 'source-atop';
-      sprinkle(w, rnd, n, Math.round(2400 * density), pal.glitter, 0.4);
-    }
-    w.globalCompositeOperation = 'source-atop';
-    // draw the stencil far off-canvas so only its offset shadow lands
-    const shade = (color: string, blur: number, dx: number, dy: number) => {
-      w.shadowColor = color;
-      w.shadowBlur = blur;
-      w.shadowOffsetX = dx + n * 3;
-      w.shadowOffsetY = dy;
-      w.drawImage(inv, -n * 3, 0);
-    };
-    if (mode === 'cut') {
-      shade('rgba(0,0,0,1)', 6, 0, 7);
-      shade('rgba(150,150,160,0.55)', 5, -3, -9);
-      shade('rgba(255,255,255,0.35)', 1, -1, -2);
-    } else {
-      shade('rgba(0,0,0,0.95)', 9, 7, 10);
-      shade('rgba(0,0,0,0.8)', 2, 2, 3);
-      shade('rgba(255,255,255,0.24)', 2, -2, -3);
-    }
-    w.shadowColor = 'transparent';
-    g.drawImage(well, 0, 0);
-
-    // the lip of the recess catches the light along its lower edge
-    const lip = canvas(n);
-    const l = ctx(lip);
-    l.shadowColor = 'rgba(255,255,255,0.22)';
-    l.shadowBlur = 2;
-    l.shadowOffsetX = n * 3 + 1.5;
-    l.shadowOffsetY = 2;
-    l.drawImage(mask, -n * 3, 0);
-    l.globalCompositeOperation = 'destination-out';
-    l.shadowColor = 'transparent';
-    l.drawImage(mask, 0, 0);
-    g.drawImage(lip, 0, 0);
-  }
-
-  const bevel = g.createLinearGradient(0, 0, n, n);
-  bevel.addColorStop(0, 'rgba(255,255,255,0.34)');
-  bevel.addColorStop(0.45, 'rgba(255,255,255,0.03)');
-  bevel.addColorStop(1, 'rgba(255,255,255,0.18)');
-  g.lineWidth = n * 0.028;
-  g.strokeStyle = bevel;
-  roundRect(g, n, n * 0.2);
-  g.stroke();
-  return c;
-}
-
-// Sparse, brighter specks with a few cross glints, laid over a face and
-// faded by the light so they flash as it moves.
-function paintSparkle(seed: number, count: number) {
-  const n = 256;
-  const c = canvas(n);
-  const g = ctx(c);
-  const rnd = ogpRng(seed);
-  for (let k = 0; k < count; k++) {
-    const x = rnd() * n;
-    const y = rnd() * n;
-    const b = rnd();
-    const r = 0.35 + b * 0.75;
-    const dot = g.createRadialGradient(x, y, 0, x, y, r * 2);
-    dot.addColorStop(0, 'rgba(255,255,255,' + (0.55 + b * 0.45).toFixed(2) + ')');
-    dot.addColorStop(1, 'rgba(255,255,255,0)');
-    g.fillStyle = dot;
-    g.fillRect(x - r * 3, y - r * 3, r * 6, r * 6);
-    if (b > 0.94) {
-      g.fillStyle = 'rgba(255,255,255,0.5)';
-      g.fillRect(x - r * 5, y - 0.3, r * 10, 0.6);
-      g.fillRect(x - 0.3, y - r * 5, 0.6, r * 10);
-    }
-  }
-  return c;
-}
-
-function paintGrain() {
-  const n = 160;
-  const c = canvas(n);
-  const g = ctx(c);
-  const img = g.createImageData(n, n);
-  const rnd = ogpRng(7);
-  for (let i = 0; i < img.data.length; i += 4) {
-    const v = Math.round(rnd() * 255);
-    img.data[i] = v;
-    img.data[i + 1] = v;
-    img.data[i + 2] = v;
-    img.data[i + 3] = 34;
-  }
-  g.putImageData(img, 0, 0);
-  return c;
-}
-
-// Synchronous on purpose: toBlob is scheduled into idle time, which a page
-// this busy never has. WebP keeps the noisy faces small; browsers that cannot
-// encode it hand back PNG instead.
-const toUrl = (c: HTMLCanvasElement) => 'url("' + c.toDataURL('image/webp', 0.92) + '")';
-
-function paintAll(
-  glyphs: OnyxGlyph[],
-  mark: OnyxGlyph,
-  markStyle: 'cut' | 'deboss',
-  pal: OnyxPalette,
-  density: number,
-): OgpTextures {
+function toTextures(urls: string[], glyphCount: number): OgpTextures {
+  const at = (i: number) => urls[i] ?? '';
   return {
-    faces: glyphs.map((gl, i) => toUrl(paintFace(gl, 'deboss', pal, density, 101 + i * 17))),
-    hero: toUrl(paintFace(mark, markStyle, pal, density, 977)),
-    back: toUrl(paintFace(null, 'deboss', pal, density, 1301)),
-    glitA: toUrl(paintSparkle(11, Math.round(110 * Math.max(0.2, density)))),
-    glitB: toUrl(paintSparkle(29, Math.round(110 * Math.max(0.2, density)))),
-    grain: toUrl(paintGrain()),
+    faces: urls.slice(0, glyphCount),
+    hero: at(glyphCount),
+    back: at(glyphCount + 1),
+    glitA: at(glyphCount + 2),
+    glitB: at(glyphCount + 3),
+    grain: at(glyphCount + 4),
   };
+}
+
+function paintInWorker(request: TextureRequest): Promise<string[] | null> {
+  if (typeof Worker === 'undefined' || typeof OffscreenCanvas === 'undefined') {
+    return Promise.resolve(null);
+  }
+  return new Promise((resolve) => {
+    let worker: Worker;
+    try {
+      worker = new Worker(new URL('./onyx-glyph-paint.worker.ts', import.meta.url));
+    } catch {
+      resolve(null);
+      return;
+    }
+    const finish = (urls: string[] | null) => {
+      worker.terminate();
+      resolve(urls);
+    };
+    worker.onmessage = (event: MessageEvent<Blob[] | null>) =>
+      finish(
+        event.data ? event.data.map((blob) => 'url("' + URL.createObjectURL(blob) + '")') : null,
+      );
+    worker.onerror = () => finish(null);
+    worker.postMessage(request);
+  });
+}
+
+// Main-thread fallback. JPEG for the opaque faces: WebP-encoding them costs
+// hundreds of ms each here. The small detail layers keep their alpha as WebP.
+function paintOnMainThread(request: TextureRequest): Promise<string[] | null> {
+  const jobs = textureJobs(request);
+  const urls: string[] = [];
+  return new Promise((resolve) => {
+    const step = (index: number) => {
+      const job = jobs[index];
+      if (!job) {
+        resolve(urls);
+        return;
+      }
+      try {
+        const surface = job.paint();
+        if (!(surface instanceof HTMLCanvasElement)) throw new Error('no canvas');
+        urls.push('url("' + surface.toDataURL(job.face ? 'image/jpeg' : 'image/webp', 0.92) + '")');
+      } catch {
+        resolve(null);
+        return;
+      }
+      setTimeout(() => step(index + 1), 0);
+    };
+    setTimeout(() => step(0), 0);
+  });
+}
+
+function loadTextures(key: string, request: TextureRequest) {
+  let textures = textureCache.get(key);
+  if (!textures) {
+    textures = paintInWorker(request)
+      .then((urls) => urls ?? paintOnMainThread(request))
+      .then((urls) => (urls ? toTextures(urls, request.glyphs.length) : null));
+    textureCache.set(key, textures);
+  }
+  return textures;
 }
 
 // ---- styles -------------------------------------------------------------------
@@ -527,6 +369,8 @@ const OGP_CSS = `
   background-image: var(--ogp-grain);
   background-size: 160px 160px;
   animation: ogp-grain 0.9s steps(6) infinite;
+  /* Own layer: the jitter moves on the compositor instead of repainting the stage. */
+  will-change: transform;
 }
 .ogp-dust { position: absolute; inset: 0; pointer-events: none; }
 .ogp-mote {
@@ -884,6 +728,9 @@ const OGP_CSS = `
 }
 
 .ogp-root svg, .ogp-root canvas, .ogp-root img { max-width: none; }
+/* Off screen or in a background tab: freeze the endless loops instead of painting them unseen. */
+.ogp-root[data-idle="true"] .ogp-gate,
+.ogp-root[data-idle="true"] .ogp-gate * { animation-play-state: paused !important; }
 
 @media (max-width: 520px) {
   .ogp-hide-sm { display: none; }
@@ -954,6 +801,7 @@ export default function OnyxGlyphPreloader({
   mark = DEFAULT_MARK,
   markStyle = 'cut',
   word = 'osama.',
+  showTitle = true,
   caption = 'From research to handoff',
   palette,
   glitter = 1,
@@ -984,21 +832,30 @@ export default function OnyxGlyphPreloader({
   });
 
   const colors = { ...DEFAULT_PALETTE, ...palette };
+  const holds = !loop && !children;
   const n = Math.max(1, glyphs.length);
   const lit = ogpCount(pct / 100, n);
   const current = glyphs[Math.min(n - 1, lit)];
 
   // ---- paint the metal once per look ---------------------------------------------
   const look = JSON.stringify([glyphs, mark, markStyle, colors, glitter]);
-  /* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps -- painted once per serialised look */
+  /* eslint-disable react-hooks/exhaustive-deps -- painted once per serialised look */
   React.useEffect(() => {
-    try {
-      setTex(paintAll(glyphs, mark, markStyle, colors, Math.max(0, glitter)));
-    } catch {
-      /* no canvas (tests, very old browsers): the CSS gradients stand in */
-    }
+    let live = true;
+    void loadTextures(look, {
+      glyphs,
+      mark,
+      markStyle,
+      pal: colors,
+      density: Math.max(0, glitter),
+    }).then((textures) => {
+      if (live && textures) setTex(textures);
+    });
+    return () => {
+      live = false;
+    };
   }, [look]);
-  /* eslint-enable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   // ---- size everything off the shorter side ---------------------------------------
   React.useEffect(() => {
@@ -1025,6 +882,17 @@ export default function OnyxGlyphPreloader({
     let raf = 0;
     let x = 0;
     let y = 0;
+    let shownX = '';
+    let shownY = '';
+    let onScreen = false;
+    // Live collections, so replays that remount the camera are picked up.
+    const lit = [
+      root.getElementsByClassName('ogp-spot'),
+      root.getElementsByClassName('ogp-glit'),
+      root.getElementsByClassName('ogp-sheen'),
+    ] as HTMLCollectionOf<HTMLElement>[];
+    const rigs = root.getElementsByClassName('ogp-rig') as HTMLCollectionOf<HTMLElement>;
+    let written = -1;
     const t0 = performance.now();
     const tick = (now: number) => {
       const ptr = pointerRef.current;
@@ -1040,12 +908,60 @@ export default function OnyxGlyphPreloader({
       }
       x += (tx - x) * 0.07;
       y += (ty - y) * 0.07;
-      root.style.setProperty('--ogp-mx', x.toFixed(4));
-      root.style.setProperty('--ogp-my', y.toFixed(4));
+      const nextX = x.toFixed(3);
+      const nextY = y.toFixed(3);
+      // A replay remounts the camera; its fresh elements need the current light too.
+      const mounted = (lit[1]?.length ?? 0) + rigs.length;
+      if (nextX !== shownX || nextY !== shownY || mounted !== written) {
+        written = mounted;
+        shownX = nextX;
+        shownY = nextY;
+        // Write the light only where it is read. Setting it on the root made every
+        // frame restyle the whole 3D stage; leaves restyle alone, and the rig gets
+        // the same transform its CSS rule would compute.
+        for (const list of lit) {
+          for (const el of list) {
+            el.style.setProperty('--ogp-mx', nextX);
+            el.style.setProperty('--ogp-my', nextY);
+          }
+        }
+        for (const el of rigs) {
+          el.style.transform =
+            'rotateX(' + Number(nextY) * -11 + 'deg) rotateY(' + Number(nextX) * 14 + 'deg)';
+        }
+      }
       raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    // Run the light only while the stage is on screen in a visible tab.
+    const sync = () => {
+      const active = onScreen && !document.hidden;
+      root.dataset.idle = String(!active);
+      if (active && !raf) raf = requestAnimationFrame(tick);
+      if (!active && raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
+    };
+    const io =
+      typeof IntersectionObserver === 'undefined'
+        ? null
+        : new IntersectionObserver(
+            ([entry]) => {
+              // A sliver peeking under the hero is only empty stage: stay idle until a tenth shows.
+              onScreen = (entry?.intersectionRatio ?? 0) >= 0.1;
+              sync();
+            },
+            { threshold: [0, 0.1] },
+          );
+    if (io) io.observe(root);
+    else onScreen = true;
+    sync();
+    document.addEventListener('visibilitychange', sync);
+    return () => {
+      io?.disconnect();
+      document.removeEventListener('visibilitychange', sync);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   // ---- load: drive the ignition from progress, frame by frame ---------------------
@@ -1057,9 +973,13 @@ export default function OnyxGlyphPreloader({
     let last = performance.now();
     const start = last;
     let lastPct = -1;
+    let painted = -1;
     rushRef.current = false;
 
     const paint = (p: number) => {
+      // Scroll-driven progress often rests mid-way; skip identical frames.
+      if (p === painted) return;
+      painted = p;
       root?.style.setProperty('--ogp-p', p.toFixed(4));
       tileRefs.current.forEach((el, i) => {
         if (!el) return;
@@ -1106,6 +1026,8 @@ export default function OnyxGlyphPreloader({
       return () => clearTimeout(t);
     }
     if (phase === 'reveal') {
+      // Nothing to reveal behind the gate: hold on the hero tile.
+      if (holds) return;
       const t = setTimeout(() => {
         if (loop) setVeil(true);
         else setPhase('lift');
@@ -1119,7 +1041,7 @@ export default function OnyxGlyphPreloader({
       }, LIFT_MS);
       return () => clearTimeout(t);
     }
-  }, [phase, loop]);
+  }, [phase, loop, holds]);
 
   // the veil comes down, the stage resets beneath it, the veil goes up
   React.useEffect(() => {
@@ -1137,7 +1059,7 @@ export default function OnyxGlyphPreloader({
     if (veil) return;
     if (phase === 'load') rushRef.current = true;
     else if (phase === 'forge') setPhase('reveal');
-    else if (phase === 'reveal') {
+    else if (phase === 'reveal' && !holds) {
       if (loop) setVeil(true);
       else setPhase('lift');
     }
@@ -1209,7 +1131,9 @@ export default function OnyxGlyphPreloader({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={pct}
-          aria-valuetext={loading ? pct + '%' : 'Loaded. Press Enter to continue.'}
+          aria-valuetext={
+            loading ? pct + '%' : holds ? 'Loaded.' : 'Loaded. Press Enter to continue.'
+          }
           tabIndex={0}
           onClick={onActivate}
           onKeyDown={(e) => {
@@ -1309,20 +1233,22 @@ export default function OnyxGlyphPreloader({
             </div>
           </div>
 
-          <div className="ogp-title" aria-hidden="true">
-            <p className="ogp-word">
-              {Array.from(word).map((ch, i) => (
-                <span
-                  key={i + ch}
-                  className="ogp-letter"
-                  style={{ animationDelay: 0.08 + i * 0.07 + 's' }}
-                >
-                  {ch === ' ' ? ' ' : ch}
-                </span>
-              ))}
-            </p>
-            {caption ? <p className="ogp-caption">{caption}</p> : null}
-          </div>
+          {showTitle ? (
+            <div className="ogp-title" aria-hidden="true">
+              <p className="ogp-word">
+                {Array.from(word).map((ch, i) => (
+                  <span
+                    key={i + ch}
+                    className="ogp-letter"
+                    style={{ animationDelay: 0.08 + i * 0.07 + 's' }}
+                  >
+                    {ch === ' ' ? ' ' : ch}
+                  </span>
+                ))}
+              </p>
+              {caption ? <p className="ogp-caption">{caption}</p> : null}
+            </div>
+          ) : null}
 
           <div className="ogp-vignette" />
           <div className="ogp-grain" />
@@ -1370,7 +1296,13 @@ export default function OnyxGlyphPreloader({
           <div className="ogp-frame" />
           <div className="ogp-veil" data-on={veil} />
           <span className="ogp-sr" aria-live="polite">
-            {loading ? (lit > 0 ? (glyphs[lit - 1]?.label ?? '') : '') : word + ' — ' + caption}
+            {loading
+              ? lit > 0
+                ? (glyphs[lit - 1]?.label ?? '')
+                : ''
+              : caption
+                ? word + ' — ' + caption
+                : word}
           </span>
         </div>
       ) : null}

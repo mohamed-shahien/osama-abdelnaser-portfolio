@@ -19,7 +19,7 @@ Keep the generated Next.js 16.4 Cache Components, Partial Prefetching, and Tailw
 
 Tailwind v4 uses CSS-first configuration in `src/styles/tokens.css`. No JavaScript Tailwind config or duplicate PostCSS pipeline is needed for the existing Turbopack loader. Use `pnpm build` with Turbopack; a Webpack migration requires adapting the CSS pipeline.
 
-The Tailwind rule excludes `.module.css`, preserving native CSS Module class exports. Hero styles use a plain CSS Module for the reference's positioned composition; Tailwind utilities remain available through the global entry point.
+The Tailwind rule excludes `.module.css`, preserving native CSS Module class exports if one is ever needed. Section styling is Tailwind-only: the hero's positioned composition lives in class strings in `hero.tsx` and `hero-scene.tsx`. Only the supplied components keep their own scoped `<style>` blocks.
 
 The approved palette is `#5B8DFB` (primary), `#F8FA55` (secondary), `#F3D061` and `#E43468` (accents). Derived blue ink `#17284F` keeps body copy readable. The 80rem container, motion defaults, and Geist fonts remain setup defaults. Approve final typography and font licensing during design. `next/font/google` downloads fonts at build time and self-hosts the output; clean CI needs network access. Use approved local font files later if required.
 

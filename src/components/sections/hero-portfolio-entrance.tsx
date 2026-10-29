@@ -6,7 +6,6 @@ import WavingPortfolioLanding from '@/components/ui/waving-portfolio-landing';
 import { heroContent } from '@/content/hero';
 import { motionConfig } from '@/lib/motion/config';
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/motion/gsap';
-import styles from './hero.module.css';
 
 type Phase = 'intro' | 'docking' | 'ready';
 type Controls = { start?: () => void; finish?: () => void };
@@ -132,15 +131,16 @@ export function HeroPortfolioEntrance({
     <>
       <div
         ref={layerRef}
-        className={styles.portfolioLayer}
+        className="absolute inset-x-0 top-[calc(-1*var(--hero-header-height))] bottom-0 z-30 origin-center data-[offscreen=true]:**:[animation-play-state:paused]! data-[phase=ready]:z-8 [&_.wpl-poster]:[translate:0_var(--portfolio-poster-shift,0px)] [&_.wpl-poster]:[scale:var(--portfolio-poster-scale,1)] [&_.wpl-sign]:[translate:none]"
         data-portfolio-layer
         data-phase={phase}
         inert={phase !== 'ready'}
       >
         <WavingPortfolioLanding
-          name={heroContent.name}
-          year={heroContent.poster.eyebrow}
-          roles={[...heroContent.poster.labels]}
+          // The poster's top labels are `name` and `year`; its bottom labels are `roles`.
+          name={heroContent.poster.top[0]}
+          year={heroContent.poster.top[1]}
+          roles={[...heroContent.poster.bottom]}
           lettersLeft={[...heroContent.poster.left]}
           giantLetter={heroContent.poster.giant}
           lettersRight={[...heroContent.poster.right]}
@@ -156,7 +156,7 @@ export function HeroPortfolioEntrance({
       {phase !== 'ready' ? (
         <button
           type="button"
-          className={styles.skipPortfolio}
+          className="absolute right-[24px] bottom-[24px] z-31 cursor-pointer text-[12px] text-ink underline underline-offset-[4px]"
           onClick={() => {
             setSkip(true);
             layerRef.current?.closest('main')?.focus({ preventScroll: true });

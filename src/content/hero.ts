@@ -7,35 +7,30 @@ export const heroContent = {
   description: profile.description,
   contactLabel: 'Talk design',
   contactHref: 'mailto:osamaabdelnaser18@gmail.com',
-  // Editorial copy based on the brief's Understand / Simplify / Systems / Experience approach.
+  // The poster spells UX / UI around one giant U. Its heading is the brief's
+  // verbatim short bio. The top row names core specialties from section 03; the
+  // name and title sit on the bottom row, clear of the character's head.
   poster: {
-    title: 'Digital products, made more human.',
-    eyebrow: 'Product Designer',
-    left: ['', 'HU'],
-    giant: 'M',
-    right: ['ORE', 'AN'],
-    labels: ['Less friction.', 'More clarity.'],
+    title: profile.description,
+    top: ['UX research', 'Design systems'],
+    bottom: [profile.name, profile.role],
+    left: ['', ''],
+    giant: 'U',
+    right: ['X', 'I'],
     greeting: 'Let’s make it useful!',
   },
-  comments: ['Complex problems. Clear experiences.', 'Thoughtful UX. Interfaces built to work.'],
-  processNotes: `Ask better questions.\nMap the real problem.\nMake every step clear.\nDesign a useful experience.`,
+  // Review notes paraphrase the brief's bio and its proposed positioning (section 16).
+  comments: ['Complex problems, simple experiences.', 'Considered design that can be built.'],
+  // The four steps of "How I think" from the brief, section 03.
+  method: ['Understand', 'Simplify', 'Design systems', 'Experience'],
   skipIntro: 'Explore the design',
   motionLabel: 'Keep it moving',
   artwork: {
-    canvasLabel: 'IDEAS INTO INTERFACES',
-    canvasLines: ['Clear.', 'By design.'],
-    laptopLabel: 'PRODUCT THINKING',
-    laptopLines: ['Less friction.', 'More flow.'],
-    phoneLabel: 'MADE FOR PEOPLE',
+    flow: ['Sign up', 'Valid?', 'Home'],
+    tokensLabel: 'Color & type',
+    dashboardLabel: 'Dashboard',
+    appLabel: 'Mobile app',
   },
-  // Roles describe a design workflow, not named colleagues or a claimed team.
-  cursors: [
-    'Ask why',
-    'Find the friction',
-    'Shape the flow',
-    'Make it clear',
-    'Prototype',
-    'Connect the system',
-    'Refine the detail',
-  ],
+  // UX activities from the brief's skill list (section 03), not named collaborators.
+  cursors: ['Research', 'User flows', 'Wireframing', 'Prototyping', 'Design systems'],
 } as const;

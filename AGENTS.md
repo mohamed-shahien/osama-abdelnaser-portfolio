@@ -27,6 +27,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Use TypeScript with strict checks; avoid `any` and non-null assertions to bypass missing content.
 - Keep content in `src/content`, site configuration in `src/config`, reusable UI in `src/components/ui`, and motion in `src/lib/motion` plus its root runtime.
 - Prefer direct imports over barrel exports. Use `cn` from `@/lib/utils` for conditional Tailwind classes.
+- Style with Tailwind utilities only; do not add CSS Modules or new stylesheets. Global tokens stay in `src/styles/tokens.css`, and the supplied components keep their scoped `<style>` blocks. Write every class name in full in the source (Tailwind cannot detect names assembled at runtime), and use arbitrary properties such as `[transform:…]` when a utility would emit a different CSS property than the design needs.
 - Use Tailwind utilities first, logical spacing for RTL readiness, and the CSS-first tokens in `src/styles/tokens.css`. The configured Tailwind Turbopack loader is intentional; do not add a parallel PostCSS pipeline without a reason.
 - Use semantic HTML, visible focus, and a single `main#main-content` per page.
 
@@ -38,6 +39,31 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Clean up listeners, observers, tickers, timelines, and ScrollTriggers. Never call `ScrollTrigger.killAll()` from a component.
 - Native touch scrolling remains enabled. Nested scrolling surfaces can opt out with `data-lenis-prevent`.
 - Refresh ScrollTrigger after asynchronous layout changes; the runtime already handles initial fonts, loaded images, and pathname changes.
+
+## Runtime performance budget
+
+The site must stay light on low-end laptops and phones. Every new section follows these rules:
+
+- No perpetual work. Every `requestAnimationFrame` loop, `repeat: -1` tween, infinite CSS animation and interval must pause when its section is off screen (IntersectionObserver or a ScrollTrigger `onToggle`) and when `document.hidden` is true. Existing patterns: `data-offscreen` in `hero-portfolio-entrance.tsx`, `data-idle` in `onyx-glyph-preloader.tsx`.
+- Mount heavy sections lazily, about one viewport before they are reached, never during the intro loader (see `practice-showcase.tsx`).
+- Write a CSS custom property or inline style only when its value changes. A write on a container restyles its whole subtree.
+- Expensive canvas or generated work runs once per page, is cached at module level, and is split into small tasks; no single main-thread task should exceed about 50ms.
+- Do not call `setState` per animation frame or per scroll event unless the rendered value changed. Prefer refs plus direct style writes driven by GSAP.
+- Animate `transform` and `opacity`. Avoid animating layout properties, `filter`, large `mix-blend-mode` layers and `backdrop-filter`; any new blended or filtered layer must also pause off screen.
+- Keep pinned scroll sections short: at most about 175svh of runway unless the user asks for more.
+- Do not add an animation, 3D or smooth-scroll dependency without a decision.
+
+## Agent conduct
+
+Agents working here must not exhaust the machine or damage the work:
+
+- Run at most one dev server (port 3001) and one production server (port 3002) through `.claude/launch.json`. Reuse a running server; stop the ones you started when done.
+- Do not run `pnpm build` or `pnpm verify` in a loop. Run `pnpm verify` once at the end of a change, and targeted `pnpm lint`/`pnpm typecheck` while iterating.
+- Do not start parallel agents or sessions for one task unless the user asks. Prefer targeted lookups (LSP, grep with a path) over whole-repository scans and full reads of the 1000+ line supplied components.
+- Never run destructive git commands (`reset --hard`, `clean`, `checkout --` on others' files, force push), never commit or push unless asked, and never delete files you did not create without asking.
+- Do not install, upgrade or remove dependencies, or edit `pnpm-lock.yaml`, without asking.
+- Do not touch `docs/OSAMA_ABDELNASER_PORTFOLIO_MASTER_BRIEF.md`, or `.env*` files.
+- Changes to the supplied components (`src/components/ui/*`) are limited to colors, text and behavior-preserving guards or performance fixes; record any such change in `docs/VALIDATION.md`.
 
 ## Validation
 

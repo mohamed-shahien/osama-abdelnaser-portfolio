@@ -218,6 +218,7 @@ export function TangleFooter({
           });
 
           // Outer arch leads; each pair grows upward from both feet on the footer seam.
+          const reveals: gsap.core.Tween[] = [];
           [...rings].reverse().forEach((_ring, order) => {
             const index = rings.length - 1 - order;
             const paths = root.querySelectorAll<SVGPathElement>(
@@ -227,23 +228,65 @@ export function TangleFooter({
               const length = path.getTotalLength();
               gsap.set(path, { strokeDasharray: length + ' ' + length, strokeDashoffset: length });
             });
-            drawing.to(paths, { strokeDashoffset: 0, duration: 1, ease: 'none' }, order * 0.13);
+            const reveal = gsap.to(paths, { strokeDashoffset: 0, duration: 1, ease: 'none' });
+            drawing.add(reveal, order * 0.13);
+            reveals[index] = reveal;
           });
 
+          // Each ring is its own layer, turned on the compositor, so spinning never
+          // repaints the text. The reveal mask must stay put while the ring turns, so
+          // it is counter-rotated until the ring is fully drawn. Then it masks nothing
+          // (the hidden lower half sits below the footer seam) and is dropped, so a
+          // drawn ring costs no repaint at all.
+          const syncs: (() => void)[] = [];
+          const restores: (() => void)[] = [];
           const spins = rings.flatMap((ring, index) => {
-            const group = root.querySelector<SVGGElement>('[data-tangle-spin="' + index + '"]');
-            if (!group) return [];
-            gsap.set(group, { svgOrigin: ring.cx + ' ' + ring.cy, rotation: ring.phase * 360 });
+            const layer = root.querySelector<HTMLElement>('[data-tangle-spin="' + index + '"]');
+            const masked = root.querySelector<SVGGElement>('[data-tangle-mask="' + index + '"]');
+            const counter = root.querySelector<SVGGElement>(
+              '[data-tangle-counter="' + index + '"]',
+            );
+            if (!layer || !masked || !counter) return [];
+            const maskRef = masked.getAttribute('mask') ?? '';
+            let state = '';
+            const sync = () => {
+              const progress = reveals[index]?.progress() ?? 1;
+              const next = progress >= 1 ? 'drawn' : progress <= 0 ? 'hidden' : 'drawing';
+              if (next !== state) {
+                state = next;
+                if (next === 'drawn') masked.removeAttribute('mask');
+                else masked.setAttribute('mask', maskRef);
+              }
+              if (next !== 'drawn') {
+                const angle = Number(gsap.getProperty(layer, 'rotation')) || 0;
+                counter.setAttribute(
+                  'transform',
+                  'rotate(' + -angle + ' ' + ring.cx + ' ' + ring.cy + ')',
+                );
+              }
+            };
+            syncs.push(sync);
+            restores.push(() => {
+              masked.setAttribute('mask', maskRef);
+              counter.removeAttribute('transform');
+            });
+            gsap.set(layer, {
+              transformOrigin: ring.cx + 'px ' + ring.cy + 'px',
+              rotation: ring.phase * 360,
+            });
+            sync();
             return [
-              gsap.to(group, {
+              gsap.to(layer, {
                 rotation: (ring.reverse ? '-=' : '+=') + 360,
                 duration: ring.duration,
                 repeat: -1,
                 ease: 'none',
                 paused: true,
+                onUpdate: sync,
               }),
             ];
           });
+          drawing.eventCallback('onUpdate', () => syncs.forEach((sync) => sync()));
 
           const visibility = ScrollTrigger.create({
             id: uid + '-visibility',
@@ -254,6 +297,7 @@ export function TangleFooter({
               spins.forEach((spin) => (isActive ? spin.resume() : spin.pause())),
           });
           if (visibility.isActive) spins.forEach((spin) => spin.resume());
+          return () => restores.forEach((restore) => restore());
         },
         root,
       );
@@ -275,71 +319,75 @@ export function TangleFooter({
         aspectRatio: height == null ? '2 / 1' : undefined,
       }}
     >
-      {width > 0 && bandHeight > 0 ? (
-        <svg
-          className="absolute inset-0 size-full"
-          viewBox={['0', '0', width, bandHeight].join(' ')}
-          preserveAspectRatio="xMidYMax slice"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-          focusable="false"
-        >
-          <defs>
-            {rings.map((ring, index) => (
-              <g key={index}>
-                <path id={uid + '-path-' + index} d={ring.d} fill="none" />
-                <mask
-                  id={uid + '-mask-' + index}
-                  maskUnits="userSpaceOnUse"
-                  x={0}
-                  y={0}
-                  width={width}
-                  height={bandHeight}
-                  style={{ maskType: 'alpha' }}
-                >
-                  {([-1, 1] as const).map((side) => (
-                    <path
-                      key={side}
-                      data-tangle-reveal={index}
-                      d={risePath(ring, side)}
-                      stroke="white"
-                      strokeWidth={ring.strokeWidth + 2}
-                      strokeLinecap="round"
-                      fill="none"
-                    />
-                  ))}
-                </mask>
-              </g>
-            ))}
-          </defs>
-          {rings.map((ring, index) => (
-            <g key={index} mask={'url(#' + uid + '-mask-' + index + ')'}>
-              <g data-tangle-spin={index}>
-                <use
-                  href={'#' + uid + '-path-' + index}
-                  strokeWidth={ring.strokeWidth}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  fill="none"
-                  style={{ stroke: ribbon }}
-                />
-                <text
-                  fontSize={ring.fontSize}
-                  fontFamily="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
-                  fontWeight={700}
-                  letterSpacing="0.05em"
-                  dominantBaseline="central"
-                  style={{ fill: textColor, userSelect: 'none', pointerEvents: 'none' }}
-                >
-                  <textPath href={'#' + uid + '-path-' + index} startOffset="0" method="align">
-                    {ring.text}
-                  </textPath>
-                </text>
-              </g>
-            </g>
-          ))}
-        </svg>
-      ) : null}
+      {width > 0 && bandHeight > 0
+        ? rings.map((ring, index) => (
+            // One layer per ring, painted in the same inner-to-outer order as before.
+            <div
+              key={index}
+              className="absolute inset-0 will-change-transform"
+              data-tangle-spin={index}
+            >
+              <svg
+                className="absolute inset-0 size-full overflow-visible"
+                viewBox={['0', '0', width, bandHeight].join(' ')}
+                preserveAspectRatio="xMidYMax slice"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <defs>
+                  <path id={uid + '-path-' + index} d={ring.d} fill="none" />
+                  {/* Region padded past the band so the counter-rotated mask never clips. */}
+                  <mask
+                    id={uid + '-mask-' + index}
+                    maskUnits="userSpaceOnUse"
+                    x={-width}
+                    y={-bandHeight}
+                    width={width * 3}
+                    height={bandHeight * 3}
+                    style={{ maskType: 'alpha' }}
+                  >
+                    <g data-tangle-counter={index}>
+                      {([-1, 1] as const).map((side) => (
+                        <path
+                          key={side}
+                          data-tangle-reveal={index}
+                          d={risePath(ring, side)}
+                          stroke="white"
+                          strokeWidth={ring.strokeWidth + 2}
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                      ))}
+                    </g>
+                  </mask>
+                </defs>
+                <g data-tangle-mask={index} mask={'url(#' + uid + '-mask-' + index + ')'}>
+                  <use
+                    href={'#' + uid + '-path-' + index}
+                    strokeWidth={ring.strokeWidth}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                    style={{ stroke: ribbon }}
+                  />
+                  <text
+                    fontSize={ring.fontSize}
+                    fontFamily="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
+                    fontWeight={700}
+                    letterSpacing="0.05em"
+                    dominantBaseline="central"
+                    style={{ fill: textColor, userSelect: 'none', pointerEvents: 'none' }}
+                  >
+                    <textPath href={'#' + uid + '-path-' + index} startOffset="0" method="align">
+                      {ring.text}
+                    </textPath>
+                  </text>
+                </g>
+              </svg>
+            </div>
+          ))
+        : null}
       <p className="sr-only">{(lines.length ? lines : DEFAULT_LINES).join(' ')}</p>
     </section>
   );

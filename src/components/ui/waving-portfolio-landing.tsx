@@ -484,7 +484,13 @@ export default function WavingPortfolioLanding({
     const ro = new ResizeObserver(([e]) => {
       if (!e) return;
       const { width, height: h } = e.contentRect;
-      if (width && h) setCompact(width / h < 0.9);
+      if (!width || !h) return;
+      setCompact(width / h < 0.9);
+      // Stand-ins for the former cqh/cqmin units and aspect container query:
+      // a size container made every poster animation frame restyle expensively.
+      el.style.setProperty('--wpl-cqh', h / 100 + 'px');
+      el.style.setProperty('--wpl-cqmin', Math.min(width, h) / 100 + 'px');
+      el.toggleAttribute('data-tall', width / h <= 0.9);
     });
     ro.observe(el);
     return () => ro.disconnect();
@@ -551,6 +557,46 @@ export default function WavingPortfolioLanding({
       return { row, half, span: x };
     });
   }, [letters]);
+
+  // The storm is ~950 glyph paths. Build it once per look, not on every scramble re-render.
+  const stormNode = React.useMemo(
+    () => (
+      <div className="wpl-storm" aria-hidden="true">
+        {storm.map(({ row, half, span }) => (
+          <div
+            key={row}
+            className="wpl-srow"
+            data-dir={row % 2 ? 'r' : 'l'}
+            style={{ animationDelay: row * 0.04 + 's, ' + (1.25 + row * 0.06) + 's' }}
+          >
+            <svg
+              className="wpl-strip"
+              data-dir={row % 2 ? 'r' : 'l'}
+              viewBox={'0 -6 ' + span * 2 + ' 152'}
+              style={{ animationDuration: 4.6 + (row % 3) * 1.5 + 's' }}
+              fill="none"
+              strokeLinecap="square"
+              strokeMiterlimit={4}
+            >
+              {[0, span].map((off) =>
+                half.map((g, k) => {
+                  const d = glyphPath(g.ch, g.w, 140, 12);
+                  const hollow = row % 3 !== 0;
+                  return (
+                    <g key={off + '-' + k} transform={'translate(' + (off + g.x) + ' 0)'}>
+                      <path d={d} stroke={row % 3 === 2 ? ink : accent} strokeWidth={12} />
+                      {hollow && <path d={d} stroke={paper} strokeWidth={5} />}
+                    </g>
+                  );
+                }),
+              )}
+            </svg>
+          </div>
+        ))}
+      </div>
+    ),
+    [storm, ink, accent, paper],
+  );
 
   // The pointer variables only drive the poster artwork, so they are written there
   // (not on the root) and only when a value actually changes. That keeps every
@@ -777,41 +823,7 @@ export default function WavingPortfolioLanding({
           )}
         </svg>
 
-        {playing && !ready && (
-          <div className="wpl-storm" aria-hidden="true">
-            {storm.map(({ row, half, span }) => (
-              <div
-                key={row}
-                className="wpl-srow"
-                data-dir={row % 2 ? 'r' : 'l'}
-                style={{ animationDelay: row * 0.04 + 's, ' + (1.25 + row * 0.06) + 's' }}
-              >
-                <svg
-                  className="wpl-strip"
-                  data-dir={row % 2 ? 'r' : 'l'}
-                  viewBox={'0 -6 ' + span * 2 + ' 152'}
-                  style={{ animationDuration: 4.6 + (row % 3) * 1.5 + 's' }}
-                  fill="none"
-                  strokeLinecap="square"
-                  strokeMiterlimit={4}
-                >
-                  {[0, span].map((off) =>
-                    half.map((g, k) => {
-                      const d = glyphPath(g.ch, g.w, 140, 12);
-                      const hollow = row % 3 !== 0;
-                      return (
-                        <g key={off + '-' + k} transform={'translate(' + (off + g.x) + ' 0)'}>
-                          <path d={d} stroke={row % 3 === 2 ? ink : accent} strokeWidth={12} />
-                          {hollow && <path d={d} stroke={paper} strokeWidth={5} />}
-                        </g>
-                      );
-                    }),
-                  )}
-                </svg>
-              </div>
-            ))}
-          </div>
-        )}
+        {playing && !ready && stormNode}
 
         {([0, 1] as const).map((k) => (
           <button
@@ -1334,7 +1346,7 @@ function Character({
 // #endregion character
 
 const WPL_CSS = `
-.wpl-root{position:relative;width:100%;overflow:hidden;background:var(--wpl-paper);color:var(--wpl-ink);container-type:size;isolation:isolate;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.wpl-root{position:relative;width:100%;overflow:hidden;background:var(--wpl-paper);color:var(--wpl-ink);isolation:isolate;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
 .wpl-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .wpl-stage{position:absolute;inset:0}
 .wpl-poster{position:absolute;left:3%;top:10%;width:94%;height:70%;max-width:none;overflow:visible;z-index:2}
@@ -1382,13 +1394,13 @@ const WPL_CSS = `
 .wpl-char.is-waving .wpl-eyes,.wpl-char.is-waving .wpl-smile{opacity:0}
 .wpl-char.is-waving .wpl-happy,.wpl-char.is-waving .wpl-grin{opacity:1}
 
-.wpl-storm{position:absolute;inset:-25% -15%;display:flex;flex-direction:column;justify-content:center;gap:2.2cqh;transform:rotate(-7deg);pointer-events:none;z-index:3}
-.wpl-srow{height:15cqh;flex:none;overflow:visible;animation:wpl-row-in .6s cubic-bezier(.2,.9,.2,1) both,wpl-shutter .45s cubic-bezier(.7,0,.3,1) forwards}
+.wpl-storm{position:absolute;inset:-25% -15%;display:flex;flex-direction:column;justify-content:center;gap:calc(2.2*var(--wpl-cqh,1vh));transform:rotate(-7deg);pointer-events:none;z-index:3}
+.wpl-srow{height:calc(15*var(--wpl-cqh,1vh));flex:none;overflow:visible;animation:wpl-row-in .6s cubic-bezier(.2,.9,.2,1) both,wpl-shutter .45s cubic-bezier(.7,0,.3,1) forwards}
 .wpl-srow[data-dir="r"]{animation-name:wpl-row-in-r,wpl-shutter}
 .wpl-strip{display:block;height:100%;width:auto;max-width:none;animation:wpl-marq 5s linear infinite;will-change:transform}
 .wpl-strip[data-dir="r"]{animation-name:wpl-marq-r}
 
-.wpl-corner{position:absolute;top:0;width:clamp(64px,15cqmin,168px);height:clamp(64px,15cqmin,168px);margin:0;padding:0;border:0;background:none;cursor:pointer;z-index:4}
+.wpl-corner{position:absolute;top:0;width:clamp(64px,calc(15*var(--wpl-cqmin,1vmin)),168px);height:clamp(64px,calc(15*var(--wpl-cqmin,1vmin)),168px);margin:0;padding:0;border:0;background:none;cursor:pointer;z-index:4}
 .wpl-corner-l{left:0}
 .wpl-corner-r{right:0}
 .wpl-corner svg{display:block;width:100%;height:100%;max-width:none;overflow:visible}
@@ -1397,7 +1409,7 @@ const WPL_CSS = `
 .wpl-pips{transform-box:fill-box;transform-origin:center;transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
 .wpl-pips.is-rolled{animation:wpl-dice .6s cubic-bezier(.3,1.4,.5,1)}
 
-.wpl-sign{position:absolute;left:50%;bottom:clamp(12px,4cqh,44px);width:clamp(60px,11cqmin,120px);height:clamp(60px,11cqmin,120px);margin:0;padding:0;border:0;background:none;cursor:pointer;z-index:4;transform:translateX(-50%);transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+.wpl-sign{position:absolute;left:50%;bottom:clamp(12px,calc(4*var(--wpl-cqh,1vh)),44px);width:clamp(60px,calc(11*var(--wpl-cqmin,1vmin)),120px);height:clamp(60px,calc(11*var(--wpl-cqmin,1vmin)),120px);margin:0;padding:0;border:0;background:none;cursor:pointer;z-index:4;transform:translateX(-50%);transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
 .wpl-sign:hover{transform:translateX(-50%) rotate(-8deg) scale(1.07)}
 .wpl-sign svg{display:block;width:100%;height:100%;max-width:none;overflow:visible}
 .wpl-root button:focus-visible{outline:2px solid var(--wpl-accent);outline-offset:4px}
@@ -1405,9 +1417,7 @@ const WPL_CSS = `
 .wpl-burst{position:absolute;width:0;height:0;pointer-events:none;z-index:6}
 .wpl-bit{position:absolute;left:-9px;top:-18px;width:18px;height:36px;max-width:none;overflow:visible;animation:wpl-bit .95s cubic-bezier(.15,.7,.3,1) forwards}
 
-@container (max-aspect-ratio: 9/10){
-.wpl-poster{left:2%;width:96%;top:12%;height:66%}
-}
+.wpl-root[data-tall] .wpl-poster{left:2%;width:96%;top:12%;height:66%}
 
 @keyframes wpl-roll{
 0%{transform:translateY(var(--dist));opacity:0;animation-timing-function:cubic-bezier(.5,0,.25,1)}
