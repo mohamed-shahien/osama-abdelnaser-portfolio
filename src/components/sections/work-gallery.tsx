@@ -9,6 +9,7 @@ import { gsap, useGSAP } from '@/lib/motion/gsap';
 import { createWorkRenderer, type WorkFrame } from '@/lib/motion/work-renderer';
 import type { WorkImage, WorkProject } from '@/types/work';
 import { WorkPageLink } from './work-page-transition';
+import { WorkCounter } from './work-counter';
 
 type GalleryItem = {
   slug: string;
@@ -35,15 +36,26 @@ const moreCard: GalleryItem = {
   },
 };
 const clamp = (value: number, last: number) => Math.max(0, Math.min(last, value));
+const part = (value: number, from: number, to: number) =>
+  Math.max(0, Math.min(1, (value - from) / (to - from)));
+const easeOut = (value: number) => 1 - Math.pow(1 - value, 3);
+
+/**
+ * The deck's assembly, driven by the push that reveals it: the showcase writes
+ * `progress` (0 hidden, 1 assembled) and calls `apply`, which the gallery owns.
+ */
+export type GalleryAssembly = { progress: number; apply: (progress: number) => void };
 
 export default function WorkGallery({
   projects: initialProjects,
   total,
   enabled,
+  assembly,
 }: {
   projects: readonly WorkProject[];
   total: number;
   enabled: boolean;
+  assembly: GalleryAssembly;
 }) {
   const rootRef = useRef<HTMLDivElement>(null),
     canvasRef = useRef<HTMLCanvasElement>(null);
@@ -61,11 +73,14 @@ export default function WorkGallery({
     [collection, hasMore],
   );
   const itemsRef = useRef(items),
-    activeRef = useRef(0),
-    introPlayed = useRef(false);
+    activeRef = useRef(0);
   const moveRef = useRef<(index: number) => void>(() => {}),
     replaceRef = useRef<() => void>(() => {});
   const requestRef = useRef<AbortController | null>(null);
+  const restoreFocusRef = useRef(false);
+  // Read live by the deck, so opening the gate never rebuilds the WebGL renderer.
+  const enabledRef = useRef(enabled),
+    wakeRef = useRef<() => void>(() => {});
   const project = items[active] ?? items[0];
 
   useEffect(() => {
@@ -73,9 +88,14 @@ export default function WorkGallery({
     replaceRef.current();
   }, [items]);
   useEffect(() => () => requestRef.current?.abort(), []);
+  useEffect(() => {
+    enabledRef.current = enabled;
+    wakeRef.current();
+  }, [enabled]);
   const loadMore = async () => {
     if (requestRef.current || !hasMore) return;
     const controller = new AbortController();
+    restoreFocusRef.current = Boolean(rootRef.current?.contains(document.activeElement));
     requestRef.current = controller;
     setLoading(true);
     setError('');
@@ -117,18 +137,7 @@ export default function WorkGallery({
           let cards = Array.from(root.querySelectorAll<HTMLElement>('[data-work-card]'));
           let labels = Array.from(root.querySelectorAll<HTMLElement>('[data-work-label]'));
           const last = () => itemsRef.current.length - 1;
-          let savedIndex = clamp(activeRef.current, last());
-          if (!introPlayed.current)
-            try {
-              const saved = sessionStorage.getItem('osama:selected-work');
-              const index = itemsRef.current.findIndex((p) => p.slug === saved);
-              if (index >= 0) {
-                savedIndex = index;
-                introPlayed.current = true;
-              }
-            } catch {
-              /* Optional navigation memory. */
-            }
+          const savedIndex = clamp(activeRef.current, last());
           const frame: WorkFrame = {
             current: savedIndex,
             speed: 0,
@@ -146,7 +155,7 @@ export default function WorkGallery({
           let inView = false,
             ticking = false,
             disposed = false,
-            introRunning = false;
+            assembled = reduced ? 1 : assembly.progress;
           let width = root.clientWidth,
             height = root.clientHeight,
             lastWheel = 0,
@@ -177,8 +186,10 @@ export default function WorkGallery({
           };
           const paint = () => {
             if (disposed || document.hidden || !inView) return;
+            // Nothing to draw until the push starts revealing the deck.
+            if (!enabledRef.current && assembled <= 0) return;
             const selected = clamp(Math.round(frame.current), last());
-            if (!introRunning) selectActive(selected);
+            selectActive(selected);
             if (root.dataset.workIndex !== String(selected))
               root.dataset.workIndex = String(selected);
             const bounds = renderer?.draw(frame),
@@ -208,6 +219,7 @@ export default function WorkGallery({
                   Math.abs(index - frame.current) < 0.5 ? 'visible' : 'hidden',
                 );
             });
+            const reveal = part(assembled, 0.55, 1);
             labels.forEach((label, index) => {
               const distance = index - frame.current;
               style(
@@ -215,17 +227,8 @@ export default function WorkGallery({
                 'transform',
                 `translate(-50%,calc(-50% + ${(distance * 178).toFixed(2)}px))`,
               );
-              style(
-                label,
-                'opacity',
-                introRunning
-                  ? '0'
-                  : Math.abs(distance) < 0.5
-                    ? '1'
-                    : Math.abs(distance) < 2.8
-                      ? '.2'
-                      : '0',
-              );
+              const base = Math.abs(distance) < 0.5 ? 1 : Math.abs(distance) < 2.8 ? 0.2 : 0;
+              style(label, 'opacity', String(Math.round(base * reveal * 1000) / 1000));
             });
             const progress = root.querySelector<HTMLElement>('[data-work-progress]');
             if (progress)
@@ -243,19 +246,19 @@ export default function WorkGallery({
             if (root.dataset.workAnimating !== 'false') root.dataset.workAnimating = 'false';
           };
           const wake = () => {
-            if (!ticking && inView && !document.hidden && enabled) {
+            if (!ticking && inView && !document.hidden && enabledRef.current) {
               ticking = true;
               root.dataset.workAnimating = 'true';
               gsap.ticker.add(tick);
             }
           };
           const tick = () => {
-            if (!inView || document.hidden || !enabled) {
+            if (!inView || document.hidden || !enabledRef.current) {
               stop();
               return;
             }
             const ratio = Math.min(3, gsap.ticker.deltaRatio(60));
-            if (!introRunning) {
+            if (assembled >= 1) {
               if (Math.abs(pending) > 0.001) {
                 const step = pending * (1 - Math.pow(0.925, ratio));
                 pending -= step;
@@ -280,7 +283,6 @@ export default function WorkGallery({
             });
             paint();
             if (
-              !introRunning &&
               Math.abs(target - frame.current) < 0.0005 &&
               Math.abs(frame.speed) < 0.0001 &&
               !pending &&
@@ -309,48 +311,57 @@ export default function WorkGallery({
             }
             target = clamp(target, last());
             paint();
+            if (restoreFocusRef.current) {
+              root.focus({ preventScroll: true });
+              restoreFocusRef.current = false;
+            }
             wake();
           };
-          const intro = gsap.timeline({
-            paused: true,
-            onUpdate: paint,
-            onComplete: () => {
-              introRunning = false;
-              target = savedIndex;
-              frame.current = savedIndex;
+          // The deck rolls in from behind, fans out and turns into place as the
+          // push pulls the page away, landing on the first project. Scrubbed by
+          // scroll, so it plays back in reverse when the reader returns.
+          const copy = Array.from(root.querySelectorAll<HTMLElement>('[data-work-copy]'));
+          let wasAssembling = assembled < 1;
+          const assemble = () => {
+            if (assembled < 1) {
+              wasAssembling = true;
+              frame.current = -2.4 * (1 - easeOut(assembled));
+              frame.speed = 0;
+              target = 0;
+              pending = 0;
+              frame.spacing = 1.2 + 5.8 * easeOut(part(assembled, 0.1, 1));
+              frame.focus = easeOut(part(assembled, 0.3, 1));
+            } else if (wasAssembling) {
+              wasAssembling = false;
+              frame.current = 0;
               frame.spacing = 7;
               frame.focus = 1;
-              root.dataset.workIntro = 'complete';
-              selectActive(savedIndex);
-              paint();
-              wake();
-            },
-          });
-          if (!reduced && !introPlayed.current) {
-            frame.current = Math.min(last(), 5);
-            frame.spacing = 0;
-            frame.focus = 0;
-            intro
-              .to(frame, { current: savedIndex, duration: 2, ease: 'power3.out' }, 0)
-              .to(frame, { spacing: 7, focus: 1, duration: 1.1, ease: 'power2.out' }, 1.06);
-          }
+            }
+            copy.forEach((node, index) => {
+              const shown = easeOut(part(assembled, 0.55 + index * 0.08, 0.86 + index * 0.05));
+              style(node, 'opacity', String(Math.round(shown * 1000) / 1000));
+              style(node, 'transform', `translate3d(0,${((1 - shown) * 12).toFixed(2)}px,0)`);
+            });
+          };
+          assemble();
+          assembly.apply = (progress) => {
+            const next = reduced ? 1 : progress;
+            if (next === assembled) return;
+            assembled = next;
+            assemble();
+            paint();
+          };
           const start = () => {
-            if (!enabled || !inView || document.hidden) return;
-            if (!reduced && !introPlayed.current) {
-              introPlayed.current = true;
-              introRunning = true;
-              root.dataset.workIntro = 'playing';
-              intro.play();
-            } else if (introRunning) intro.resume();
+            if (!inView || document.hidden) return;
+            paint();
+            wake();
+          };
+          wakeRef.current = () => {
             paint();
             wake();
           };
           moveRef.current = (index) => {
-            if (!enabled) return;
-            if (introRunning) {
-              intro.progress(1);
-              introRunning = false;
-            }
+            if (!enabledRef.current) return;
             pending = 0;
             target = clamp(index, last());
             if (reduced) {
@@ -371,12 +382,12 @@ export default function WorkGallery({
               ? frame.current >= last() - 0.025 && target >= last() - 0.025
               : frame.current <= 0.025 && target <= 0.025;
           const wheel = (event: WheelEvent) => {
-            if (!enabled || !inView || event.ctrlKey || document.hidden) return;
+            if (!enabledRef.current || !inView || event.ctrlKey || document.hidden) return;
             const delta =
               Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-            if (!delta || (!introRunning && atBoundary(delta))) return;
+            if (!delta || atBoundary(delta)) return;
             event.preventDefault();
-            if (introRunning) return;
+            (event as WheelEvent & { lenisStopPropagation?: boolean }).lenisStopPropagation = true;
             const trackpad =
               event.deltaMode === 0 && (Math.abs(event.deltaX) > 0 || Math.abs(event.deltaY) < 24);
             if (trackpad) {
@@ -410,7 +421,7 @@ export default function WorkGallery({
           };
           const touchMove = (event: TouchEvent) => {
             const point = event.touches[0];
-            if (!point || !touch || !enabled) return;
+            if (!point || !touch || !enabledRef.current) return;
             const dx = point.clientX - touch.x,
               dy = point.clientY - touch.y;
             if (!touch.axis) {
@@ -418,9 +429,9 @@ export default function WorkGallery({
               touch.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
             }
             const delta = touch.axis === 'x' ? dx : dy;
-            if (!introRunning && atBoundary(-delta)) return;
+            if (atBoundary(-delta)) return;
             event.preventDefault();
-            if (introRunning) return;
+            (event as TouchEvent & { lenisStopPropagation?: boolean }).lenisStopPropagation = true;
             const step = Math.max(
               -0.2,
               Math.min(
@@ -467,10 +478,7 @@ export default function WorkGallery({
             ([entry]) => {
               inView = Boolean(entry?.isIntersecting);
               if (inView) start();
-              else {
-                stop();
-                intro.pause();
-              }
+              else stop();
             },
             { threshold: 0.1 },
           );
@@ -483,10 +491,8 @@ export default function WorkGallery({
           });
           resize.observe(root);
           const visibility = () => {
-            if (document.hidden) {
-              stop();
-              intro.pause();
-            } else start();
+            if (document.hidden) stop();
+            else start();
           };
           document.addEventListener('visibilitychange', visibility);
           root.addEventListener('wheel', wheel, { passive: false });
@@ -499,7 +505,8 @@ export default function WorkGallery({
           return () => {
             disposed = true;
             stop();
-            intro.kill();
+            assembly.apply = () => {};
+            wakeRef.current = () => {};
             renderer?.dispose();
             observer.disconnect();
             resize.disconnect();
@@ -521,7 +528,7 @@ export default function WorkGallery({
       );
       return () => media.revert();
     },
-    { scope: rootRef, dependencies: [enabled], revertOnUpdate: true },
+    { scope: rootRef },
   );
 
   const keyboard = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -578,7 +585,6 @@ export default function WorkGallery({
       data-work-gallery
       data-work-count={collection.length}
       data-work-total={total}
-      data-lenis-prevent={enabled ? '' : undefined}
       tabIndex={0}
       role="region"
       aria-label="Project gallery. Scroll or use arrow keys. Scroll past the last card to continue."
@@ -625,7 +631,10 @@ export default function WorkGallery({
           </WorkPageLink>
         ),
       )}
-      <aside className="pointer-events-none absolute start-5 top-[42%] z-50 w-[29%] text-[11px] leading-tight max-lg:hidden">
+      <aside
+        data-work-copy
+        className="pointer-events-none absolute start-5 top-[42%] z-50 w-[29%] text-[11px] leading-tight max-lg:hidden"
+      >
         <dl className="grid grid-cols-[42px_1fr_64px_1fr] gap-x-3 gap-y-2">
           <dt className="text-black/45">Role</dt>
           <dd>{project.role}</dd>
@@ -652,7 +661,10 @@ export default function WorkGallery({
           </div>
         ))}
       </div>
-      <header className="pointer-events-none absolute inset-x-0 top-0 z-[200] flex items-start justify-between p-5 text-xs">
+      <header
+        data-work-copy
+        className="pointer-events-none absolute inset-x-0 top-0 z-[200] flex items-start justify-between p-5 text-xs"
+      >
         <h2 className="text-xl font-medium tracking-[-0.07em] uppercase lg:ms-[12%]">
           {workContent.title}
         </h2>
@@ -662,16 +674,14 @@ export default function WorkGallery({
           experiences.
         </p>
       </header>
-      <div className="pointer-events-none absolute start-[14%] bottom-8 z-[200] flex items-start gap-2 max-lg:start-5 max-lg:bottom-5 lg:gap-6">
+      <div
+        data-work-copy
+        className="pointer-events-none absolute start-[14%] bottom-8 z-[200] flex items-start gap-2 max-lg:start-5 max-lg:bottom-5 lg:gap-6"
+      >
         <span className="mt-1 text-[11px] leading-tight">
           Selected<span className="block lg:inline"> work</span>
         </span>
-        <span
-          className="text-[clamp(4rem,12vw,11rem)] leading-[0.75] tracking-[-0.11em]"
-          aria-hidden="true"
-        >
-          {project.kind === 'more' ? '+' : String(active + 1).padStart(2, '0')}
-        </span>
+        <WorkCounter value={project.kind === 'more' ? '+' : String(active + 1).padStart(2, '0')} />
         <span className="ms-2 text-[10px]">/{String(total).padStart(2, '0')}</span>
       </div>
       <div className="pointer-events-none absolute inset-x-5 bottom-[22%] z-[200] text-center lg:hidden">
@@ -693,7 +703,13 @@ export default function WorkGallery({
         role={error ? 'alert' : undefined}
       >
         {error ||
-          (loading ? 'Loading projects…' : end ? 'Keep scrolling to continue' : workContent.scroll)}
+          (loading
+            ? 'Loading projects…'
+            : project.kind === 'more'
+              ? 'Click for all projects · Scroll to continue'
+              : end
+                ? 'Keep scrolling to continue'
+                : workContent.scroll)}
       </p>
       <div
         data-work-progress

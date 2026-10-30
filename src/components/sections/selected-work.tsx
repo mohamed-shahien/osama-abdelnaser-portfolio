@@ -12,7 +12,7 @@ export function SelectedWork({ children }: { children: ReactNode }) {
     <section
       id="work"
       aria-label={workContent.title}
-      className={`${workSans.variable} ${workDisplay.variable} relative isolate z-10 overflow-x-clip bg-[#ededed] [font-family:var(--font-work-sans)] text-ink`}
+      className={`${workSans.variable} ${workDisplay.variable} relative isolate z-10 overflow-x-clip [font-family:var(--font-work-sans)] text-ink`}
     >
       <WorkShowcase
         projects={workProjects.slice(0, workContent.featuredCount)}
@@ -21,7 +21,7 @@ export function SelectedWork({ children }: { children: ReactNode }) {
         {children}
       </WorkShowcase>
       <noscript>
-        <div className="mx-auto max-w-7xl px-6 py-20">
+        <div className="mx-auto max-w-7xl bg-[#ededed] px-6 py-20">
           <h2 className="mb-10 text-4xl">{workContent.title}</h2>
           <ul className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
             {workProjects.map((project) => (

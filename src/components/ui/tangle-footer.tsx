@@ -195,6 +195,7 @@ export function TangleFooter({
 }: TangleFooterProps) {
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const rootRef = useRef<HTMLDivElement>(null);
+  const syncVisibilityRef = useRef<() => void>(() => {});
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
@@ -209,11 +210,18 @@ export function TangleFooter({
   }, []);
 
   const bandHeight = height ?? width / 2;
+  useEffect(() => {
+    syncVisibilityRef.current();
+  }, [ctaExpanded]);
   const { allRings, ctaHitRadius } = useMemo(() => {
     if (width <= 0 || bandHeight <= 0) {
       return { allRings: [] as Ring[], ctaHitRadius: 0 };
     }
-    const baseRings = buildRings(width, bandHeight, lines, seed);
+    const fullRings = buildRings(width, bandHeight, lines, seed);
+    // Reserve a readable semicircle on compact screens. Keep the outer arches
+    // in their original positions; only omit the crowded inner bands by the CTA.
+    const compact = Boolean(ctaLabel) && width < 720;
+    const baseRings = compact ? fullRings.slice(width < 480 ? 2 : 1) : fullRings;
     const innerRing = baseRings[0];
     if (!ctaLabel || !innerRing) {
       return { allRings: baseRings, ctaHitRadius: 0 };
@@ -221,10 +229,13 @@ export function TangleFooter({
 
     const innerEdge = Math.max(0, innerRing.radius - innerRing.strokeWidth / 2);
     const strokeWidth = Math.min(STROKE, Math.max(12, Math.round(innerRing.radius * 0.2)));
-    const radius = Math.max(
-      strokeWidth * 0.75,
-      Math.round(Math.min(innerRing.radius * 0.52, innerEdge - strokeWidth * 0.85) * 10) / 10,
-    );
+    const gap = Math.max(10, Math.min(24, width * 0.035));
+    const radius = compact
+      ? Math.min(innerEdge - gap, Math.max(44, Math.min(68, width * 0.15))) - strokeWidth / 2
+      : Math.max(
+          strokeWidth * 0.75,
+          Math.round(Math.min(innerRing.radius * 0.52, innerEdge - strokeWidth * 0.85) * 10) / 10,
+        );
     const fontSize = Math.min(innerRing.fontSize, Math.max(10, Math.round(strokeWidth * 0.64)));
     const circumference = 2 * Math.PI * radius;
     const ctaRing: Ring = {
@@ -234,7 +245,13 @@ export function TangleFooter({
       cy: innerRing.cy,
       strokeWidth,
       fontSize,
-      text: buildRingCopy(ctaLabel, ctaLabel, false, circumference, fontSize),
+      text: buildRingCopy(
+        ctaLabel.toUpperCase(),
+        ctaLabel.toUpperCase(),
+        false,
+        circumference,
+        fontSize,
+      ),
       duration: 34,
       phase: 0.12,
       reverse: !innerRing.reverse,
@@ -282,6 +299,23 @@ export function TangleFooter({
             drawing.add(reveal, order * 0.13);
             reveals[index] = reveal;
           });
+          const face = root.querySelector('[data-tangle-cta-face]');
+          const icon = root.querySelector('[data-tangle-cta-icon]');
+          const ctaStart = (allRings.length - 1) * 0.13;
+          if (face)
+            drawing.fromTo(
+              face,
+              { scaleY: 0 },
+              { scaleY: 1, duration: 1, ease: 'power2.out' },
+              ctaStart,
+            );
+          if (icon)
+            drawing.fromTo(
+              icon,
+              { opacity: 0, y: 6 },
+              { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
+              ctaStart + 0.35,
+            );
 
           // Each ring is its own layer, turned on the compositor, so spinning never
           // repaints the text. The reveal mask must stay put while the ring turns, so
@@ -343,11 +377,23 @@ export function TangleFooter({
             trigger: root,
             start: 'top bottom',
             end: 'bottom top',
-            onToggle: ({ isActive }) =>
-              spins.forEach((spin) => (isActive ? spin.resume() : spin.pause())),
+            onToggle: () => syncVisibilityRef.current(),
           });
-          if (visibility.isActive) spins.forEach((spin) => spin.resume());
-          return () => restores.forEach((restore) => restore());
+          const syncVisibility = () => {
+            const play =
+              visibility.isActive &&
+              !document.hidden &&
+              !root.querySelector('[data-tangle-cta][aria-expanded="true"]');
+            spins.forEach((spin) => (play ? spin.resume() : spin.pause()));
+          };
+          syncVisibilityRef.current = syncVisibility;
+          document.addEventListener('visibilitychange', syncVisibility);
+          syncVisibility();
+          return () => {
+            document.removeEventListener('visibilitychange', syncVisibility);
+            syncVisibilityRef.current = () => {};
+            restores.forEach((restore) => restore());
+          };
         },
         root,
       );
@@ -375,7 +421,10 @@ export function TangleFooter({
             // One layer per ring, painted in the same inner-to-outer order as before.
             <div
               key={index}
-              className="pointer-events-none absolute inset-0 will-change-transform"
+              className={cn(
+                'pointer-events-none absolute inset-0 will-change-transform',
+                ring.isCta && 'z-20',
+              )}
               data-tangle-spin={index}
             >
               <svg
@@ -458,9 +507,36 @@ export function TangleFooter({
           aria-haspopup="dialog"
           aria-expanded={ctaExpanded}
           aria-controls={ctaControls}
-          style={{ width: ctaHitRadius * 2, height: ctaHitRadius }}
-          className="absolute bottom-0 left-1/2 z-10 -translate-x-1/2 cursor-pointer rounded-t-full bg-transparent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-rose"
+          style={{
+            width: ctaHitRadius * 2,
+            height: ctaHitRadius,
+            borderRadius: '9999px 9999px 0 0',
+          }}
+          className="group/cta absolute bottom-0 left-1/2 z-10 -translate-x-1/2 cursor-pointer rounded-t-full bg-transparent after:absolute after:bottom-0 after:left-1/2 after:h-[max(100%,44px)] after:w-[max(100%,44px)] after:-translate-x-1/2 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-rose"
         >
+          <span
+            data-tangle-cta-face
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 origin-bottom rounded-t-full bg-ink transition-colors duration-300 group-hover/cta:bg-accent-rose group-focus-visible/cta:bg-accent-rose"
+          />
+          <span
+            data-tangle-cta-icon
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-[58%] flex justify-center text-secondary"
+          >
+            <svg
+              width={Math.max(6, Math.min(26, ctaHitRadius * 0.25))}
+              height={Math.max(6, Math.min(26, ctaHitRadius * 0.25))}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M6 18 18 6M6 6h12v12" />
+            </svg>
+          </span>
           <span className="sr-only">{ctaLabel}</span>
         </button>
       ) : null}

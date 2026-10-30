@@ -1,33 +1,43 @@
 # Selected work: content and replacement guide
 
-The collection wraps the existing Practice section as a server-rendered child.
-The actual Practice panel is pushed away; there is no extra black section. Hero,
-Practice source, supplied UI, and the shared motion runtime remain intact.
+The collection wraps the preceding section as a server-rendered child. Its panel opens onto the gallery, and a closing gate lands on the reserved black section.
 
 ## Experience
 
-- Practice keeps its existing 175svh track. At its end the same panel sticks at
-  -75svh; 75svh more scroll pushes it sideways and reveals the gallery behind it.
-  The combined 250svh composition has 150svh of pinned runway, with no extra
-  scrolling driver. Scrolling back reverses the push.
-- The original pushing character is 489.06×514.14px on desktop, 248.82×261.58px
-  below 768px, and 686.4×721.6px above 1920px. Its full original 116-frame cycle
-  is sampled at half-frame intervals. Scroll progress seeks vectors, rather than
-  running a separate animation clock. The reference's visible counter size is zero.
-- The project viewer renders actual subdivided pages with native WebGL. Camera,
-  page dimensions, focus rotations, spacing, velocity bend, cover cropping,
-  hover lift and 15.6% image zoom follow the reference measurements. No 3D package
-  was installed. Textures load nearby, with a maximum of 12 resident textures.
-- The entry flies through the collection, then separates and focuses the pages.
-  Wheel, trackpad and touch input use inertia, damping and snapping; arrow keys
-  and previous/next controls are also available. Continue exits to the footer.
-- Opening a project raises a black panel, shows its title, then lowers the panel.
-  Reduced motion skips these transitions. The last viewed project is restored
-  on returning to `/#work-viewer` without replaying the gallery entry.
-- `/work/[slug]` provides description and metadata, a vertical UI-image sequence,
-  thumbnail navigation, a large title, and the next project.
-- Reduced motion uses a flat semantic image gallery. The full image/link list is
-  also available without JavaScript.
+- The preceding 175svh section is passed as a Server Component child. The work
+  choreography moves that actual panel without editing the preceding component.
+  Hero, the supplied UI and the other agent's Solution section remain separate.
+- Entry has 75svh of scroll; exit adds another 75svh for the requested reverse
+  gate. The combined 325svh composition has 225svh of runway across its three
+  phases. There is still one scrolling driver, owned by the root runtime.
+- The character uses its full original 116-frame vector cycle, sampled at half
+  frames. It is enlarged to 600.6×631.4px on desktop, 321.75×338.25px on mobile,
+  and 793.65×834.35px above 1920px. Gate travel adapts so it walks fully off screen.
+- The gallery stays hidden until the opening character finishes. Its first entry
+  then forms the page arrangement and brings in surrounding text. It replays on
+  a fresh page load; a cached return from a project preserves browsing position.
+- Pages use native WebGL with the measured camera, curved geometry, focus angles,
+  hover lift and image zoom. Correct UV orientation keeps cover text readable.
+- Browsing is finite. Six featured projects are followed by an ALL PROJECTS image
+  card. Clicking it fetches the remaining 13 from `/api/work` and inserts them at
+  the current position in the same scene, without resetting its animation.
+- There are no arrow controls. Wheel, touch and keyboard navigate within bounds.
+  At either boundary input passes back to the root scroll runtime. Local events
+  signal when consumed, rather than applying a permanent overscroll barrier.
+- Scrolling beyond the last card closes the black gate from right to left with
+  the mirrored character, then continues into `NextChapter`, an empty black
+  section reserved for the user's next design. Footer rings and the footer come
+  after that full-height section and do not overlay the work viewport.
+- The root exposes a narrow scroll command to reconcile Lenis inertia at the
+  entry and return boundaries. It creates no additional Lenis or RAF driver.
+- The project index uses the reference's isolated blur pulse (about 10px, then an
+  850ms return to sharpness). It pauses off screen and while the document is hidden.
+- BT Grotesk and F37 Bolton are self-hosted with `next/font/local`, scoped to work
+  and case-study content. Original font URLs are in `public/fonts/work/SOURCES.json`.
+  The former external collection link is replaced by “Ideas into experiences.”
+- Project opening still uses the black-panel/title transition. Reduced motion
+  removes gate movement, 3D, counter blur and page transitions. No-JavaScript users
+  receive the complete image/link list.
 
 ## What to provide for each real project
 
@@ -111,3 +121,27 @@ package was introduced.
 - Opening project 02 used the black-panel transition. Returning restored project
   02, with no active overlay or repeated navigation; one visible main remained.
 - These are local browser/build checks, not deployment or physical-device proof.
+
+## Bounded gallery and reverse gate validation — 2026-10-30
+
+- `pnpm verify` passed once after the runtime changes: lint, route-aware types,
+  formatting, and production build (including the static `/api/work` route).
+- On a fresh document, the gallery surface had opacity 0 while the gate was
+  closed. Runtime observation recorded `workOpen=true`, then `intro=playing`
+  24ms later, then `intro=complete` about 2.16s later, on project 01.
+- At 1440×1000, wheel input after the last initial card moved body scroll from
+  2488 to 2868 and started the reverse gate. At 390×844, loading ALL PROJECTS
+  expanded 6 projects to 19; scrolling after project 19 moved body scroll from
+  2098 to 2498 and activated the close. No index wrapped to project 01.
+- The mobile close kept the black section below the scene and the footer below
+  that section (observed tops 1077px and 1921px for an 844px viewport). No horizontal
+  overflow. Character widths were 600.59px desktop and 321.75px mobile.
+- A project change produced `blur(9.7288px)` on the index; it returned to 0px.
+  A simulated mobile swipe changed project 02 to 04 while body scroll stayed fixed.
+- ALL PROJECTS cover text was visually checked after correcting horizontal UV
+  orientation. Insertion kept index 6, and WebGL returned error code 0.
+- Reduced motion hid both characters, removed counter blur and hit polygons,
+  and displayed a flat image with the reserved black section still in flow.
+- Next dev reported no runtime/config errors. These are local checks; there was
+  no deployment, physical-device test, or modification to the other agent's
+  Solution component. Its existing 175svh composition is preserved.

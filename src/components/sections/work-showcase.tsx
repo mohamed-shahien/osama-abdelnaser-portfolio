@@ -9,8 +9,17 @@ import { gsap, ScrollTrigger, useGSAP } from '@/lib/motion/gsap';
 import { mountPushCharacter } from '@/lib/motion/push-character';
 import { scrollPageTo } from '@/lib/motion/page-scroll';
 import type { WorkProject } from '@/types/work';
+import type { GalleryAssembly } from './work-gallery';
 
 const WorkGallery = dynamic(() => import('./work-gallery'));
+
+// Push progress at which the deck behind the page starts to assemble.
+const ASSEMBLE_FROM = 0.18;
+
+function actorMetrics(mobile: boolean) {
+  const scale = mobile ? 0.75 : window.innerWidth >= 1920 ? 1.85 : 1.4;
+  return { width: 429 * scale, offset: scale * (mobile ? 31 / 0.58 : 60 / 1.14) };
+}
 
 export function WorkShowcase({
   projects,
@@ -26,6 +35,8 @@ export function WorkShowcase({
   const [nearby, setNearby] = useState(false);
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
+  // Shared with the gallery: the push writes how far the deck has assembled.
+  const [assembly] = useState<GalleryAssembly>(() => ({ progress: 0, apply: () => {} }));
   const mounted = nearby && introDone;
 
   useEffect(() => {
@@ -50,10 +61,10 @@ export function WorkShowcase({
       const plate = root.querySelector<HTMLElement>('[data-work-plate]');
       const actor = root.querySelector<HTMLElement>('[data-work-actor]');
       const graphic = root.querySelector<HTMLElement>('[data-work-vector]');
-      const exitPanel = root.querySelector<HTMLElement>('[data-work-exit-panel]');
+      const stage = root.querySelector<HTMLElement>('[data-work-stage]');
       const exitActor = root.querySelector<HTMLElement>('[data-work-exit-actor]');
       const exitGraphic = root.querySelector<HTMLElement>('[data-work-exit-vector]');
-      if (!plate || !actor || !graphic || !exitPanel || !exitActor || !exitGraphic) return;
+      if (!plate || !actor || !graphic || !stage || !exitActor || !exitGraphic) return;
       const media = gsap.matchMedia();
       media.add(
         {
@@ -66,6 +77,8 @@ export function WorkShowcase({
             setOpen(true);
             setClosing(false);
             root.dataset.workOpen = 'true';
+            assembly.progress = 1;
+            assembly.apply(1);
             return;
           }
           let disposed = false;
@@ -77,27 +90,44 @@ export function WorkShowcase({
           let wasOpen = false;
           let width = root.clientWidth;
           const mobile = Boolean(context.conditions?.mobile);
+          const finish = () => {
+            const actor = actorMetrics(mobile);
+            return 1 + (actor.width - actor.offset) / width + 0.04;
+          };
+          const alignGallery = () => {
+            const y = root.getBoundingClientRect().top + window.scrollY + window.innerHeight * 11.4;
+            if (Math.abs(window.scrollY - y) < window.innerHeight * 0.45) scrollPageTo(y);
+          };
           const paint = () => {
             const value = position.value;
-            const scale = mobile ? 0.58 : width >= 1920 ? 1.6 : 1.14;
-            const offset = mobile ? 31 : width >= 1920 ? 80 : 60;
+            const metrics = actorMetrics(mobile);
             const x = Math.round(value * width * 100) / 100;
             if (x !== previousX) {
               plate.style.transform = `translate3d(${Math.min(x, width * (mobile ? 1.4 : 1.12))}px,0,0)`;
-              actor.style.transform = `translate3d(${x - 429 * scale + offset}px,-50%,0)`;
+              actor.style.transform = `translate3d(${x - metrics.width + metrics.offset}px,-50%,0)`;
               previousX = x;
             }
-            const opacity = value > 0.001 && value < (mobile ? 1.4 : 1.28) ? '1' : '0';
+            const opacity = value > 0.001 && value < finish() - 0.001 ? '1' : '0';
             if (opacity !== previousOpacity) {
               actor.style.opacity = opacity;
               previousOpacity = opacity;
             }
             if (!document.hidden) seek?.(value);
-            const nextOpen = value >= (mobile ? 1.39 : 1.27);
+            const assembled =
+              Math.round(
+                Math.max(0, Math.min(1, (value - ASSEMBLE_FROM) / (finish() - ASSEMBLE_FROM))) *
+                  10000,
+              ) / 10000;
+            if (assembled !== assembly.progress) {
+              assembly.progress = assembled;
+              assembly.apply(assembled);
+            }
+            const nextOpen = value >= finish() - 0.01;
             if (nextOpen !== wasOpen) {
               wasOpen = nextOpen;
               setOpen(nextOpen);
               root.dataset.workOpen = String(nextOpen);
+              if (nextOpen) alignGallery();
             }
           };
           void mountPushCharacter(graphic)
@@ -112,26 +142,28 @@ export function WorkShowcase({
             });
           const timeline = gsap.timeline({ paused: true, onUpdate: paint });
           timeline
-            .to(position, { value: 0.3, duration: mobile ? 0.95 : 0.65, ease: 'power2.inOut' })
-            .to({}, { duration: 0.16 })
-            .to(position, { value: 0.6, duration: 0.72, ease: 'power2.inOut' })
-            .to({}, { duration: 0.2 })
+            .to(position, { value: 0.3, duration: 0.8, ease: 'sine.inOut' })
+            .to({}, { duration: 0.08 })
+            .to(position, { value: 0.6, duration: 0.85, ease: 'sine.inOut' })
+            .to({}, { duration: 0.1 })
             .to(position, {
-              value: mobile ? 1.4 : 1.28,
-              duration: mobile ? 1.76 : 1.46,
+              value: finish,
+              duration: 1.6,
               ease: 'power2.inOut',
             });
           const trigger = ScrollTrigger.create({
             id: 'selected-work-push',
             trigger: root,
             animation: timeline,
-            start: () => `top -${window.innerHeight * 0.75}px`,
-            end: () => `top -${window.innerHeight * 1.5}px`,
-            scrub: 0.18,
+            start: () => `top -${window.innerHeight * 10.65}px`,
+            end: () => `top -${window.innerHeight * 11.4}px`,
+            scrub: 0.4,
+            invalidateOnRefresh: true,
             onRefresh: paint,
             onLeave: () => {
+              if (wasOpen) return;
               const end =
-                root.getBoundingClientRect().top + window.scrollY + window.innerHeight * 1.5;
+                root.getBoundingClientRect().top + window.scrollY + window.innerHeight * 11.4;
               // Cancel the root Lenis inertia when the local gallery takes input.
               if (window.scrollY >= end && window.scrollY < end + window.innerHeight * 0.4)
                 scrollPageTo(end);
@@ -140,20 +172,26 @@ export function WorkShowcase({
           const exitPosition = { value: 0 };
           let exitX = Number.NaN;
           let exitOpacity = '';
+          let exitShown = '';
           let wasClosing = false;
           const paintExit = () => {
             const value = exitPosition.value;
-            const scale = mobile ? 0.58 : width >= 1920 ? 1.6 : 1.14;
-            const offset = mobile ? 31 : width >= 1920 ? 80 : 60;
+            const metrics = actorMetrics(mobile);
             const x = Math.round(width * (1 - value) * 100) / 100;
             if (x !== exitX) {
-              exitPanel.style.transform = `translate3d(${Math.max(0, x)}px,0,0)`;
-              exitActor.style.transform = `translate3d(${x - offset}px,-50%,0)`;
-              exitActor.style.width = `${429 * scale}px`;
-              exitActor.style.height = `${451 * scale}px`;
+              // The avatar draws the gallery off to the left; the next section,
+              // already pinned beneath this one, shows behind it.
+              const covered = Math.max(0, Math.min(width, width - x));
+              stage.style.clipPath = covered > 0 ? `inset(0 ${covered}px 0 0)` : '';
+              const shown = covered >= width ? 'hidden' : '';
+              if (shown !== exitShown) {
+                stage.style.visibility = shown;
+                exitShown = shown;
+              }
+              exitActor.style.transform = `translate3d(${x - metrics.offset}px,-50%,0)`;
               exitX = x;
             }
-            const opacity = value > 0.001 && value < 1.28 ? '1' : '0';
+            const opacity = value > 0.001 && value < finish() - 0.001 ? '1' : '0';
             if (opacity !== exitOpacity) {
               exitActor.style.opacity = opacity;
               exitOpacity = opacity;
@@ -164,6 +202,7 @@ export function WorkShowcase({
               wasClosing = nextClosing;
               setClosing(nextClosing);
               root.dataset.workClosing = String(nextClosing);
+              if (!nextClosing) alignGallery();
             }
           };
           void mountPushCharacter(exitGraphic)
@@ -176,18 +215,19 @@ export function WorkShowcase({
             .catch(() => {});
           const exitTimeline = gsap.timeline({ paused: true, onUpdate: paintExit });
           exitTimeline
-            .to(exitPosition, { value: 0.3, duration: 0.65, ease: 'power2.inOut' })
-            .to({}, { duration: 0.16 })
-            .to(exitPosition, { value: 0.6, duration: 0.72, ease: 'power2.inOut' })
-            .to({}, { duration: 0.2 })
-            .to(exitPosition, { value: 1.28, duration: 1.46, ease: 'power2.inOut' });
+            .to(exitPosition, { value: 0.3, duration: 0.8, ease: 'sine.inOut' })
+            .to({}, { duration: 0.08 })
+            .to(exitPosition, { value: 0.6, duration: 0.85, ease: 'sine.inOut' })
+            .to({}, { duration: 0.1 })
+            .to(exitPosition, { value: finish, duration: 1.6, ease: 'power2.inOut' });
           const exitTrigger = ScrollTrigger.create({
             id: 'selected-work-close',
             trigger: root,
             animation: exitTimeline,
-            start: () => `top -${window.innerHeight * 1.5}px`,
-            end: () => `top -${window.innerHeight * 2.25}px`,
-            scrub: 0.18,
+            start: () => `top -${window.innerHeight * 11.4}px`,
+            end: () => `top -${window.innerHeight * 12.15}px`,
+            scrub: 0.4,
+            invalidateOnRefresh: true,
             onRefresh: paintExit,
           });
           const resize = new ResizeObserver(() => {
@@ -227,7 +267,8 @@ export function WorkShowcase({
             actor.style.removeProperty('transform');
             actor.style.removeProperty('opacity');
             graphic.replaceChildren();
-            exitPanel.style.removeProperty('transform');
+            stage.style.removeProperty('clip-path');
+            stage.style.removeProperty('visibility');
             exitActor.style.removeProperty('transform');
             exitActor.style.removeProperty('opacity');
             exitGraphic.replaceChildren();
@@ -236,7 +277,7 @@ export function WorkShowcase({
       );
       return () => media.revert();
     },
-    { scope: rootRef, dependencies: [mounted], revertOnUpdate: true },
+    { scope: rootRef, dependencies: [mounted, assembly], revertOnUpdate: true },
   );
 
   return (
@@ -246,16 +287,24 @@ export function WorkShowcase({
       data-work-intro-ready={introDone}
       className="relative flex flex-col"
     >
-      <span data-push-start aria-hidden="true" className="absolute top-[75svh] size-px" />
+      <span data-push-start aria-hidden="true" className="absolute top-[1065svh] size-px" />
       <span
         id="work-viewer"
         aria-hidden="true"
-        className="absolute top-[150svh] size-px [scroll-margin-top:-2rem] motion-reduce:top-[175svh]"
+        className="absolute top-[1140svh] size-px [scroll-margin-top:-2rem] motion-reduce:top-[1165svh]"
       />
-      <div className="sticky top-0 order-1 -mb-[100svh] h-svh shrink-0 overflow-hidden bg-[#ededed] motion-reduce:static motion-reduce:order-3 motion-reduce:mb-0">
-        <div inert={!open} className="h-full">
+      <div
+        data-work-stage
+        className="sticky top-0 order-1 -mb-[100svh] h-svh shrink-0 overflow-hidden bg-[#ededed] motion-reduce:static motion-reduce:order-3 motion-reduce:mb-0"
+      >
+        <div inert={!open || closing} className="h-full">
           {mounted ? (
-            <WorkGallery projects={projects} total={total} enabled={open && !closing} />
+            <WorkGallery
+              projects={projects}
+              total={total}
+              enabled={open && !closing}
+              assembly={assembly}
+            />
           ) : null}
         </div>
       </div>
@@ -265,7 +314,7 @@ export function WorkShowcase({
       >
         <div
           data-work-actor
-          className="absolute start-0 top-1/2 h-[261.58px] w-[248.82px] opacity-0 will-change-transform min-[1920px]:h-[721.6px] min-[1920px]:w-[686.4px] md:h-[514.14px] md:w-[489.06px]"
+          className="absolute start-0 top-1/2 h-[338.25px] w-[321.75px] opacity-0 will-change-transform min-[1920px]:h-[834.35px] min-[1920px]:w-[793.65px] md:h-[631.4px] md:w-[600.6px]"
         >
           <div data-work-vector className="size-full" />
         </div>
@@ -275,19 +324,15 @@ export function WorkShowcase({
         className="pointer-events-none sticky top-0 z-[60] order-1 -mb-[100svh] h-svh shrink-0 overflow-hidden motion-reduce:hidden"
       >
         <div
-          data-work-exit-panel
-          className="absolute inset-0 [transform:translateX(100%)] bg-black"
-        />
-        <div
           data-work-exit-actor
-          className="absolute start-0 top-1/2 opacity-0 will-change-transform"
+          className="absolute start-0 top-1/2 h-[338.25px] w-[321.75px] opacity-0 will-change-transform min-[1920px]:h-[834.35px] min-[1920px]:w-[793.65px] md:h-[631.4px] md:w-[600.6px]"
         >
           <div data-work-exit-vector className="size-full [transform:scaleX(-1)]" />
         </div>
       </div>
       <div
         data-work-plate
-        className="sticky top-[-75svh] z-40 order-2 shrink-0 will-change-transform motion-reduce:static"
+        className="sticky top-[-1065svh] z-40 order-2 shrink-0 will-change-transform motion-reduce:static"
       >
         {children}
       </div>

@@ -12,6 +12,7 @@ export const footerWhatsappHref =
   'https://api.whatsapp.com/send/?phone=%2B201223165082&text&type=phone_number&app_absent=0';
 
 export const footerBookLabel = 'Book a meeting';
+export const footerBookKicker = 'Talk to Osama';
 
 export const footerSocials: Social[] = [
   {

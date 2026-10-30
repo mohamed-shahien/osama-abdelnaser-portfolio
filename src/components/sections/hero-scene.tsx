@@ -25,6 +25,7 @@ import {
   SignupStudy,
   type HeroTool,
 } from './hero-art';
+import { canvasGrid } from './canvas-grid';
 import { HeroPortfolioEntrance } from './hero-portfolio-entrance';
 
 const subscribeMotion = (callback: () => void) => {
@@ -106,7 +107,6 @@ const cursorLayout: [string, string][] = [
 ];
 
 const panelShadow = '[box-shadow:0_1px_4px_#17284f1a]';
-const gridPattern = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M60 0H0V60' fill='none' stroke='%2317284F' stroke-opacity='.13' stroke-dasharray='1 2'/%3E%3C/svg%3E")`;
 
 function FloatingCard({
   kind,
@@ -475,7 +475,7 @@ export function HeroScene() {
     >
       <div
         className="absolute inset-0 -z-1 overflow-hidden [transition:opacity_900ms_ease] group-data-[portfolio-phase=intro]/scene:invisible group-data-[portfolio-phase=intro]/scene:opacity-0 motion-reduce:[transition:none]"
-        style={{ backgroundImage: gridPattern }}
+        style={{ backgroundImage: canvasGrid }}
         aria-hidden="true"
       >
         <div

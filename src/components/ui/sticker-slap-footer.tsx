@@ -566,7 +566,7 @@ const CSS =
   '@keyframes ssf-popin{from{opacity:0;transform:translateY(10px) scale(.7) rotate(4deg)}}' +
   // the storyboard: everything above is the finished state; motion only adds the way in
   '@media (prefers-reduced-motion: no-preference){' +
-  '.ssf [data-slot="tangle-footer"]{scale:calc(.9 + .1 * var(--ssf-sp,1))}' +
+  '.ssf [data-slot="tangle-footer"]{scale:calc(.82 + .1 * var(--ssf-sp,1))}' +
   '.ssf-panel{scale:calc(.9 + .1 * var(--ssf-sp,1));border-radius:calc(clamp(14px,1.8cqw,24px) + (1 - var(--ssf-sp,1)) * 60px)}' +
   '.ssf-stage-in{transform:translateY(calc((1 - var(--ssf-sp,1)) * 18%))}' +
   '.ssf-st{transform:translate(calc(var(--ssf-px,0) * var(--d) * 9px),calc(var(--ssf-py,0) * var(--d) * 6px));transition:transform .7s cubic-bezier(.2,.8,.2,1)}' +

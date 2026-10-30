@@ -161,3 +161,75 @@ Measured on the production build in headless Chrome at 1440×900, normal CPU and
 - Added Osama's supplied contact and social links in `src/content/footer.ts` (LinkedIn, Behance, WhatsApp, X, Figma, Instagram, TikTok, Facebook, Upwork, and Medium) and wired them through `src/components/sections/site-footer.tsx`. Removed the duplicate Email icon from the social icon strip since the email address is already displayed above it.
 - Updated `src/components/ui/sticker-slap-footer.tsx` (`SocialKind`, `ICONS`, `DEFAULT_SOCIALS`, `DEFAULT_CREDITS`, and `chatHref`) to use 24×24 Simple Icons paths across all social icons, remove the `credits` pill button (`DEFAULT_CREDITS = []`), and wrap `.ssf-socials` cleanly without horizontal overflow.
 - Integrated `src/components/ui/tangle-footer.tsx` directly inside `<footer class="ssf">` via `topSlot` on `src/components/ui/sticker-slap-footer.tsx`, synchronized at their shared horizontal seam, and rendered the `"Book a meeting"` CTA as the innermost rotating semicircle marquee ring (`isCta: true`) inside `rings[0]`. Clicking it lazily loads and reveals `src/components/ui/wirebound-inquiry.tsx` through the WebGL2 noise-threshold tear in `src/components/ui/noise-dissolve-reveal.tsx` (`src/components/sections/footer-tangle-booking.tsx` and `src/components/sections/booking-overlay.tsx`), adapted to the approved brand palette (`#5B8DFB`, `#F8FA55`, `#F3D061`, `#E43468`, `#17284F`) and Osama's sourced portfolio copy with strict TypeScript and ESLint ref/effect guards.
+
+## Key section replaces What I do — 2026-10-29
+
+- Removed the Onyx "What I do" section (`practice.tsx`, `practice-showcase.tsx`, `content/practice.ts` and the three `onyx-glyph-*` files). The slot after the hero now holds the supplied Skeleton Key Preloader (`src/components/ui/skeleton-key-preloader.tsx`) inside `src/components/sections/solution.tsx` and `solution-showcase.tsx`, with copy in `src/content/solution.ts`.
+- Changes to the supplied component are limited to text, colors and guards:
+  - Text: the word `solution`, greeting, tags, about lines, signature, links and the loading status line.
+  - Colors: paper `#F8FA55`, ink `#17284F` and a new `brand` metal built from `#5B8DFB`.
+  - Guards: ref mirrors moved into a layout effect, three effect `setState` calls restructured without changing behavior, a non-null assertion and an empty `catch` replaced, unused constants removed.
+  - Performance: the frame loop and the CSS loops pause through `data-idle` while the gate is off screen or the tab is hidden.
+- Behavior: `unlock="key"` waits for the visitor to drop the key in the lock, click "Turn the key", or press Enter; the camera then dives through the keyhole onto the solution content. The gate mounts only after the intro, about 30% of a viewport before it appears. The 175svh runway the work-plate choreography needs is kept.
+
+## Key section: designer × developer workspace — 2026-10-30
+
+- The key gate's GSAP animation, timing and sizes are unchanged (`skeleton-key-preloader.tsx` not edited). Only what it reveals changed.
+- The revealed content is `src/components/sections/solution-workspace.tsx`: one full-width Figma editor. The developer's separate editor window was removed at the user's request. The developer and the client now work inside the Figma file with Osama, as live named cursors, comment pins and threads.
+- The ten stages are idle, listening, thinking, reasoning, tool-call, tool-result, streaming, waiting-approval, error and done, across four canvas sections:
+  - **Brief & research:** the client's brief, two rows of notes ("Osama heard" / "Developer heard"), a question, a persona and a problem statement.
+  - **Mapping:** this is "thinking", and it gets twice the scroll. Osama draws the journey (Cart → Done) with a feeling curve and circles Pay. The developer draws the system behind Pay (three sequential API calls). A four-message thread between them leads to "1 batched call".
+  - **Options:** A (three steps) and B (one page) with pros and cons. Both vote, B is chosen.
+  - **Checkout:** a frame is drawn with auto layout, the content and a PayButton component land, tokens and redlines are handed off, and the client reviews. Then the Arabic frame overflows, the RTL test fails, a hug width fixes it, and it is approved.
+- Figma UI3 chrome at Figma's sizes:
+  - 241px side panels with 48px headers and 32px layer rows
+  - 16px layer icons, including purple component and instance glyphs
+  - a 48px floating toolbar of 32px buttons with 24px 1px-stroke glyphs, menu chevrons, and the Dev Mode toggle
+  - a Share bar with multiplayer avatars, and Design/Prototype properties that follow the selection
+- Motion:
+  - One timeline, scrubbed by scroll with `scrub: 2.2` for a slow, smooth follow, drives the camera, cursors, comments and drawing. Diagrams draw with stroke-dashoffset on small SVG paths.
+  - The chrome changes only when the stage index changes (ten `setState` calls in total).
+  - Reduced motion uses `scrub: true` and no CSS transitions.
+- Copy lives in `src/content/solution.ts`. The brief, people, comments, products and prices are an illustrative process scenario, not client work or measured results.
+- The runway is 1060svh at the user's request (slow scroll, about 85svh per stage). This is longer than the 175svh budget.
+- `work-showcase.tsx` offsets moved so the push starts only after the last stage:
+  - push 9.6→10.35 viewports, exit 10.35→11.1
+  - markers `top-[960svh]` and `#work-viewer` `top-[1035svh]` (reduced `1060svh`)
+  - plate `sticky top-[-960svh]`
+- Performance:
+  - The canvas world is fixed at 900×600 and scaled by a ResizeObserver that writes a transform only when the scale changes.
+  - Canvases below 0.6 scale, such as phones, zoom to half a section, and the camera follows each beat's focus point.
+  - Only transform and opacity animate, apart from the small SVG stroke draws. Nothing runs while the page is not scrolling, and the scrub pauses when the tab is hidden.
+- Layout: the design panel shows from xl. The layers panel and toolbar show from lg.
+- Full-motion runs at 1440×900, 768×1024 and 390×844: no console errors. The work plate stays at 0 during the stages and moves after them.
+- `canvas-grid.ts` holds the dotted grid shared by the hero and the workspace.
+
+## Key section: scroll-driven key and richer final stages — 2026-10-30
+
+- **Scope change, requested by the user:** the supplied key gate (`skeleton-key-preloader.tsx`) now runs on scroll instead of timers. It is one piece with the Figma workspace, and scrolling back up returns through the keyhole to the key screen.
+- **Additions to the supplied component.** The defaults are unchanged, so without these props it behaves exactly as supplied:
+  - `scrub` is a ref the host writes 0–1 into. When it is set, the timers are skipped, and the count and every phase (settle, insert, turn, open, done) follow the value both ways.
+    - The gate eases toward the raw value itself, so it cannot be reset by a ScrollTrigger refresh.
+    - Insert, slide, turn and camera dive use the same geometry as before; only their clock is the scroll.
+  - `through` tells the gate the host is past the end; when it turns false the gate comes back out.
+  - In scroll mode the gate stays mounted but hidden when done, and its CSS loops pause.
+  - `face` sets one font for the whole board. The user asked for a single face, so Space Grotesk is used for every line.
+  - `labels` sets the status-line text.
+- The key screen's copy now introduces the Figma file: tags `#brief #figma #handoff #shipped`, "inside/ one brief, one file, designer + developer, one solution.", the status "Opening Checkout.fig", and the hint "Scroll to turn the key ↓".
+- The workspace sits in its own stacking context (`isolate`), so Figma's toolbar no longer shows through the key screen.
+- Runway is 1165svh:
+  - 0–110svh turn the key and dive
+  - Figma's timeline starts at 130svh
+  - the stages keep their 9.35 viewports
+- `work-showcase.tsx` offsets moved by +1.05 viewports:
+  - push 10.65→11.4, exit 11.4→12.15
+  - markers `top-[1065svh]` and `#work-viewer` `top-[1140svh]` (reduced `1165svh`)
+  - plate `sticky top-[-1065svh]`
+- **Stages 6–10:**
+  - A trendier checkout design: product thumbnails, delivery chip, a segmented payment control, a gradient PayButton with an arrow, and the same design in Arabic.
+  - A Dev Mode panel streams the PayButton's code line by line.
+  - An approval card is shown while the client reviews.
+  - A failing then passing RTL test card.
+  - A "Live" badge and emoji confetti when the checkout ships.
+  - Every thread is a longer, playful designer–developer exchange with emoji and reactions. It remains an illustrative scenario.
+- Full-motion runs at 1440×900, 768×1024 and 390×844, scrolling forward and back through the key: no console errors.

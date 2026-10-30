@@ -42,6 +42,7 @@ void main(){
  vec2 uv=vUv;float a=uSize.x/uSize.y;
  if(a<uAspect)uv.x=(uv.x-.5)*(a/uAspect)+.5;else uv.y=(uv.y-.5)*(uAspect/a)+.5;
  uv=(uv-.5)*(1.-uHover*smoothstep(.65,.95,vFocus)*.156)+.5;
+ uv.x=1.-uv.x;
  gl_FragColor=texture2D(uImage,uv);
 }`;
 const smooth = (a: number, b: number, x: number) => {
