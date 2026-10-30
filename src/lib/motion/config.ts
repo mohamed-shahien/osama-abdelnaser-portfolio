@@ -5,5 +5,6 @@ export const motionConfig = {
   },
   duration: { fast: 0.25, normal: 0.6, slow: 1 },
   ease: { enter: 'power2.out', exit: 'power2.in', transition: 'power2.inOut' },
-  scroll: { lerp: 0.1 },
+  // A softer glide: each frame closes 7.5% of the gap, and a wheel notch travels a bit less.
+  scroll: { lerp: 0.075, wheelMultiplier: 0.9 },
 } as const;

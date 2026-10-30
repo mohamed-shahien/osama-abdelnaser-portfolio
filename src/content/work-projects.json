@@ -1,0 +1,1725 @@
+[
+  {
+    "slug": "brackets",
+    "name": "Brackets",
+    "category": "Store Theme (Salla + Zid)",
+    "summary": "A modern electronics store theme for Salla and Zid.",
+    "description": "An online store selling electronics, accessories, and smart devices, designed for both Salla and Zid. The design focuses on easy navigation, product discovery, and a seamless shopping experience that improves conversion rates.",
+    "date": "Aug 2026",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/ar/dev-m2muzge6dw3an9t6",
+    "behanceUrl": "https://www.behance.net/gallery/251470343/Brackets-Theme-Electronics-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/brackets/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Brackets — A modern electronics store theme for Salla and Zid."
+    },
+    "images": [
+      {
+        "src": "/work/projects/brackets/01.webp",
+        "width": 1000,
+        "height": 750,
+        "alt": "Brackets — interface 1",
+        "thumbnail": "/work/projects/brackets/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/brackets/02.webp",
+        "width": 400,
+        "height": 300,
+        "alt": "Brackets — interface 2",
+        "thumbnail": "/work/projects/brackets/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/brackets/03.webp",
+        "width": 1000,
+        "height": 562,
+        "alt": "Brackets — interface 3",
+        "thumbnail": "/work/projects/brackets/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/brackets/04.webp",
+        "width": 300,
+        "height": 225,
+        "alt": "Brackets — interface 4",
+        "thumbnail": "/work/projects/brackets/04.thumb.webp"
+      },
+      {
+        "src": "/work/projects/brackets/05.webp",
+        "width": 1000,
+        "height": 750,
+        "alt": "Brackets — interface 5",
+        "thumbnail": "/work/projects/brackets/05.thumb.webp"
+      },
+      {
+        "src": "/work/projects/brackets/06.webp",
+        "width": 1440,
+        "height": 810,
+        "alt": "Brackets — interface 6",
+        "thumbnail": "/work/projects/brackets/06.thumb.webp"
+      },
+      {
+        "src": "/work/projects/brackets/07.webp",
+        "width": 400,
+        "height": 300,
+        "alt": "Brackets — interface 7",
+        "thumbnail": "/work/projects/brackets/07.thumb.webp"
+      },
+      {
+        "src": "/work/projects/brackets/08.webp",
+        "width": 1000,
+        "height": 750,
+        "alt": "Brackets — interface 8",
+        "thumbnail": "/work/projects/brackets/08.thumb.webp"
+      },
+      {
+        "src": "/work/projects/brackets/09.webp",
+        "width": 1000,
+        "height": 750,
+        "alt": "Brackets — interface 9",
+        "thumbnail": "/work/projects/brackets/09.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "bahij",
+    "name": "Bahij",
+    "category": "Salla Store",
+    "summary": "A Salla store for cosmetics and perfumes.",
+    "description": "UI design for Bahij, a cosmetics and perfume store on Salla, with a clear browsing and purchasing experience on both mobile and desktop.",
+    "date": "Jul 2026",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/dev-c4jn7y5pnwy42vjk",
+    "behanceUrl": null,
+    "cover": {
+      "src": "/work/projects/bahij/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Bahij — A Salla store for cosmetics and perfumes."
+    },
+    "images": [
+      {
+        "src": "/work/projects/bahij/01.webp",
+        "width": 1440,
+        "height": 810,
+        "alt": "Bahij — interface 1",
+        "thumbnail": "/work/projects/bahij/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bahij/02.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Bahij — interface 2",
+        "thumbnail": "/work/projects/bahij/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bahij/03.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Bahij — interface 3",
+        "thumbnail": "/work/projects/bahij/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bahij/04.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Bahij — interface 4",
+        "thumbnail": "/work/projects/bahij/04.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "bom",
+    "name": "BOM",
+    "category": "Salla Store",
+    "summary": "A Salla store for cosmetics and skincare products.",
+    "description": "UI design for BOM, a cosmetics and skincare store on Salla, based on the Qimmah theme and adapted to the brand's visual identity.",
+    "date": "Jul 2026",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/ar/dev-nqikggcfvk9q5qcm",
+    "behanceUrl": null,
+    "cover": {
+      "src": "/work/projects/bom/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "BOM — A Salla store for cosmetics and skincare products."
+    },
+    "images": [
+      {
+        "src": "/work/projects/bom/01.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "BOM — interface 1",
+        "thumbnail": "/work/projects/bom/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bom/02.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "BOM — interface 2",
+        "thumbnail": "/work/projects/bom/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bom/03.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "BOM — interface 3",
+        "thumbnail": "/work/projects/bom/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bom/04.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "BOM — interface 4",
+        "thumbnail": "/work/projects/bom/04.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bom/05.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "BOM — interface 5",
+        "thumbnail": "/work/projects/bom/05.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "nagham",
+    "name": "Nagham",
+    "category": "Salla Store",
+    "summary": "A Salla perfume store.",
+    "description": "UI design for Nagham, a perfume store on Salla, based on the perfume demo of the Washaq theme.",
+    "date": "Jul 2026",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/dev-kmr0hktwczx2neyc",
+    "behanceUrl": null,
+    "cover": {
+      "src": "/work/projects/nagham/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Nagham — A Salla perfume store."
+    },
+    "images": [
+      {
+        "src": "/work/projects/nagham/01.webp",
+        "width": 1440,
+        "height": 1440,
+        "alt": "Nagham — interface 1",
+        "thumbnail": "/work/projects/nagham/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nagham/02.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Nagham — interface 2",
+        "thumbnail": "/work/projects/nagham/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nagham/03.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Nagham — interface 3",
+        "thumbnail": "/work/projects/nagham/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nagham/04.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Nagham — interface 4",
+        "thumbnail": "/work/projects/nagham/04.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "azma",
+    "name": "Azma",
+    "category": "Salla Store",
+    "summary": "A Salla store for men's fashion.",
+    "description": "UI design for Azma, a men's fashion store on Salla, based on the Qimmah theme with a browsing experience focused on product presentation.",
+    "date": "Jul 2026",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/dev-mwfq90dpdykplwee",
+    "behanceUrl": null,
+    "cover": {
+      "src": "/work/projects/azma/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Azma — A Salla store for men's fashion."
+    },
+    "images": [
+      {
+        "src": "/work/projects/azma/01.webp",
+        "width": 1440,
+        "height": 1440,
+        "alt": "Azma — interface 1",
+        "thumbnail": "/work/projects/azma/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/azma/02.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Azma — interface 2",
+        "thumbnail": "/work/projects/azma/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/azma/03.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Azma — interface 3",
+        "thumbnail": "/work/projects/azma/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/azma/04.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Azma — interface 4",
+        "thumbnail": "/work/projects/azma/04.thumb.webp"
+      },
+      {
+        "src": "/work/projects/azma/05.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Azma — interface 5",
+        "thumbnail": "/work/projects/azma/05.thumb.webp"
+      },
+      {
+        "src": "/work/projects/azma/06.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Azma — interface 6",
+        "thumbnail": "/work/projects/azma/06.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "bareeq",
+    "name": "Bareeq",
+    "category": "Salla Store",
+    "summary": "A Salla cosmetics store.",
+    "description": "UI design for Bareeq, a cosmetics store on Salla, based on the beauty demo of the Washaq theme.",
+    "date": "Jul 2026",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/dev-9o0oguibwbcjzmnz",
+    "behanceUrl": "https://www.behance.net/gallery/237526569/Washaq-Cosmetics-Demo-",
+    "cover": {
+      "src": "/work/projects/bareeq/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Bareeq — A Salla cosmetics store."
+    },
+    "images": [
+      {
+        "src": "/work/projects/bareeq/01.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Bareeq — interface 1",
+        "thumbnail": "/work/projects/bareeq/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bareeq/02.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Bareeq — interface 2",
+        "thumbnail": "/work/projects/bareeq/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bareeq/03.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Bareeq — interface 3",
+        "thumbnail": "/work/projects/bareeq/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bareeq/04.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Bareeq — interface 4",
+        "thumbnail": "/work/projects/bareeq/04.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bareeq/05.webp",
+        "width": 1080,
+        "height": 1080,
+        "alt": "Bareeq — interface 5",
+        "thumbnail": "/work/projects/bareeq/05.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bareeq/06.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Bareeq — interface 6",
+        "thumbnail": "/work/projects/bareeq/06.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "shams",
+    "name": "Shams",
+    "category": "Salla Store",
+    "summary": "A Salla store for breeding and selling Khao Manee cats.",
+    "description": "UI design for Shams, a store specializing in breeding and selling Khao Manee cats on Salla, based on the Primal Paw theme.",
+    "date": "Jul 2026",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/ar/dev-jbbbrcw4tupsnoix",
+    "behanceUrl": null,
+    "cover": {
+      "src": "/work/projects/shams/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Shams — A Salla store for breeding and selling Khao Manee cats."
+    },
+    "images": [
+      {
+        "src": "/work/projects/shams/01.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Shams — interface 1",
+        "thumbnail": "/work/projects/shams/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/shams/02.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Shams — interface 2",
+        "thumbnail": "/work/projects/shams/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/shams/03.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Shams — interface 3",
+        "thumbnail": "/work/projects/shams/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/shams/04.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Shams — interface 4",
+        "thumbnail": "/work/projects/shams/04.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "beauty-store",
+    "name": "Beauty Store",
+    "category": "Salla Store",
+    "summary": "A multipurpose store for cosmetics, perfumes, and fashion.",
+    "description": "A multipurpose online store designed for several categories, including cosmetics, perfumes, and fashion. It features a modern interface, a seamless user experience, and a flexible layout suited to different product categories.",
+    "date": "Jul 2026",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/dev-1cieq378nbuydjqh",
+    "behanceUrl": "https://www.behance.net/gallery/247795865/Anan-Beauty-Products-E-commerce-Store",
+    "cover": {
+      "src": "/work/projects/beauty-store/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Beauty Store — A multipurpose store for cosmetics, perfumes, and fashion."
+    },
+    "images": [
+      {
+        "src": "/work/projects/beauty-store/01.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Beauty Store — interface 1",
+        "thumbnail": "/work/projects/beauty-store/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/beauty-store/02.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Beauty Store — interface 2",
+        "thumbnail": "/work/projects/beauty-store/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/beauty-store/03.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Beauty Store — interface 3",
+        "thumbnail": "/work/projects/beauty-store/03.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "truepath",
+    "name": "TruePath",
+    "category": "Website / Landing Page",
+    "summary": "A real estate agency website for selling homes quickly and with less hassle.",
+    "description": "A real estate agency website that helps homeowners sell quickly without repairs or waiting, through cash offers and flexible financing solutions. The design emphasizes a clear message, trust, and a direct call to get in touch. (Personal project)",
+    "date": "Mar 2026",
+    "support": "Responsive (Desktop + Mobile)",
+    "liveUrl": null,
+    "behanceUrl": "https://www.behance.net/gallery/245686333/TruePath-Luxury-Real-Estate-Agency-Landing-Page",
+    "cover": {
+      "src": "/work/projects/truepath/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "TruePath — A real estate agency website for selling homes quickly and with less hassle."
+    },
+    "images": [
+      {
+        "src": "/work/projects/truepath/01.webp",
+        "width": 1400,
+        "height": 875,
+        "alt": "TruePath — interface 1",
+        "thumbnail": "/work/projects/truepath/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/truepath/02.webp",
+        "width": 1400,
+        "height": 7198,
+        "alt": "TruePath — interface 2",
+        "thumbnail": "/work/projects/truepath/02.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "mahsoul",
+    "name": "Mahsoul",
+    "category": "Salla Store",
+    "summary": "A Saudi store for premium dates and Arabic coffee.",
+    "description": "A Saudi online store on Salla selling specialty coffee and premium dates, with a design that reflects the products' authenticity and quality at every step from browsing to checkout.",
+    "date": "Jan 2026",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/dev-c9ce4feg59ouvced",
+    "behanceUrl": "https://www.behance.net/gallery/243004611/Mahsoul-Coffee-Dates-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/mahsoul/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Mahsoul — A Saudi store for premium dates and Arabic coffee."
+    },
+    "images": [
+      {
+        "src": "/work/projects/mahsoul/01.webp",
+        "width": 1440,
+        "height": 810,
+        "alt": "Mahsoul — interface 1",
+        "thumbnail": "/work/projects/mahsoul/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/mahsoul/02.webp",
+        "width": 1440,
+        "height": 810,
+        "alt": "Mahsoul — interface 2",
+        "thumbnail": "/work/projects/mahsoul/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/mahsoul/03.webp",
+        "width": 1440,
+        "height": 810,
+        "alt": "Mahsoul — interface 3",
+        "thumbnail": "/work/projects/mahsoul/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/mahsoul/04.webp",
+        "width": 1440,
+        "height": 810,
+        "alt": "Mahsoul — interface 4",
+        "thumbnail": "/work/projects/mahsoul/04.thumb.webp"
+      },
+      {
+        "src": "/work/projects/mahsoul/05.webp",
+        "width": 1440,
+        "height": 810,
+        "alt": "Mahsoul — interface 5",
+        "thumbnail": "/work/projects/mahsoul/05.thumb.webp"
+      },
+      {
+        "src": "/work/projects/mahsoul/06.webp",
+        "width": 1440,
+        "height": 810,
+        "alt": "Mahsoul — interface 6",
+        "thumbnail": "/work/projects/mahsoul/06.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "pro-whey",
+    "name": "Pro Whey",
+    "category": "Salla Store",
+    "summary": "A sports supplements and gym equipment store.",
+    "description": "A comprehensive online store for sports supplements (protein, amino acids, vitamins, and energy products) and gym equipment. The design highlights offers and discounts and provides a fast shopping experience for athletes and health-conscious customers.",
+    "date": "Jan 2026",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": null,
+    "behanceUrl": "https://www.behance.net/gallery/243009665/Pro-Whey-Gym-Supplements-Fitness-Store-Design",
+    "cover": {
+      "src": "/work/projects/pro-whey/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Pro Whey — A sports supplements and gym equipment store."
+    },
+    "images": [
+      {
+        "src": "/work/projects/pro-whey/01.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Pro Whey — interface 1",
+        "thumbnail": "/work/projects/pro-whey/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/pro-whey/02.webp",
+        "width": 1400,
+        "height": 9623,
+        "alt": "Pro Whey — interface 2",
+        "thumbnail": "/work/projects/pro-whey/02.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "ma7rek",
+    "name": "Ma7rek",
+    "category": "Salla Theme",
+    "summary": "A theme for car sales, rentals, spare parts, and maintenance services.",
+    "description": "Interfaces specifically designed for car sales and rentals, spare parts, and maintenance service bookings, with a clear, easy-to-navigate user experience across devices.",
+    "date": "Jan 2026",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/dev-rnksv1y37ilgw8xc",
+    "behanceUrl": "https://www.behance.net/gallery/242787165/Ma7rek-Car-Marketplace-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/ma7rek/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Ma7rek — A theme for car sales, rentals, spare parts, and maintenance services."
+    },
+    "images": [
+      {
+        "src": "/work/projects/ma7rek/01.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Ma7rek — interface 1",
+        "thumbnail": "/work/projects/ma7rek/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/ma7rek/02.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Ma7rek — interface 2",
+        "thumbnail": "/work/projects/ma7rek/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/ma7rek/03.webp",
+        "width": 1440,
+        "height": 823,
+        "alt": "Ma7rek — interface 3",
+        "thumbnail": "/work/projects/ma7rek/03.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "sokit",
+    "name": "Sokit",
+    "category": "Salla Store",
+    "summary": "A store for computer parts and custom PC builds.",
+    "description": "A responsive design for all devices, created to showcase PC builds, cases, components, and accessories in a professional, organized way.",
+    "date": "Jan 2026",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/dev-inqvwagfypdakdc3",
+    "behanceUrl": "https://www.behance.net/gallery/242786939/Sokit-Electronics-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/sokit/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Sokit — A store for computer parts and custom PC builds."
+    },
+    "images": [
+      {
+        "src": "/work/projects/sokit/01.webp",
+        "width": 1440,
+        "height": 809,
+        "alt": "Sokit — interface 1",
+        "thumbnail": "/work/projects/sokit/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/sokit/02.webp",
+        "width": 1440,
+        "height": 960,
+        "alt": "Sokit — interface 2",
+        "thumbnail": "/work/projects/sokit/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/sokit/03.webp",
+        "width": 1440,
+        "height": 810,
+        "alt": "Sokit — interface 3",
+        "thumbnail": "/work/projects/sokit/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/sokit/04.webp",
+        "width": 1440,
+        "height": 810,
+        "alt": "Sokit — interface 4",
+        "thumbnail": "/work/projects/sokit/04.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "maono",
+    "name": "Maono",
+    "category": "Zid Store",
+    "summary": "The official Maono distributor's store for microphones and audio equipment.",
+    "description": "A modern Zid store for microphones and audio equipment, showcasing professional audio products through a clean, responsive, fully customizable shopping experience.",
+    "date": "Jan 2026",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": null,
+    "behanceUrl": "https://www.behance.net/gallery/243005963/Maono-Recording-Equipment-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/maono/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Maono — The official Maono distributor's store for microphones and audio equipment."
+    },
+    "images": [
+      {
+        "src": "/work/projects/maono/01.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Maono — interface 1",
+        "thumbnail": "/work/projects/maono/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/maono/02.webp",
+        "width": 1400,
+        "height": 5688,
+        "alt": "Maono — interface 2",
+        "thumbnail": "/work/projects/maono/02.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "wesal",
+    "name": "Wesal",
+    "category": "Salla Theme",
+    "summary": "A modern theme for electronics stores.",
+    "description": "A modern electronics store theme for Salla, focused on clear product information, specifications, and an easy purchasing experience.",
+    "date": "Jan 2026",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": null,
+    "behanceUrl": null,
+    "cover": {
+      "src": "/work/projects/wesal/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Wesal — A modern theme for electronics stores."
+    },
+    "images": [
+      {
+        "src": "/work/projects/wesal/01.webp",
+        "width": 1080,
+        "height": 1080,
+        "alt": "Wesal — interface 1",
+        "thumbnail": "/work/projects/wesal/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/wesal/02.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Wesal — interface 2",
+        "thumbnail": "/work/projects/wesal/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/wesal/03.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Wesal — interface 3",
+        "thumbnail": "/work/projects/wesal/03.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "personal-profile",
+    "name": "Personal Profile",
+    "category": "Personal Website (Portfolio)",
+    "summary": "A personal portfolio website for a developer.",
+    "description": "A personal portfolio website showcasing a developer's work and skills while building their personal brand, with a minimal design that highlights projects and contact options.",
+    "date": "Dec 2025",
+    "support": "Responsive (Desktop + Mobile)",
+    "liveUrl": "https://mohamed-shahien.online/",
+    "behanceUrl": "https://www.behance.net/gallery/243065301/Personal-Portfolio-Developers-Website-Design",
+    "cover": {
+      "src": "/work/projects/personal-profile/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Personal Profile — A personal portfolio website for a developer."
+    },
+    "images": [
+      {
+        "src": "/work/projects/personal-profile/01.webp",
+        "width": 1400,
+        "height": 7671,
+        "alt": "Personal Profile — interface 1",
+        "thumbnail": "/work/projects/personal-profile/01.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "style",
+    "name": "Style",
+    "category": "Salla Store",
+    "summary": "A contemporary fashion store for everyday clothing.",
+    "description": "An online store for contemporary fashion and everyday clothing on Salla, with a design that showcases product imagery and collections and makes browsing and purchasing easier.",
+    "date": "Dec 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/ar/dev-wjsfwfi6lel9rvkf",
+    "behanceUrl": "https://www.behance.net/gallery/240438493/Style-Fashion-Clothing-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/style/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Style — A contemporary fashion store for everyday clothing."
+    },
+    "images": [
+      {
+        "src": "/work/projects/style/01.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Style — interface 1",
+        "thumbnail": "/work/projects/style/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/style/02.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Style — interface 2",
+        "thumbnail": "/work/projects/style/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/style/03.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Style — interface 3",
+        "thumbnail": "/work/projects/style/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/style/04.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Style — interface 4",
+        "thumbnail": "/work/projects/style/04.thumb.webp"
+      },
+      {
+        "src": "/work/projects/style/05.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Style — interface 5",
+        "thumbnail": "/work/projects/style/05.thumb.webp"
+      },
+      {
+        "src": "/work/projects/style/06.webp",
+        "width": 1080,
+        "height": 1080,
+        "alt": "Style — interface 6",
+        "thumbnail": "/work/projects/style/06.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "primal-paw",
+    "name": "Primal Paw",
+    "category": "Shopify Store",
+    "summary": "A premium, veterinarian-approved cat food store.",
+    "description": "An online store for premium, veterinarian-approved cat food designed to support cats' health and activity. The design presents high-quality nutrition clearly and credibly.",
+    "date": "Dec 2025",
+    "support": "Responsive (Desktop + Mobile)",
+    "liveUrl": "https://salla.sa/PrimalPaw",
+    "behanceUrl": "https://www.behance.net/gallery/240188179/Primal-Paw-Cat-Food-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/primal-paw/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Primal Paw — A premium, veterinarian-approved cat food store."
+    },
+    "images": [
+      {
+        "src": "/work/projects/primal-paw/01.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Primal Paw — interface 1",
+        "thumbnail": "/work/projects/primal-paw/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/primal-paw/02.webp",
+        "width": 1400,
+        "height": 7723,
+        "alt": "Primal Paw — interface 2",
+        "thumbnail": "/work/projects/primal-paw/02.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "golynk",
+    "name": "GoLynk",
+    "category": "Web Platform",
+    "summary": "A smart logistics platform that turns unused transport capacity into income.",
+    "description": "A smart delivery and logistics platform that turns unused transport capacity into a source of income. The design simplifies the user journey across the platform from start to finish.",
+    "date": "Nov 2025",
+    "support": "Responsive (Desktop + Mobile)",
+    "liveUrl": "https://golynk.de/",
+    "behanceUrl": "https://www.behance.net/gallery/243020081/GoLynk-Intelligent-Logistics-Network-Design",
+    "cover": {
+      "src": "/work/projects/golynk/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "GoLynk — A smart logistics platform that turns unused transport capacity into income."
+    },
+    "images": [
+      {
+        "src": "/work/projects/golynk/01.webp",
+        "width": 376,
+        "height": 160,
+        "alt": "GoLynk — interface 1",
+        "thumbnail": "/work/projects/golynk/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/golynk/02.webp",
+        "width": 1400,
+        "height": 8805,
+        "alt": "GoLynk — interface 2",
+        "thumbnail": "/work/projects/golynk/02.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "zena",
+    "name": "Zena",
+    "category": "Salla Store",
+    "summary": "A trusted cosmetics and skincare store.",
+    "description": "Zena is a trusted destination for beauty and personal care, offering a curated selection of authentic cosmetics and skincare products. The design makes it easier to discover products and choose the right look.",
+    "date": "Nov 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": null,
+    "behanceUrl": "https://www.behance.net/gallery/240183225/Zena-Cosmetics-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/zena/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Zena — A trusted cosmetics and skincare store."
+    },
+    "images": [
+      {
+        "src": "/work/projects/zena/01.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Zena — interface 1",
+        "thumbnail": "/work/projects/zena/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/zena/02.webp",
+        "width": 1400,
+        "height": 1400,
+        "alt": "Zena — interface 2",
+        "thumbnail": "/work/projects/zena/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/zena/03.webp",
+        "width": 1400,
+        "height": 787,
+        "alt": "Zena — interface 3",
+        "thumbnail": "/work/projects/zena/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/zena/04.webp",
+        "width": 1400,
+        "height": 787,
+        "alt": "Zena — interface 4",
+        "thumbnail": "/work/projects/zena/04.thumb.webp"
+      },
+      {
+        "src": "/work/projects/zena/05.webp",
+        "width": 1400,
+        "height": 13995,
+        "alt": "Zena — interface 5",
+        "thumbnail": "/work/projects/zena/05.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "qimmah",
+    "name": "Qimmah",
+    "category": "Salla Theme",
+    "summary": "A fashion theme with three demo stores.",
+    "description": "A Salla fashion and clothing theme with three demo stores for different categories (beauty, electronics, and jewelry), built on a single flexible design system that adapts to each store's brand identity.",
+    "date": "Oct 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/ar/dev-yukmfdivyljhrpg5",
+    "behanceUrl": "https://www.behance.net/gallery/239093391/Qimmah-Fashion-Clothing-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/qimmah/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Qimmah — A fashion theme with three demo stores."
+    },
+    "images": [
+      {
+        "src": "/work/projects/qimmah/01.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Qimmah — interface 1",
+        "thumbnail": "/work/projects/qimmah/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/qimmah/02.webp",
+        "width": 1400,
+        "height": 11833,
+        "alt": "Qimmah — interface 2",
+        "thumbnail": "/work/projects/qimmah/02.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "ra7a",
+    "name": "Ra7a",
+    "category": "Salla Theme (Demo)",
+    "summary": "A furniture store demo built with the multipurpose Washaq theme.",
+    "description": "A furniture store demo within the multipurpose Washaq theme for Salla, which offers three demos for different businesses built on the same design foundation.",
+    "date": "Oct 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/ar/dev-vwrvev0r4kl56sh6",
+    "behanceUrl": "https://www.behance.net/gallery/237265805/Washaq-Multipurpose-Salla-Store-Theme-3-Niche-Demos",
+    "cover": {
+      "src": "/work/projects/ra7a/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Ra7a — A furniture store demo built with the multipurpose Washaq theme."
+    },
+    "images": [
+      {
+        "src": "/work/projects/ra7a/01.webp",
+        "width": 1080,
+        "height": 1080,
+        "alt": "Ra7a — interface 1",
+        "thumbnail": "/work/projects/ra7a/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/ra7a/02.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Ra7a — interface 2",
+        "thumbnail": "/work/projects/ra7a/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/ra7a/03.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Ra7a — interface 3",
+        "thumbnail": "/work/projects/ra7a/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/ra7a/04.webp",
+        "width": 1366,
+        "height": 768,
+        "alt": "Ra7a — interface 4",
+        "thumbnail": "/work/projects/ra7a/04.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "nokhbat-almabani",
+    "name": "Nokhbat Almabani",
+    "category": "Web Platform",
+    "summary": "An interactive real estate mapping and 3D tour platform.",
+    "description": "A Virtual Dimensions platform for marketing real estate developments through PropTech solutions: interactive maps and immersive 3D tours that help developers and brokers close deals faster.",
+    "date": "Oct 2025",
+    "support": "Responsive (Desktop + Mobile)",
+    "liveUrl": "https://el-nokhba.vercel.app/",
+    "behanceUrl": "https://www.behance.net/gallery/240427283/Virtual-Dimensions-Real-Estate-VR-Platform-Design",
+    "cover": {
+      "src": "/work/projects/nokhbat-almabani/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Nokhbat Almabani — An interactive real estate mapping and 3D tour platform."
+    },
+    "images": [
+      {
+        "src": "/work/projects/nokhbat-almabani/01.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Nokhbat Almabani — interface 1",
+        "thumbnail": "/work/projects/nokhbat-almabani/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nokhbat-almabani/02.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Nokhbat Almabani — interface 2",
+        "thumbnail": "/work/projects/nokhbat-almabani/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nokhbat-almabani/03.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Nokhbat Almabani — interface 3",
+        "thumbnail": "/work/projects/nokhbat-almabani/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nokhbat-almabani/04.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Nokhbat Almabani — interface 4",
+        "thumbnail": "/work/projects/nokhbat-almabani/04.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nokhbat-almabani/05.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Nokhbat Almabani — interface 5",
+        "thumbnail": "/work/projects/nokhbat-almabani/05.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nokhbat-almabani/06.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Nokhbat Almabani — interface 6",
+        "thumbnail": "/work/projects/nokhbat-almabani/06.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nokhbat-almabani/07.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Nokhbat Almabani — interface 7",
+        "thumbnail": "/work/projects/nokhbat-almabani/07.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nokhbat-almabani/08.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Nokhbat Almabani — interface 8",
+        "thumbnail": "/work/projects/nokhbat-almabani/08.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nokhbat-almabani/09.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Nokhbat Almabani — interface 9",
+        "thumbnail": "/work/projects/nokhbat-almabani/09.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nokhbat-almabani/10.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Nokhbat Almabani — interface 10",
+        "thumbnail": "/work/projects/nokhbat-almabani/10.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "milyar",
+    "name": "Milyar",
+    "category": "Salla Theme",
+    "summary": "A Salla theme for electronics stores.",
+    "description": "An electronics store theme for Salla, designed to showcase products and offers while making browsing and shopping easier.",
+    "date": "Sep 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": null,
+    "behanceUrl": "https://www.behance.net/gallery/235828433/Mlyar-Electronics-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/milyar/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Milyar — A Salla theme for electronics stores."
+    },
+    "images": [
+      {
+        "src": "/work/projects/milyar/01.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Milyar — interface 1",
+        "thumbnail": "/work/projects/milyar/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/milyar/02.webp",
+        "width": 1400,
+        "height": 9166,
+        "alt": "Milyar — interface 2",
+        "thumbnail": "/work/projects/milyar/02.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "dragon",
+    "name": "Dragon (Hook & Hunt)",
+    "category": "Salla Store",
+    "summary": "A Salla store for fishing, hunting, and outdoor gear.",
+    "description": "An online store for fishing and hunting equipment on Salla, with clearly organized categories and a presentation focused on product details.",
+    "date": "Sep 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://dragon-jig.com/",
+    "behanceUrl": "https://www.behance.net/gallery/236714133/Dragon-Fishing-Hunting-Gear-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/dragon/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Dragon (Hook & Hunt) — A Salla store for fishing, hunting, and outdoor gear."
+    },
+    "images": [
+      {
+        "src": "/work/projects/dragon/01.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Dragon (Hook & Hunt) — interface 1",
+        "thumbnail": "/work/projects/dragon/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/dragon/02.webp",
+        "width": 1400,
+        "height": 8897,
+        "alt": "Dragon (Hook & Hunt) — interface 2",
+        "thumbnail": "/work/projects/dragon/02.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "battal",
+    "name": "Battal",
+    "category": "Salla Store",
+    "summary": "A Salla store selling tea.",
+    "description": "An online store for the Battal tea brand on Salla, designed to showcase tea varieties and the brand identity while making ordering easier.",
+    "date": "Sep 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://battal-tea.com/",
+    "behanceUrl": "https://www.behance.net/gallery/236714673/Battal-Tea-Tea-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/battal/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Battal — A Salla store selling tea."
+    },
+    "images": [
+      {
+        "src": "/work/projects/battal/01.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Battal — interface 1",
+        "thumbnail": "/work/projects/battal/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/battal/02.webp",
+        "width": 1400,
+        "height": 8369,
+        "alt": "Battal — interface 2",
+        "thumbnail": "/work/projects/battal/02.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "orai",
+    "name": "Orai",
+    "category": "Salla Store",
+    "summary": "An online store for a Saudi fashion brand.",
+    "description": "A modern shopping experience for a Saudi fashion brand, using a calm editorial style focused on browsing and showcasing collections.",
+    "date": "Aug 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://salla.sa/orai",
+    "behanceUrl": "https://www.behance.net/gallery/235827539/Orai-Fashion-Clothing-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/orai/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Orai — An online store for a Saudi fashion brand."
+    },
+    "images": [
+      {
+        "src": "/work/projects/orai/01.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Orai — interface 1",
+        "thumbnail": "/work/projects/orai/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/orai/02.webp",
+        "width": 1400,
+        "height": 5903,
+        "alt": "Orai — interface 2",
+        "thumbnail": "/work/projects/orai/02.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "viva-charms",
+    "name": "Viva Charms",
+    "category": "Salla Store",
+    "summary": "A Salla store for customizable charm accessories.",
+    "description": "An online store for customizable charm accessories, with a shopping experience that makes selecting pieces, assembling combinations, and purchasing easier.",
+    "date": "Aug 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://salla.sa/viva-charms",
+    "behanceUrl": "https://www.behance.net/gallery/237142323/Viva-Charms-Custom-Charm-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/viva-charms/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Viva Charms — A Salla store for customizable charm accessories."
+    },
+    "images": [
+      {
+        "src": "/work/projects/viva-charms/01.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Viva Charms — interface 1",
+        "thumbnail": "/work/projects/viva-charms/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/viva-charms/02.webp",
+        "width": 1400,
+        "height": 5675,
+        "alt": "Viva Charms — interface 2",
+        "thumbnail": "/work/projects/viva-charms/02.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "repo",
+    "name": "Repo",
+    "category": "Salla Theme",
+    "summary": "A Salla theme for pet food and supplies stores.",
+    "description": "A Salla store theme for pet food and supplies, featuring a friendly design and clearly organized categories.",
+    "date": "Aug 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/dev-esqa4a1kh0yqahsj",
+    "behanceUrl": "https://www.behance.net/gallery/234034699/Repo-Pet-Food-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/repo/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Repo — A Salla theme for pet food and supplies stores."
+    },
+    "images": [
+      {
+        "src": "/work/projects/repo/01.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Repo — interface 1",
+        "thumbnail": "/work/projects/repo/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/repo/02.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Repo — interface 2",
+        "thumbnail": "/work/projects/repo/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/repo/03.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Repo — interface 3",
+        "thumbnail": "/work/projects/repo/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/repo/04.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Repo — interface 4",
+        "thumbnail": "/work/projects/repo/04.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "bin",
+    "name": "Bin",
+    "category": "Salla Theme",
+    "summary": "A Salla theme for restaurants, cafés, and dessert shops.",
+    "description": "A Salla store theme for restaurants, cafés, and desserts, displaying products with appealing imagery and a simple ordering experience.",
+    "date": "Aug 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/dev-4ccmvhfbcxsnva6m",
+    "behanceUrl": "https://www.behance.net/gallery/234029645/Bin-Coffee-Sweets-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/bin/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Bin — A Salla theme for restaurants, cafés, and dessert shops."
+    },
+    "images": [
+      {
+        "src": "/work/projects/bin/01.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Bin — interface 1",
+        "thumbnail": "/work/projects/bin/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bin/02.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Bin — interface 2",
+        "thumbnail": "/work/projects/bin/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bin/03.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Bin — interface 3",
+        "thumbnail": "/work/projects/bin/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/bin/04.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Bin — interface 4",
+        "thumbnail": "/work/projects/bin/04.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "tamayoz",
+    "name": "Tamayoz",
+    "category": "Salla Theme",
+    "summary": "A Salla theme for gold and jewelry stores.",
+    "description": "A Salla store theme for gold and jewelry, with a luxurious identity and detailed product presentations that build customer trust.",
+    "date": "Aug 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/dev-43ucgiz8xnc6hbjr",
+    "behanceUrl": "https://www.behance.net/gallery/234033427/Tamayoz-Gold-Jewelry-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/tamayoz/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Tamayoz — A Salla theme for gold and jewelry stores."
+    },
+    "images": [
+      {
+        "src": "/work/projects/tamayoz/01.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Tamayoz — interface 1",
+        "thumbnail": "/work/projects/tamayoz/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/tamayoz/02.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Tamayoz — interface 2",
+        "thumbnail": "/work/projects/tamayoz/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/tamayoz/03.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Tamayoz — interface 3",
+        "thumbnail": "/work/projects/tamayoz/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/tamayoz/04.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Tamayoz — interface 4",
+        "thumbnail": "/work/projects/tamayoz/04.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "siri",
+    "name": "Siri",
+    "category": "Salla Theme",
+    "summary": "A Salla theme for electronics stores.",
+    "description": "An electronics store theme on Salla with a clean design that highlights products and offers and makes category-based browsing easier.",
+    "date": "Aug 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/dev-65vb12uggf4amx3z",
+    "behanceUrl": "https://www.behance.net/gallery/234072301/Siri-Electronics-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/siri/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Siri — A Salla theme for electronics stores."
+    },
+    "images": [
+      {
+        "src": "/work/projects/siri/01.webp",
+        "width": 1400,
+        "height": 788,
+        "alt": "Siri — interface 1",
+        "thumbnail": "/work/projects/siri/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/siri/02.webp",
+        "width": 1400,
+        "height": 11280,
+        "alt": "Siri — interface 2",
+        "thumbnail": "/work/projects/siri/02.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "tamim",
+    "name": "Tamim",
+    "category": "Salla Theme",
+    "summary": "A Salla theme for modern clothing brands.",
+    "description": "A Salla clothing store theme with modern interfaces for fashion brands, showcasing collections and imagery while simplifying browsing and shopping.",
+    "date": "Jul 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://demostore.salla.sa/dev-f85z1t1yitfslwzk",
+    "behanceUrl": "https://www.behance.net/gallery/231252147/Tamim-Fashion-Clothing-E-commerce-Store-Design",
+    "cover": {
+      "src": "/work/projects/tamim/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Tamim — A Salla theme for modern clothing brands."
+    },
+    "images": [
+      {
+        "src": "/work/projects/tamim/01.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Tamim — interface 1",
+        "thumbnail": "/work/projects/tamim/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/tamim/02.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Tamim — interface 2",
+        "thumbnail": "/work/projects/tamim/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/tamim/03.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Tamim — interface 3",
+        "thumbnail": "/work/projects/tamim/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/tamim/04.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Tamim — interface 4",
+        "thumbnail": "/work/projects/tamim/04.thumb.webp"
+      },
+      {
+        "src": "/work/projects/tamim/05.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Tamim — interface 5",
+        "thumbnail": "/work/projects/tamim/05.thumb.webp"
+      },
+      {
+        "src": "/work/projects/tamim/06.webp",
+        "width": 1440,
+        "height": 1080,
+        "alt": "Tamim — interface 6",
+        "thumbnail": "/work/projects/tamim/06.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "veo",
+    "name": "VEO",
+    "category": "Salla Theme",
+    "summary": "A multipurpose Salla theme with three demos.",
+    "description": "A flexible store concept tested across multiple categories (skincare, sports, electronics, and perfumes), using one design system with different visual identities.",
+    "date": "Jun 2025",
+    "support": "Responsive (Desktop + Mobile) · Arabic RTL",
+    "liveUrl": "https://salla.sa/dev-fljujdrithw8rlgp",
+    "behanceUrl": "https://www.behance.net/gallery/230563896/VEO-Multipurpose-Salla-Store-Theme-3-Niche-Demos",
+    "cover": {
+      "src": "/work/projects/veo/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "VEO — A multipurpose Salla theme with three demos."
+    },
+    "images": [
+      {
+        "src": "/work/projects/veo/01.webp",
+        "width": 1400,
+        "height": 1400,
+        "alt": "VEO — interface 1",
+        "thumbnail": "/work/projects/veo/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/veo/02.webp",
+        "width": 1400,
+        "height": 12446,
+        "alt": "VEO — interface 2",
+        "thumbnail": "/work/projects/veo/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/veo/03.webp",
+        "width": 1400,
+        "height": 12365,
+        "alt": "VEO — interface 3",
+        "thumbnail": "/work/projects/veo/03.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "via",
+    "name": "Via",
+    "category": "Website / Landing Page",
+    "summary": "An AI-powered digital marketing platform.",
+    "description": "An AI-powered digital marketing platform that analyzes data and improves campaign performance. The design clearly explains the product's value and guides visitors toward trying it.",
+    "date": "May 2025",
+    "support": "Responsive (Desktop + Mobile)",
+    "liveUrl": "https://via-ai.co/",
+    "behanceUrl": "https://www.behance.net/gallery/230421883/Via-Landing-Page-for-Software-House",
+    "cover": {
+      "src": "/work/projects/via/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Via — An AI-powered digital marketing platform."
+    },
+    "images": [
+      {
+        "src": "/work/projects/via/01.webp",
+        "width": 1400,
+        "height": 6983,
+        "alt": "Via — interface 1",
+        "thumbnail": "/work/projects/via/01.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "vlora",
+    "name": "Vlora",
+    "category": "Website / Landing Page",
+    "summary": "A website for a software solutions and UX studio.",
+    "description": "A website for a digital and software solutions studio, showcasing its services and work through a modern design that builds customer trust and encourages inquiries.",
+    "date": "Apr 2025",
+    "support": "Responsive (Desktop + Mobile)",
+    "liveUrl": "https://vlorasoftware.com/",
+    "behanceUrl": "https://www.behance.net/gallery/230420803/Vlora-Landing-Page-for-Software-House",
+    "cover": {
+      "src": "/work/projects/vlora/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Vlora — A website for a software solutions and UX studio."
+    },
+    "images": [
+      {
+        "src": "/work/projects/vlora/01.webp",
+        "width": 1400,
+        "height": 1400,
+        "alt": "Vlora — interface 1",
+        "thumbnail": "/work/projects/vlora/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/vlora/02.webp",
+        "width": 1400,
+        "height": 1400,
+        "alt": "Vlora — interface 2",
+        "thumbnail": "/work/projects/vlora/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/vlora/03.webp",
+        "width": 1400,
+        "height": 1469,
+        "alt": "Vlora — interface 3",
+        "thumbnail": "/work/projects/vlora/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/vlora/04.webp",
+        "width": 1400,
+        "height": 752,
+        "alt": "Vlora — interface 4",
+        "thumbnail": "/work/projects/vlora/04.thumb.webp"
+      },
+      {
+        "src": "/work/projects/vlora/05.webp",
+        "width": 1400,
+        "height": 8257,
+        "alt": "Vlora — interface 5",
+        "thumbnail": "/work/projects/vlora/05.thumb.webp"
+      },
+      {
+        "src": "/work/projects/vlora/06.webp",
+        "width": 1400,
+        "height": 752,
+        "alt": "Vlora — interface 6",
+        "thumbnail": "/work/projects/vlora/06.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "yamar-tech",
+    "name": "Ya'mar Tech",
+    "category": "Corporate Website",
+    "summary": "A website for a building and construction materials company.",
+    "description": "A website for Ya'mar Tech, a building and construction materials company, presenting its products and services clearly and systematically to customers.",
+    "date": "Jan 2025",
+    "support": "Responsive (Desktop + Mobile)",
+    "liveUrl": "https://www.yoamer.com/ar",
+    "behanceUrl": "https://www.behance.net/gallery/222762199/Yamar-Tech",
+    "cover": {
+      "src": "/work/projects/yamar-tech/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Ya'mar Tech — A website for a building and construction materials company."
+    },
+    "images": [
+      {
+        "src": "/work/projects/yamar-tech/01.webp",
+        "width": 1400,
+        "height": 840,
+        "alt": "Ya'mar Tech — interface 1",
+        "thumbnail": "/work/projects/yamar-tech/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/yamar-tech/02.webp",
+        "width": 1400,
+        "height": 3711,
+        "alt": "Ya'mar Tech — interface 2",
+        "thumbnail": "/work/projects/yamar-tech/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/yamar-tech/03.webp",
+        "width": 1400,
+        "height": 2250,
+        "alt": "Ya'mar Tech — interface 3",
+        "thumbnail": "/work/projects/yamar-tech/03.thumb.webp"
+      }
+    ]
+  },
+  {
+    "slug": "nile-soul",
+    "name": "Nile Soul",
+    "category": "Corporate Website",
+    "summary": "A tourism company website highlighting Egypt's landmarks.",
+    "description": "A digital experience for a travel and tourism company centered on Egypt's cultural and historical landmarks, with a design that captures the spirit of the destination and showcases tours and destinations.",
+    "date": "Oct 2024",
+    "support": "Responsive (Desktop + Mobile)",
+    "liveUrl": "https://www.nilesoul.com/en",
+    "behanceUrl": "https://www.behance.net/gallery/222762277/Nile-Soul",
+    "cover": {
+      "src": "/work/projects/nile-soul/cover.webp",
+      "width": 910,
+      "height": 732,
+      "alt": "Nile Soul — A tourism company website highlighting Egypt's landmarks."
+    },
+    "images": [
+      {
+        "src": "/work/projects/nile-soul/01.webp",
+        "width": 1400,
+        "height": 840,
+        "alt": "Nile Soul — interface 1",
+        "thumbnail": "/work/projects/nile-soul/01.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nile-soul/02.webp",
+        "width": 1400,
+        "height": 6671,
+        "alt": "Nile Soul — interface 2",
+        "thumbnail": "/work/projects/nile-soul/02.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nile-soul/03.webp",
+        "width": 1400,
+        "height": 4010,
+        "alt": "Nile Soul — interface 3",
+        "thumbnail": "/work/projects/nile-soul/03.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nile-soul/04.webp",
+        "width": 1400,
+        "height": 3053,
+        "alt": "Nile Soul — interface 4",
+        "thumbnail": "/work/projects/nile-soul/04.thumb.webp"
+      },
+      {
+        "src": "/work/projects/nile-soul/05.webp",
+        "width": 1400,
+        "height": 2250,
+        "alt": "Nile Soul — interface 5",
+        "thumbnail": "/work/projects/nile-soul/05.thumb.webp"
+      }
+    ]
+  }
+]

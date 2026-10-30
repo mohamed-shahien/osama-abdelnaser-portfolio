@@ -1,9 +1,11 @@
 import Link from 'next/link';
 
 import type { WorkProject } from '@/types/work';
-import { workSans, workDisplay } from '@/config/work-fonts';
+import { workDisplay } from '@/config/work-fonts';
 import { WorkCaseGallery } from './work-case-gallery';
-import { WorkCaseEntrance, WorkPageLink } from './work-page-transition';
+import { InnerHeader } from './inner-header';
+import { WorkBadges } from './work-badges';
+import { TransitionLink } from './page-transition';
 
 export function WorkCase({
   project,
@@ -14,68 +16,68 @@ export function WorkCase({
 }) {
   const images = project.images.length ? project.images : [project.cover];
   return (
-    <article
-      className={`${workSans.variable} ${workDisplay.variable} relative bg-[#ededed] [font-family:var(--font-work-sans)] text-[#181818]`}
-    >
-      <WorkCaseEntrance key={project.slug} label={project.name} />
+    <article className={`${workDisplay.variable} relative bg-[#ededed] font-sans text-[#181818]`}>
       <div className="pointer-events-none sticky top-0 z-20 -mb-[100svh] flex h-svh items-end justify-center overflow-hidden pb-5">
         <h1 className="max-w-full text-center [font-family:var(--font-work-display)] text-[clamp(2.75rem,9vw,10rem)] leading-[0.8] tracking-[-0.055em] [overflow-wrap:anywhere] text-primary uppercase max-lg:pb-5">
           {project.name}
         </h1>
       </div>
-      <header className="absolute inset-x-0 top-0 z-30 flex items-start justify-between gap-5 p-5 text-xs">
-        <Link
-          href="/#work-viewer"
-          prefetch={false}
-          className="underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-primary"
-        >
-          ← Back to work
-        </Link>
-        {project.sourceUrl ? (
-          <a
-            href={project.sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="text-end text-[10px] leading-snug underline underline-offset-4"
-          >
-            Reference study
-            <br />
-            {project.sourceAuthor} ↗
-          </a>
-        ) : (
-          <span>{project.category}</span>
-        )}
-      </header>
-      <div className="pt-32 lg:pt-[30svh]">
+      <InnerHeader
+        current="work"
+        className="absolute inset-x-0 top-0 z-30"
+        aside={
+          <>
+            <p className="text-ink/75">{project.category}</p>
+            <Link
+              href="/#work-viewer"
+              prefetch={false}
+              className="font-semibold underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-primary"
+            >
+              ← Back to work
+            </Link>
+          </>
+        }
+      />
+      <div className="pt-64 lg:pt-[30svh]">
         <WorkCaseGallery key={project.slug} images={images}>
           <dl className="grid grid-cols-[72px_1fr] gap-x-7 gap-y-10 leading-tight">
-            <dt className="text-black/45">About</dt>
+            <dt className="text-black/60">About</dt>
             <dd className="max-w-64">{project.description}</dd>
-            <dt className="text-black/45">Role</dt>
-            <dd>{project.role}</dd>
-            <dt className="text-black/45">Launch</dt>
-            <dd>{project.launch}</dd>
-            {project.sourceAuthor ? (
-              <>
-                <dt className="text-black/45">Original work</dt>
-                <dd>{project.sourceAuthor}</dd>
-              </>
-            ) : null}
+            <dt className="text-black/60">Built for</dt>
+            <dd>
+              <WorkBadges project={project} className="max-w-64" />
+            </dd>
+            <dt className="text-black/60">Delivered</dt>
+            <dd>{project.date}</dd>
           </dl>
-          {project.liveUrl ? (
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="ms-[100px] mt-12 inline-block text-base underline underline-offset-4"
-            >
-              Visit site ↗
-            </a>
+          {project.liveUrl || project.behanceUrl ? (
+            <p className="ms-[100px] mt-12 flex flex-wrap gap-x-6 gap-y-3 text-base">
+              {project.liveUrl ? (
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-primary"
+                >
+                  Visit site ↗
+                </a>
+              ) : null}
+              {project.behanceUrl ? (
+                <a
+                  href={project.behanceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-primary"
+                >
+                  Behance ↗
+                </a>
+              ) : null}
+            </p>
           ) : null}
         </WorkCaseGallery>
       </div>
       {next ? (
-        <WorkPageLink
+        <TransitionLink
           href={`/work/${next.slug}`}
           label={next.name}
           prefetch={false}
@@ -85,7 +87,7 @@ export function WorkCase({
           <span className="[font-family:var(--font-work-display)] text-[clamp(2.5rem,6vw,7rem)] leading-none tracking-tight uppercase">
             {next.name} ↗
           </span>
-        </WorkPageLink>
+        </TransitionLink>
       ) : null}
     </article>
   );

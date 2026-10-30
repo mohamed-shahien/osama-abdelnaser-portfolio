@@ -27,6 +27,7 @@ import {
 } from './hero-art';
 import { canvasGrid } from './canvas-grid';
 import { HeroPortfolioEntrance } from './hero-portfolio-entrance';
+import { HeroMusic } from './music-deck';
 
 const subscribeMotion = (callback: () => void) => {
   const query = window.matchMedia(motionConfig.queries.reduced);
@@ -59,7 +60,8 @@ const floatingLayout = {
   design: `${floatingBase} ${tilted} [--tilt:1.5deg] top-[calc(var(--title-center)_-_268px)] right-[40px] max-lg:hidden`,
   laptop: `${floatingBase} z-5 top-[calc(var(--title-center)_+_44px)] left-[24px] max-lg:top-[324px] max-lg:left-[-134px] max-lg:[scale:0.45]`,
   phone: `${floatingBase} z-5 top-[calc(var(--title-center)_+_32px)] right-[48px] max-md:hidden md:max-lg:top-[560px] md:max-lg:right-[60px] md:max-lg:[scale:0.6]`,
-  motionControl: `${floatingBase} z-12 [transform:translateX(-50%)] top-[calc(var(--title-center)_-_178px)] left-1/2 max-lg:top-[20px] max-lg:[scale:1]`,
+  motionControl: `${floatingBase} z-12 [transform:translateX(-100%)] top-[calc(var(--title-center)_-_236px)] left-[calc(50%_-_6px)] max-lg:top-[20px] max-lg:[scale:1]`,
+  music: `${floatingBase} z-12 top-[calc(var(--title-center)_-_236px)] left-[calc(50%_+_6px)] max-lg:top-[20px]`,
   commentOne: `${floatingBase} z-12 top-[calc(var(--title-center)_-_48px)] right-[60px] max-lg:hidden`,
   commentTwo: `${floatingBase} z-12 [transform:translateX(-50%)] top-[calc(var(--title-center)_+_128px)] left-[62%] max-lg:hidden`,
   tool0: `${floatingBase} z-5 top-[calc(var(--title-center)_-_250px)] left-[430px] max-lg:top-[70px] max-lg:left-[8%]`,
@@ -468,7 +470,7 @@ export function HeroScene() {
   return (
     <div
       ref={rootRef}
-      className="group/scene relative isolate h-[calc(100svh_-_100px)] min-h-[550px] w-full overflow-visible [--title-center:calc(50%_-_50px)] max-lg:[--title-center:calc(50%_-_97px)]"
+      className="group/scene relative isolate h-[calc(100svh_-_var(--hero-header-height))] min-h-[550px] w-full overflow-visible [--title-center:calc(50%_-_50px)] max-lg:[--title-center:calc(50%_-_97px)]"
       data-hero-scene
       data-portfolio-phase={phase}
       data-portfolio-active={ready}
@@ -577,6 +579,9 @@ export function HeroScene() {
             <span className="block size-[22px] [translate:16px_0] rounded-[50%] bg-white [transition:translate_180ms_ease] group-aria-[checked=false]/switch:[translate:0_0]! motion-reduce:[transition:none] max-lg:size-[16px] max-lg:[translate:12px_0]" />
           </span>
         </button>
+      </div>
+      <div className={floatingLayout.music} data-hero-enter data-delay={1}>
+        <HeroMusic />
       </div>
       <FloatingCard kind="commentOne" delay={1.2}>
         <Comment index={0} />

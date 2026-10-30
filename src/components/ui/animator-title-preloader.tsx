@@ -836,6 +836,7 @@ const ATP_CSS = `
   pointer-events: none; z-index: 6; opacity: var(--atp-grain); mix-blend-mode: var(--atp-grain-blend);
   animation: atp-grain 0.5s steps(1) infinite;
 }
+.atp-gate[data-phase="shut"] .atp-grain, .atp-gate[data-phase="closed"] .atp-grain { opacity: 0; animation: none; transition: opacity 300ms ease; }
 @keyframes atp-grain {
   0% { transform: translate(0, 0); } 25% { transform: translate(-31px, 17px); }
   50% { transform: translate(23px, -27px); } 75% { transform: translate(-13px, -41px); }
@@ -849,8 +850,9 @@ const ATP_CSS = `
 .atp-line { display: block; overflow: visible; flex: none; }
 .atp-line .atp-w { stroke-dasharray: 1 2; stroke-dashoffset: 1.001; transition-property: stroke-dashoffset; transition-timing-function: linear; }
 .atp-line[data-on="1"] .atp-w { stroke-dashoffset: 0; }
-.atp-marker { font-size: 0.62em; margin-block: 0.18em; }
-@container (max-width: 560px) { .atp-marker { font-size: 0.5em; } }
+.atp-marker { font-size: max(0.62em, 11px); margin-block: 0.18em; }
+.atp-name.atp-marker { font-size: max(0.62em, 15px); }
+@container (max-width: 560px) { .atp-marker { font-size: max(0.5em, 11px); } .atp-name.atp-marker { font-size: max(0.5em, 15px); } }
 .atp-fallback {
   font-size: 1.5em; line-height: 1.2; white-space: nowrap; clip-path: inset(0 100% 0 0);
   transition: clip-path 1400ms cubic-bezier(.4,0,.2,1);
@@ -1657,12 +1659,13 @@ export default function AnimatorTitlePreloader({
         <path
           className="atp-mdraw"
           pathLength={1}
-          d="M58 52 C58 40 44 36 34 40 C22 45 22 62 34 65 C46 68 56 62 58 52 C60 62 70 68 82 65 C94 62 98 45 86 40 C76 36 62 40 62 52"
+          strokeWidth="4.6"
+          d="M55 47 C58 44 62 44 65 47 M51 38 H26 Q22 38 22 42 V64 Q22 68 26 68 H51 Q55 68 55 64 V42 Q55 38 51 38 M69 38 H94 Q98 38 98 42 V64 Q98 68 94 68 H69 Q65 68 65 64 V42 Q65 38 69 38"
         />
         <path
           className="atp-mdraw"
           pathLength={1}
-          d="M22 46 C14 44 9 47 6 52 M98 46 C106 44 111 47 114 52"
+          d="M22 44 C14 42 9 45 6 50 M98 44 C106 42 111 45 114 50"
         />
         <g className="atp-eye atp-e1">
           <circle

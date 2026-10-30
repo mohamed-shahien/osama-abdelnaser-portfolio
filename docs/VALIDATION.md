@@ -233,3 +233,269 @@ Measured on the production build in headless Chrome at 1440×900, normal CPU and
   - A "Live" badge and emoji confetti when the checkout ships.
   - Every thread is a longer, playful designer–developer exchange with emoji and reactions. It remains an illustrative scenario.
 - Full-motion runs at 1440×900, 768×1024 and 390×844, scrolling forward and back through the key: no console errors.
+
+## Skills section, gallery assembly, footer CTA and step orbs — 2026-10-30
+
+- **Figma workspace:** the checkout design is now English only (a 360px small-phone frame replaces the Arabic one), with smaller elements. A dotted object for each agent stage now fills the header's empty corner (`step-orb.tsx`). It is drawn on a canvas with GSAP, in place of the reference's `thinking-orbs` and `motion` (the user chose not to add the dependency). Each stage has its own shape in brand colours, the shapes morph into each other on a stage change, and the loop pauses off screen and in hidden tabs.
+- **Gallery:** the deck assembles on the push progress (scrubbed, starting at project 01) instead of a timed intro. The WebGL renderer is no longer rebuilt when the gallery opens.
+- **Closing avatar:** it now pulls the gallery away with a clip instead of sliding a black panel. The Skills section is pinned beneath it (`-mt-[175svh]`, `z-0`), so it is revealed from behind the avatar. The fingertips sit on the edge (`reach`, measured on the drawing). `selected-work.tsx` lost its section background so the section beneath can show.
+- **Supplied `animator-title-preloader.tsx`:** adapted with behaviour-preserving props. The defaults are unchanged.
+  - `scrub` / `onScrub`: scroll mode, with beats in `ATP_SCROLL`.
+  - `irisColor`, `cardTop`, `wordMax`, `steps`, `slot` and `mascotDock="foot"`.
+  - `lettering="marker"`: writes the lines in the intro loader's marker alphabet.
+  - Pauses off screen and in hidden tabs.
+  - Strict TypeScript guards.
+  - Used with `hud={false}`, as the user asked.
+- **Skill tags (`skill-bubbles.tsx`):** adapted from the supplied Gravity Tags. They keep its physics, solid pills and parked loop, in the brand colours `#F5FB5D`, `#698BF9` and `#DB3E69`. Additions:
+  - Scroll releases the drop.
+  - The title and the glasses are solid keep-outs with a halo. The title is solid from below only, so the rain falls past it.
+  - Every tag can be grabbed, dragged and thrown.
+  - The copy is "From brief to shipped build / Design Skills / that power every project by / Osama Abdelnaser". The 16 skills come from brief section 03.
+- **Skills runway:** 595svh. Its first 75svh run under the closing avatar, then scroll draws the title, drops the tags and closes the iris onto the footer's yellow.
+- **Footer:** "Book a meeting" rises as an ink dome that fills the screen, then shrinks onto the CTA (`booking-cta-drop.tsx`, a fixed portal scrubbed by the footer's ScrollTrigger).
+- **Checks:** headless Chrome at 1440×900, 1920×1000 and 390×844, through the push, gallery, close, skills and footer: no console errors.
+
+## CV chapter, skills halo, thirty skills and push avatar — 2026-10-30
+
+- **Supplied Type Remix Preloader (`COMPONENT REFRENSE/OEN` → `src/components/ui/type-remix-preloader.tsx`):** the seven takes keep their type, geometry, stickers, zoom and moodboard. Only the colours and copy are adapted:
+  - Brand themes per take.
+  - Brand gradients in the bubble, script, band and cutout takes.
+  - Tile colours.
+  - A `ground` colour for the gate.
+- **New props for the Type Remix component** (the defaults keep the supplied behaviour):
+  - `scrub`: scroll mode. The count, the take and the phase follow the scroll both ways (`RTP_SCROLL`: takes until 0.74, board from 0.8), and state is set only when a shown value changes.
+  - `slides` and `labels`: per-take copy.
+  - `cta`: the moodboard's count tile becomes a download link.
+  - `label`.
+- **Type Remix guards and pausing:** strict TypeScript guards; ref writes moved out of render. Animations pause off screen and in hidden tabs (`data-idle`).
+- **CV section (`cv.tsx`, `cv-showcase.tsx`, `src/content/cv.ts`):**
+  - Sits after Skills, on a 560svh runway with a sticky stage, mounted lazily after the intro.
+  - Slides cover About, Experience, Services, Process, Education, Certificates and Résumé, from brief sections 01, 03 and 07 and the certificates. The About and Process wording is written for the site and awaits Osama's copy.
+  - The Skills iris now closes onto the CV's navy (`#17284f`).
+  - CV download placeholder: `public/cv/osama-abdelnaser-cv.pdf`, served at `/cv/osama-abdelnaser-cv.pdf` (set in `src/content/cv.ts`). The file is not added yet.
+- **Skill tags:**
+  - **Halo:** the glasses now have a round solid halo the size of the iris's last hold (0.64 of the mascot's width, centred 0.56 down it). Tags may land on it and pile over it, but never inside it.
+  - **Spawning:** the title stays solid from below only, and its position is re-read while the tags fall. Tags spawn anywhere across the stage in a shuffled order, a tag height apart.
+  - **List:** 30 skills, all listed in brief section 03.
+- **Push avatar:** at 1920px the size class `min-[1920px]` lost to `md` in the CSS order, so the hands stood about 165px short of the edge. It is now `min-[120rem]`, so the size matches `actorMetrics`. Measured overlap of the hands on the plate edge: 4–6px at 390, 768, 1280, 1440 and 1920.
+- **Checks:** headless Chrome at 1440×900, 1920×1080 and 390×844 through the push, skills and CV: no console errors.
+
+## Rich CV, scrubbed remix, booking, key, avatars and step orbs — 2026-10-30
+
+The user widened the scope for the supplied components touched here: content, layout and drawing changes were requested, not colour and text only.
+
+- **CV (Type Remix, `src/content/cv.ts`):**
+  - Each take now carries a fact sheet from the brief (sections 01, 03, 07, 08 and 09), drawn in its free band and hidden on the moodboard tiles.
+  - The facts cover: role and base, all nine roles with dates, six services (no prices), the four process steps, the degree and graduation project, the certificates, and the tools.
+  - The CV hides the remix's HUD, progress and click-to-drop stickers (`hud={false}`, `stickers={false}`). The four stickers sit in mirrored pairs.
+  - The script take's crossed boxes are now the four process glyphs.
+  - In scroll mode the board zoom is scrubbed, so scrolling back from the end plays it in reverse.
+- **Skills → CV:** the iris grain fades out once the iris has shut. The closed iris is now exactly `#17284f`, the CV's first scene.
+- **Workspace (`solution-workspace.tsx`):**
+  - The step chips sit on one line inside a masked track that slides to the current step. No wrap and no scrollbar.
+  - The UI uses the work sans and display fonts. Space Mono remains only in code and terminal lines.
+  - The empty panels now hold a brief card and a stage note.
+- **Step orbs (`step-orb.tsx`):** idle is a sleeping body with rising Zs, thinking is a thought bubble, waiting for approval is an hourglass that turns, and done is a tick with a ring. Swaying states rock instead of spinning.
+- **Booking:**
+  - The footer dome now shows a composed screen: kicker, place, headline with an arrow button, the inquiry note and three steps.
+  - The words leave before the dome shrinks, so it lands clean on the CTA.
+  - On click, the noise dissolve ships with the overlay and starts as soon as the dome covers the screen. Only the notebook form is lazy-loaded.
+- **Key (`skeleton-key-preloader.tsx`):**
+  - The key lines up with its tip on the keyhole's mouth (the top of the round). It slides 52 units, until the whole bit is under the paper.
+  - It is cut at the mouth line, and the buried shaft shows through the round.
+- **Avatars:**
+  - **Hero (`waving-portfolio-landing.tsx`):** Osama's curly hair, thick square glasses, a rounder face, and a drawn hand on the folded arm instead of a plain circle.
+  - **Push character (`public/work/reference/push-character-motion.json`):** the cap is worn backwards, the hair is curly and the glasses are square, on both head layers. The T-shirt is now white with dark flowers.
+  - **Push character, method:** only static node attributes changed, so every motion track still indexes the same nodes.
+  - **Skills mascot:** square, thick-framed glasses.
+- **Checks:**
+  - ESLint and TypeScript are clean on the changed files. Prettier is clean apart from the untracked playground files.
+  - Headless Chrome at 1440×900 and 390×844 through the hero, key, CV, skills, footer dome and booking click: no console errors.
+
+## Distinct fact sheets, placed stickers, a lighter booking cue and a scroll review — 2026-10-30
+
+- **Fact sheets per take (`type-remix-preloader.tsx`, CSS only):** each take now dresses its facts in its own material.
+  - **About:** die-cut stickers in a two-column grid beside "ME".
+  - **Experience:** stitched felt patches.
+  - **Services:** inflated balloons. The duplicate "Web · Stores · Apps" pill hides when facts exist.
+  - **Process:** outlined steps joined by arrows.
+  - **Education:** a transcript with dotted leaders.
+  - **Certificates:** Figma-style selection boxes with layer-name tabs.
+  - **Résumé:** torn magazine scraps.
+  - **Phones:** under a 560px stage, every take packs two to a row.
+- **Stickers:** click-to-drop stays off. A new `decals` prop lays fixed stickers on each take (with optional phone positions). They slap in as the take arrives and leave for the board. The About take keeps its own four.
+- **Booking cue (`booking-cta-drop.tsx`):**
+  - The scroll-scrubbed full-screen dome is gone. Once the footer rings have drawn the button, a "Book a meeting ↗" chip pops over it and a rose ring pulses out of it.
+  - Scrolling back up reverses the chip. The pulse rests off screen and in hidden tabs.
+  - The pieces are added next to the footer's own button on the first visit, because the footer draws it only after measuring. The dome copy in `src/content/footer.ts` is removed.
+- **Scroll review:** headless Chrome stepped the whole page down and back up through the same stops: 49 stops at 1440×900 and 48 at 390×844.
+  - Section, phase and fixed-layer state matched at every stop in both directions, with no console errors.
+  - One stop going down lands about 100px short. This is the Work push's intentional snap that holds the gallery.
+  - Long tasks of about 90–110ms appear only on the first pass down, while lazy sections mount.
+
+## Smooth intro, nav, shortcuts, studio radio and one body font — 2026-10-30
+
+- **Intro (`amour-sunrise-preloader.tsx`, `site-intro.tsx`):**
+  - The loader opens by itself. The "click to enter" hint is gone and the hold is 0.9s.
+  - A new `onLift` fires as the sun starts to cover the screen. The hero's entrance starts underneath, and the gate fades over it. The loader's paper turns transparent while lifting, so blue dissolves straight into the letter storm, with no yellow or muddy frame.
+  - The poster is ready about 5s sooner (about 15s instead of 20s).
+- **Hero:**
+  - **Height:** the scene is now `100svh` minus the header, so the yellow section no longer peeks in.
+  - **Switch:** "Keep it moving" moves up clear of the hair.
+  - **Folded arm:** a watch on the wrist and a drawn hand with four curled fingers and a thumb.
+  - **Font:** the Inter class is removed.
+- **Navigation:**
+  - **`site-nav.tsx`:** a numbered capsule (Home · Work · Playground) in the hero header. The current page wears the ink pill. On phones the logo is screen-reader only and "Talk design" hides.
+  - **`section-dock.tsx`:** a slim fixed rail on the right (a bottom bar on phones) with Intro, Process, Work, Skills, CV and Contact, plus the radio toggle.
+    - Each jump drops an ink curtain, moves while covered and lifts it, so pinned sections never race by.
+    - One ScrollTrigger tracks the active stop from positions measured on refresh. Skills counts from after the gallery's exit wipe.
+    - On phones the bar steps aside at the footer.
+- **Studio radio:**
+  - **`src/lib/audio/lofi.ts`:** a generative WebAudio lo-fi loop (keys, bass, soft beat, sparse melody). No audio file. It starts only from a click, fades in and out, and suspends in hidden tabs.
+  - **`music-deck.tsx`:** a vinyl pill beside the switch, whose record spins only while playing and on screen, and analyser-driven bars. The frame loop runs only while playing, visible and on screen.
+- **Font:** `--font-sans` is now the booking form's `--wbi-hand` stack for all running text. Geist Sans and BT Grotesk are no longer loaded for body text. Display faces (F37 Bolton, marker titles, the supplied components' own stacks) are unchanged.
+- **Section reveal (`scroll-dissolve.tsx`):** the booking form's noise dissolve, reusable for any section. The solution section arrives under an ink veil that dissolves once it nearly fills the view. It plays once, with full motion only, and never for a reader already past it.
+- **Booking speed:**
+  - The notebook chunk preloads about one and a half screens before the footer.
+  - The dome is 0.62s.
+  - The dissolve waits for the notebook, so it always opens onto the form instead of a blue placeholder.
+- **Work gallery:** the left side is now a project sheet: now-viewing index, category, up next, role, launch, frame count, reference credit and an open hint. The header shows the count and an arrow-keys hint. Two unused variables are removed.
+- **Push avatar:** a light brand wash: pale sun T-shirt with blue flowers and rose hems, soft blue shorts, honey cap and white socks. The trainers lose the swoosh and turn blush. Only static attributes changed.
+- **Skills:**
+  - The hands wear the hero's look: white skin, navy sleeves with white swirls and yellow cuffs.
+  - The tags are bigger (15px, and 19px from md).
+  - The mascot's lenses are pulled apart, with a visible bridge between them.
+- **CV Experience (`type-remix-preloader.tsx`, CSS only):** the nine jobs hang as pegged, numbered tags in two centred rows.
+- **Checks:**
+  - ESLint and TypeScript are clean on the changed files, apart from the known typed-route error in the untracked `playground-gallery.tsx`.
+  - Headless Chrome at 1440×900 and 390×844 covered the intro frames, hero, dock jumps to every stop, the radio toggle, the dissolve, the gallery, skills and CV, with no console errors.
+
+## Brand icons, share images, company badges and CV stickers — 2026-10-30
+
+- **Source:** the user's images in the untracked `Picflow Images Oct 30 (1)` folder, resized and renamed with sharp. The folder itself is unchanged.
+- **Browser icons (`src/app`):** `favicon.ico` (16, 32, 48), `icon.png` (192) and `apple-icon.png` (180, flattened on `#F8FA55`), all through Next's metadata file conventions.
+- **Share images:** `opengraph-image.jpg` and `twitter-image.jpg` at 1200×630, each with an `.alt.txt`. `layout.tsx` adds `openGraph` and a `summary_large_image` Twitter card. The absolute image URLs need `NEXT_PUBLIC_SITE_URL` in production.
+- **Company badges:** `public/cv/badges/01–09.webp` (192px, in CV order). Each felt Experience fact carries one through the new optional `RemixFact.icon`.
+- **Stickers:** `public/cv/stickers/briefcase.webp`, `luggage-tag.webp` and `paper-plane.webp`, placed as felt decals through the new `RemixDecal` kind `image` with `src`. They have separate mobile positions.
+- **`type-remix-preloader.tsx`:** the two optional fields above, plus their rendering and CSS. Existing takes and drawn stickers are unchanged.
+- **Checks:**
+  - curl confirmed the head tags.
+  - Headless Chrome at 1440×900 and 390×844 confirmed the badges and stickers clear the tags, title and wave, with no console errors.
+
+## Osama's real projects replace the reference collection — 2026-10-30
+
+- **Data:** `src/content/work-projects.json` holds 38 of the 45 rows in `Osama_Portfolio_Projects_EN.md`, newest first. Left out:
+  - the repeated Bareeq row;
+  - Tasawwoq and Wehg (no confirmed details);
+  - Vivian Cosmetics, SoapCover, Rafal and MUHKAM (no images).
+- **Images:** Drive images are used where they exist, Behance otherwise. They are downloaded once to `public/work/projects/<slug>/` as WebP (24MB in total).
+- **Behance links:** hidden for Bahij, BOM, Nagham, Azma and Shams, whose sheet links open the base theme.
+- **Removed:** the Huy Phan reference collection (`work-reference.json`, its images and `SOURCES.json`). The push character's motion and atlas stay in `public/work/reference/`.
+- **Type:** `WorkProject` drops `role`, `launch`, `sourceAuthor` and `sourceUrl`, and adds `summary`, `date`, `support` and `behanceUrl`.
+- **UI:**
+  - The gallery and case page show "Built for" and "Delivered".
+  - The case page links to the live site and to Behance when present.
+- **CV:** the supplied PDF is now `public/cv/osama-abdelnaser-cv.pdf`, the path the CV download already used.
+- **Checks:**
+  - ESLint and TypeScript are clean, apart from the known playground typed-route error.
+  - `/api/work` returns 38.
+  - `/work/mahsoul` and the home gallery were checked in the browser.
+  - Old reference slugs now render the not-found page.
+
+## Contact page, full index, ordered work, playground of all projects and a gallery return fix — 2026-10-30
+
+- **Contact (`/contact`):** a new page with the slim `PageHeader` and the Wirebound inquiry notebook.
+  - The nav swaps Work for Contact.
+  - The hero's "Talk design" and the footer's "Book a meeting" go straight to it.
+  - The footer no longer opens the booking dialog, which lagged. `booking-overlay.tsx` and `booking-inquiry-content.tsx` are now unused.
+- **Work order (`src/content/work.ts`):** `workGroups` ranks websites, then company sites, then platforms and apps, then online stores, then store themes. Projects are newest first within each group. The home gallery's first six are therefore the websites and company sites.
+- **Playground:** now lists every project (covers, kind, date, summary), filterable by group with counts. The Huy Phan reference list (`playground-reference.json`) is removed, and so is the typed-route error.
+- **Section dock:**
+  - It covers every section, including the seven CV chapters, positioned from the CV runway (`data-cv-track`).
+  - An index button opens it with names and a Download CV link. Phones always use it from the bottom bar.
+  - It closes on Escape or an outside press.
+- **CV Services (`type-remix-preloader.tsx`, additive):** `RemixFact.n` stamps a count chip.
+  - `Cv` counts shipped projects per group on the server.
+  - The facts name real projects.
+  - Cards can take an `icon` badge, and they clear the phone bar.
+- **Gallery freeze fix:**
+  - **Cause:** returning from a project restores the cached home page. ScrollTrigger refreshes then dipped the push for a moment, and the deck rebuilt from card 01 each time, so input looked frozen.
+  - **Fix:** the deck now reassembles onto the card the reader was on. The push reports full assembly whenever the gallery is open.
+- **Checks:**
+  - Headless Chrome: home → project → back to work. The wheel moved the deck (index 0 → 6) where before it stayed on 0.
+  - Scrolling down past the CV and back up showed Services, Experience, the gallery and the push intact.
+  - Browser pane:
+    - `/contact` loads from the nav.
+    - The playground filter works.
+    - The dock index jumps to CV Services.
+  - 390×844: Services clears the bottom bar.
+
+## Service badges, loader mark, smoother scroll, page transition, inner header, contact that sends, CV replay — 2026-10-30
+
+- **CV Services badges:** six glossy badges from `Picflow Images Oct 30 (2)/` are exported to `public/cv/services/01–06.webp` (192px) and set as the fact icons.
+- **Loader (`amour-sunrise-preloader.tsx`, text and glyph only):**
+  - The caption reads "complex → simple" in the site font.
+  - A new `mark` prop (default `♥`) draws a pointer glyph (`➚`) instead of the heart. Geometry and timing are unchanged.
+- **Scroll:**
+  - Lenis is softer: `lerp` 0.075, `wheelMultiplier` 0.9.
+  - The asset-load refresh skips sized images and is debounced by 160ms.
+- **Index dock:** the panel springs open from the rail's edge and its rows stagger in. Closing plays the rows and the panel out first. Reduced motion closes at once.
+- **CV replay on scroll up (`type-remix-preloader.tsx`, behaviour fix):**
+  - **Cause:** slides were keyed by take number, so going back reused the take already mounted underneath and nothing replayed.
+  - **Fix:** each arrival now mounts fresh on top of the take it left, so entrances play both ways.
+  - **Checked:** the incoming slide runs 23–30 animations when scrolling up.
+- **Work section:**
+  - **Exit:** the gate's exit is one unbroken walk over 0.55vh (was 0.75vh with two pauses).
+  - **Project name:** the active name on the right is now a link ↗ to the case.
+  - **Jump to:** a "Jump to" rail (Websites · Company sites · Platforms & apps · Online stores · Store themes) fills the bottom row. A group that isn't loaded yet loads the collection, then jumps.
+  - **Badges:** support badges (Desktop, Mobile, Arabic · RTL, Live) are read from `support` and `liveUrl` (`src/content/work-groups.ts`). They show in the gallery, on the case page and on the playground cards.
+- **Page transition (`page-transition.tsx`):**
+  - **Cause:** the old link owned its panel inside a page that Next hides on navigation, and the entrance only mounted after paint.
+  - **Fix:** one layer in the root layout now covers (0.75s, with the page name), changes the route, and reveals at once (0.85s).
+  - **Where:** the nav, the hero, the footer CTA, the gallery, the case and playground cards. Home opens without it. Reduced motion skips it.
+  - `work-page-transition.tsx` is no longer used.
+- **Inner header (`inner-header.tsx`):** the playground header layout is shared by the playground, contact and case pages, with the current page marked. `page-header.tsx` is removed; `playground-header.tsx` is no longer used.
+- **Playground:**
+  - Brand-coloured tabs sit in a sticky ink capsule, with a colour dot per kind.
+  - Cards show their kind tag, number, display-font name and badges.
+  - The aside lists counts per kind.
+- **Contact (`contact-inquiry.tsx`, `src/content/contact.ts`):**
+  - **Sending:** the brief opens WhatsApp with every answer written out and a reference. If the window is blocked, the brief opens in the email app instead.
+  - **WhatsApp button:** a green "Chat on WhatsApp" button offers a chat before booking. It uses a small additive `direct` slot in `wirebound-inquiry.tsx`.
+  - **Text:**
+    - The cities follow the brief ("Cairo · Riyadh · Remote").
+    - No reply time is promised.
+    - The project options include Salla, Zid or Shopify stores.
+  - **Footer:** `/contact` shows the footer without the tangle and booking button.
+- **Checks:**
+  - **Static:** `pnpm typecheck` and ESLint are clean.
+  - **Headless Chrome, transition:** the panel covers in 0.75s, the route changes under it, and it lifts straight away with no solid hold.
+  - **Headless Chrome, pages:** the playground and contact pages render; the contact page has one WhatsApp button and no tangle.
+  - **Browser pane, gallery:** the jumps (Store themes, Platforms & apps) and the name link were exercised.
+
+## CV sheets, support badges, smoother dock, SEO and load — 2026-10-30
+
+Supplied-component changes (scope widened by the user for these items):
+
+- `type-remix-preloader.tsx`: the Process, Education, Certificates and Résumé takes get calmer fact sheets — one white step rail for Process, ruled columns for Education, credential cards with a seal for Certificates, and a toolkit of chips for Résumé (`Facts` takes an optional `chips` flag). The scattered process glyphs were removed, the education band lost its glow, and a plain `--rtp-text` stack is used for running text. Takes, words, timing and the replay on reverse scroll are unchanged.
+- `sticker-slap-footer.tsx`: the default address line reads "Cairo · Riyadh · Remote"; the column tags are `h2` so inner pages keep a valid heading order. Look and motion unchanged.
+- `wirebound-inquiry.tsx`: unchanged; the contact page passes a white `field` and `theme="light"` through the existing props.
+
+Integration changes:
+
+- The intro loader runs only for a visit that lands on `/`; inner pages (a project from search, the contact link) open on their content. Its code and the footer's tangle/booking pieces are loaded on demand.
+- Inner-page links to `/` no longer prefetch the home bundle.
+- Contact sends the brief to WhatsApp only (same tab when a new one is blocked). The footer's top part (rings and "Book a meeting") shows on the home page only.
+- Support badges show Desktop, Mobile, Arabic · RTL and Live site for every project, ticked when included and struck through when not (`work-badges.tsx`).
+- SEO: shared `src/config/seo.ts`, Person/WebSite JSON-LD in the root layout, CreativeWork + breadcrumbs per project, CollectionPage on the playground, per-page titles, descriptions and share cards, `sitemap.ts`, `robots.ts`, `manifest.ts`. Canonical links and sitemap entries need `NEXT_PUBLIC_SITE_URL`; they stay off until it is set.
+
+Lighthouse 12.8.2 on the production build (localhost:3002):
+
+| Page             | Mobile perf | Desktop perf | A11y                              | Best practices | SEO |
+| ---------------- | ----------- | ------------ | --------------------------------- | -------------- | --- |
+| `/`              | 89          | 98           | 100                               | 100            | 100 |
+| `/playground`    | 85          | 100          | 96 → contrast fixed after the run | 100            | 100 |
+| `/contact`       | 80          | 98           | 100                               | 100            | 100 |
+| `/work/truepath` | 93          | 100          | 100                               | 100            | 100 |
+
+Observed (unthrottled) LCP equals first paint on every page; the mobile score is held back by the simulated cost of the shared JavaScript (React/Next runtime, GSAP, the footer).

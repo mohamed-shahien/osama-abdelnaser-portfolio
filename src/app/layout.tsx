@@ -1,15 +1,13 @@
-import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
+import { Geist_Mono } from 'next/font/google';
 import { MotionProvider } from '@/components/providers/motion-provider';
 import { SiteIntro } from '@/components/providers/site-intro';
+import { PageTransitionLayer } from '@/components/sections/page-transition';
 import { SiteFooter } from '@/components/sections/site-footer';
+import { JsonLd } from '@/components/sections/json-ld';
+import { seoDescription, seoKeywords, siteJsonLd } from '@/config/seo';
 import { siteConfig } from '@/config/site';
 import './globals.css';
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
@@ -18,8 +16,47 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: siteConfig.metadataBase,
-  title: { default: siteConfig.title, template: `%s | ${siteConfig.name}` },
-  description: siteConfig.description,
+  title: {
+    default: `${siteConfig.name} — Product Designer (UI/UX) · Cairo & Riyadh`,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: seoDescription,
+  applicationName: siteConfig.name,
+  keywords: seoKeywords,
+  authors: [{ name: siteConfig.name }],
+  creator: siteConfig.name,
+  publisher: siteConfig.name,
+  category: 'design',
+  ...(siteConfig.metadataBase ? { alternates: { canonical: '/' } } : {}),
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+  },
+  formatDetection: { telephone: false, email: false, address: false },
+  // The share images are the `opengraph-image` and `twitter-image` files in this folder.
+  openGraph: {
+    type: 'profile',
+    url: '/',
+    siteName: siteConfig.name,
+    locale: 'en_US',
+    title: siteConfig.title,
+    description: seoDescription,
+    firstName: 'Osama',
+    lastName: 'Abdelnaser',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@OsAAA98',
+    creator: '@OsAAA98',
+    title: siteConfig.title,
+    description: seoDescription,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#17284f',
+  colorScheme: 'light',
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
@@ -27,7 +64,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
     <html
       lang={siteConfig.language}
       dir={siteConfig.direction}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col font-sans" suppressHydrationWarning>
         <a
@@ -36,7 +73,9 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         >
           Skip to content
         </a>
+        <JsonLd data={siteJsonLd()} />
         <MotionProvider />
+        <PageTransitionLayer />
         <SiteIntro>
           {children}
           <SiteFooter />

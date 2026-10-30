@@ -58,10 +58,14 @@ export interface AmourSunrisePreloaderProps {
   counter?: boolean;
   /** Face for the caption. The default stack never fetches anything. */
   fontFamily?: string;
+  /** The mark that inks in and beats inside the sun: '♥', or '➚' for a pointer. */
+  mark?: string;
   /** Root height. A definite length, never a percentage. */
   height?: string;
   /** Fired once, after the gate has lifted. */
   onComplete?: () => void;
+  /** Fired once, as the gate starts to lift, so the page behind can begin. */
+  onLift?: () => void;
   /** Extra root class names. */
   className?: string;
 }
@@ -188,6 +192,8 @@ export const AMR_GLYPHS: { [ch: string]: [number, string[]] } = {
       'M46 86 C30 72 12 58 12 36 C12 20 22 12 33 12 C41 12 45 18 46 27 C47 18 51 12 59 12 C70 12 80 20 80 36 C80 58 62 72 46 86 Z',
     ],
   ],
+  // A design tool's pointer, drawn and filled like the heart.
+  '➚': [84, ['M22 10 L22 80 L39 64 L51 90 L63 85 L51 59 L75 59 Z']],
 };
 
 // Accents are dropped (É → E), lower case is lifted, anything unknown is a space.
@@ -414,10 +420,12 @@ const AMR_CSS = `
   outline: none;
   user-select: none;
   -webkit-user-select: none;
-  transition: opacity 0.4s ease 1.05s;
+  transition: opacity 0.9s ease 0.75s;
 }
 .amr-gate:focus-visible .amr-frame { box-shadow: inset 0 0 0 2px var(--amr-ink); }
 .amr-root[data-phase="lift"] .amr-gate { opacity: 0; pointer-events: none; }
+/* the page behind shows through as the sun fades, not the loader's paper */
+.amr-root[data-phase="lift"], .amr-root[data-phase="done"] { background: transparent; }
 .amr-frame { position: absolute; inset: 0; pointer-events: none; }
 
 .amr-stage, .amr-grain {
@@ -587,8 +595,8 @@ const AMR_CSS = `
 type Phase = 'load' | 'bloom' | 'hold' | 'lift' | 'set' | 'done';
 
 const BLOOM_MS = 1700;
-const HOLD_MS = 2800;
-const LIFT_MS = 1500;
+const HOLD_MS = 900;
+const LIFT_MS = 1700;
 const SET_MS = 1500;
 const INTRO_MS = 900;
 const BOIL_MS = 125;
@@ -609,8 +617,10 @@ export default function AmourSunrisePreloader({
   sway = 1,
   counter = true,
   fontFamily = SERIF_STACK,
+  mark = '♥',
   height = '100svh',
   onComplete,
+  onLift,
   className = '',
 }: AmourSunrisePreloaderProps) {
   const [phase, setPhase] = React.useState<Phase>('load');
@@ -629,6 +639,7 @@ export default function AmourSunrisePreloader({
   const rushRef = React.useRef(false);
   const progressRef = React.useRef(progress);
   const onCompleteRef = React.useRef(onComplete);
+  const onLiftRef = React.useRef(onLift);
 
   const colors = { ...DEFAULT_PALETTE, ...palette };
   const chars = React.useMemo(() => Array.from(word.trim() || ' '), [word]);
@@ -665,8 +676,9 @@ export default function AmourSunrisePreloader({
   React.useLayoutEffect(() => {
     progressRef.current = progress;
     onCompleteRef.current = onComplete;
+    onLiftRef.current = onLift;
     layoutRef.current = layout;
-  }, [progress, onComplete, layout]);
+  }, [progress, onComplete, onLift, layout]);
   const R = layout.R;
 
   // ---- size off the box ------------------------------------------------------------
@@ -777,6 +789,7 @@ export default function AmourSunrisePreloader({
       return () => clearTimeout(t);
     }
     if (phase === 'lift') {
+      onLiftRef.current?.();
       const t = setTimeout(() => {
         setPhase('done');
         onCompleteRef.current?.();
@@ -923,7 +936,7 @@ export default function AmourSunrisePreloader({
   const loading = phase === 'load';
   const jitter0 = layout.stroke * 0.05 * boil;
   const count = amrLine(amrCounter(pct), 0, -R * 0.6, R * 0.25);
-  const heart = amrLine('♥', 0, -R * 0.6, R * 0.34);
+  const heart = amrLine(mark, 0, -R * 0.6, R * 0.34);
   const label = word.trim() || 'Page';
 
   return (
@@ -1050,7 +1063,7 @@ export default function AmourSunrisePreloader({
                   textAnchor="middle"
                   fontSize={Math.max(9, R * 0.036)}
                 >
-                  {loop ? 'click to replay' : 'click to enter'}
+                  {loop ? 'click to replay' : ''}
                 </text>
               </g>
             </g>

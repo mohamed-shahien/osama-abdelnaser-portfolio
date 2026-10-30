@@ -17,8 +17,15 @@ const WorkGallery = dynamic(() => import('./work-gallery'));
 const ASSEMBLE_FROM = 0.18;
 
 function actorMetrics(mobile: boolean) {
+  // Matches the actors' size classes (md and min-[120rem], i.e. 1920px).
   const scale = mobile ? 0.75 : window.innerWidth >= 1920 ? 1.85 : 1.4;
-  return { width: 429 * scale, offset: scale * (mobile ? 31 / 0.58 : 60 / 1.14) };
+  // `reach`: from the mirrored closer's left edge to its fingertips, measured
+  // on the drawing, so its hands sit exactly on the edge it pulls.
+  return {
+    width: 429 * scale,
+    offset: scale * (mobile ? 31 / 0.58 : 60 / 1.14),
+    reach: scale * 49.3,
+  };
 }
 
 export function WorkShowcase({
@@ -113,16 +120,20 @@ export function WorkShowcase({
               previousOpacity = opacity;
             }
             if (!document.hidden) seek?.(value);
-            const assembled =
-              Math.round(
-                Math.max(0, Math.min(1, (value - ASSEMBLE_FROM) / (finish() - ASSEMBLE_FROM))) *
-                  10000,
-              ) / 10000;
+            const nextOpen = value >= finish() - 0.01;
+            // An open gallery is fully assembled. Landing on the trigger's end (a
+            // return from a project, a dock jump) can leave the scrub a hair short
+            // of it, and the deck only takes input once assembly is exactly 1.
+            const assembled = nextOpen
+              ? 1
+              : Math.round(
+                  Math.max(0, Math.min(1, (value - ASSEMBLE_FROM) / (finish() - ASSEMBLE_FROM))) *
+                    10000,
+                ) / 10000;
             if (assembled !== assembly.progress) {
               assembly.progress = assembled;
               assembly.apply(assembled);
             }
-            const nextOpen = value >= finish() - 0.01;
             if (nextOpen !== wasOpen) {
               wasOpen = nextOpen;
               setOpen(nextOpen);
@@ -188,7 +199,7 @@ export function WorkShowcase({
                 stage.style.visibility = shown;
                 exitShown = shown;
               }
-              exitActor.style.transform = `translate3d(${x - metrics.offset}px,-50%,0)`;
+              exitActor.style.transform = `translate3d(${x - metrics.reach}px,-50%,0)`;
               exitX = x;
             }
             const opacity = value > 0.001 && value < finish() - 0.001 ? '1' : '0';
@@ -214,18 +225,17 @@ export function WorkShowcase({
             })
             .catch(() => {});
           const exitTimeline = gsap.timeline({ paused: true, onUpdate: paintExit });
+          // The close is one unbroken walk over a short runway, so the next
+          // section follows the last card without a long wait.
           exitTimeline
-            .to(exitPosition, { value: 0.3, duration: 0.8, ease: 'sine.inOut' })
-            .to({}, { duration: 0.08 })
-            .to(exitPosition, { value: 0.6, duration: 0.85, ease: 'sine.inOut' })
-            .to({}, { duration: 0.1 })
-            .to(exitPosition, { value: finish, duration: 1.6, ease: 'power2.inOut' });
+            .to(exitPosition, { value: 0.45, duration: 0.6, ease: 'sine.in' })
+            .to(exitPosition, { value: finish, duration: 1, ease: 'power2.out' });
           const exitTrigger = ScrollTrigger.create({
             id: 'selected-work-close',
             trigger: root,
             animation: exitTimeline,
             start: () => `top -${window.innerHeight * 11.4}px`,
-            end: () => `top -${window.innerHeight * 12.15}px`,
+            end: () => `top -${window.innerHeight * 11.95}px`,
             scrub: 0.4,
             invalidateOnRefresh: true,
             onRefresh: paintExit,
@@ -314,7 +324,7 @@ export function WorkShowcase({
       >
         <div
           data-work-actor
-          className="absolute start-0 top-1/2 h-[338.25px] w-[321.75px] opacity-0 will-change-transform min-[1920px]:h-[834.35px] min-[1920px]:w-[793.65px] md:h-[631.4px] md:w-[600.6px]"
+          className="absolute start-0 top-1/2 h-[338.25px] w-[321.75px] opacity-0 will-change-transform md:h-[631.4px] md:w-[600.6px] min-[120rem]:h-[834.35px] min-[120rem]:w-[793.65px]"
         >
           <div data-work-vector className="size-full" />
         </div>
@@ -325,7 +335,7 @@ export function WorkShowcase({
       >
         <div
           data-work-exit-actor
-          className="absolute start-0 top-1/2 h-[338.25px] w-[321.75px] opacity-0 will-change-transform min-[1920px]:h-[834.35px] min-[1920px]:w-[793.65px] md:h-[631.4px] md:w-[600.6px]"
+          className="absolute start-0 top-1/2 h-[338.25px] w-[321.75px] opacity-0 will-change-transform md:h-[631.4px] md:w-[600.6px] min-[120rem]:h-[834.35px] min-[120rem]:w-[793.65px]"
         >
           <div data-work-exit-vector className="size-full [transform:scaleX(-1)]" />
         </div>

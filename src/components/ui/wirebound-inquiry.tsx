@@ -181,6 +181,8 @@ export type WireboundInquiryProps = {
   socials?: WireboundLink[];
   /** A short availability line, e.g. "Booking projects from January 2027". null hides it. */
   availability?: React.ReactNode | null;
+  /** Another way in, under the availability line (e.g. a chat button). */
+  direct?: React.ReactNode;
   /** Who reads the briefs. Used on the inside cover. */
   reader?: string;
   /** How fast you reply, as it reads after "within", e.g. "two working days". */
@@ -1322,7 +1324,8 @@ export default function WireboundInquiry({
   intro = "Three short questions about what you're building. I read every brief myself and reply to set up our meeting.",
   email = 'osamaabdelnaser18@gmail.com',
   socials = DEFAULT_SOCIALS,
-  availability = 'Egypt · Saudi Arabia · Remote',
+  availability = 'Cairo · Riyadh · Remote',
+  direct,
   reader = 'Osama Abdelnaser',
   replyTime = 'two working days',
   questions = DEFAULT_QUESTIONS,
@@ -2336,6 +2339,7 @@ export default function WireboundInquiry({
                   {availability}
                 </p>
               ) : null}
+              {direct}
             </div>
           </div>
         ) : null}

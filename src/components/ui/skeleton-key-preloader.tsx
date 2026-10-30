@@ -140,9 +140,14 @@ const METALS: MetalMap = {
 const FOCUS = { x: 630, y: 336 };
 const HOLE = { x: 520, y: 354, r: 11 };
 const REST = { x: 470, y: 506, r: 37, s: 1 };
-const INSERT = { x: HOLE.x, y: HOLE.y, r: 0, s: 0.64 };
+// The key lines up with its tip on the keyhole's mouth (the top of the round)
+// and slides in until the whole bit is under the paper, the shaft in the round.
+const MOUTH = HOLE.y - HOLE.r;
+const INSERT = { x: HOLE.x, y: MOUTH, r: 0, s: 0.64 };
 const KEY_TIP = { x: 70, y: 392 };
-const SLIDE = 44;
+const SLIDE = 52;
+// The shaft's half-width on the board at the insert scale.
+const SHAFT = 8 * INSERT.s;
 
 const MIN_LOAD_MS = 2800;
 const SETTLE_MS = 1000;
@@ -399,6 +404,7 @@ const SKP_CSS = `
 .skp-gate[data-reduced="true"][data-phase="open"] { opacity: 0; transition: opacity 700ms ease; }
 .skp-paper { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; display: block; }
 .skp-cap { transition: opacity 360ms ease; }
+.skp-gate[data-phase="open"] .skp-sunk { opacity: 0; transition: opacity 220ms ease; }
 .skp-plug {
   fill: var(--skp-ink); transform-box: fill-box; transform-origin: 50% 40%;
   transform: scale(0); opacity: 0; transition: transform 640ms cubic-bezier(.2, 1.5, .4, 1), opacity 300ms ease;
@@ -842,6 +848,7 @@ export default function SkeletonKeyPreloader({
   const paperRef = React.useRef(null as SVGSVGElement | null);
   const keyRef = React.useRef(null as HTMLDivElement | null);
   const keyInRef = React.useRef(null as HTMLDivElement | null);
+  const sunkRef = React.useRef(null as SVGRectElement | null);
   const lightRef = React.useRef(null as SVGFEPointLightElement | null);
   const ringRef = React.useRef(null as SVGCircleElement | null);
   const onCompleteRef = React.useRef(onComplete);
@@ -1170,8 +1177,18 @@ export default function SkeletonKeyPreloader({
           'deg) scale(' +
           key.s.toFixed(4) +
           ') translate(-70px,-392px)';
-        keyRef.current.style.clipPath =
-          slide > 0 ? 'inset(-60px -60px ' + (8 + slide / key.s).toFixed(2) + 'px -60px)' : 'none';
+        // Cut at the mouth once the key has lined up, so what has gone in is
+        // under the paper; through the round you see the shaft go down.
+        const cut = ph === 'turn' || ph === 'open' || (ph === 'insert' && el >= 600);
+        const below = (key.y + slide - MOUTH) / key.s;
+        keyRef.current.style.clipPath = cut
+          ? 'inset(-60px -60px ' + Math.max(-60, 8 + below).toFixed(2) + 'px -60px)'
+          : 'none';
+        if (sunkRef.current) {
+          const h = cut ? Math.max(0, key.y + slide - MOUTH).toFixed(1) : '0';
+          if (sunkRef.current.getAttribute('height') !== h)
+            sunkRef.current.setAttribute('height', h);
+        }
         keyRef.current.style.opacity = ph === 'fonts' ? '0' : '1';
       }
       if (keyInRef.current) {
@@ -1424,6 +1441,24 @@ export default function SkeletonKeyPreloader({
             />
             <path className="skp-cap" fill={paper} d={skpHole(1.2)} />
             <path className="skp-plug" d={skpHole(0)} />
+            <clipPath id={uid + 'hole'}>
+              <path d={skpHole(0)} />
+            </clipPath>
+            <rect
+              ref={sunkRef}
+              className="skp-sunk"
+              x={HOLE.x - SHAFT}
+              y={MOUTH}
+              width={SHAFT * 2}
+              height="0"
+              rx={SHAFT}
+              fill={'url(#' + uid + 'sunk)'}
+              clipPath={'url(#' + uid + 'hole)'}
+            />
+            <linearGradient id={uid + 'sunk'} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor={metalSpec.stops[2]} stopOpacity=".75" />
+              <stop offset="1" stopColor={metalSpec.stops[0]} stopOpacity="0" />
+            </linearGradient>
           </svg>
 
           <div

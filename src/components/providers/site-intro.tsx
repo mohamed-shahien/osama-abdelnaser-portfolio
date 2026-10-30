@@ -8,10 +8,18 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from 'react';
+import dynamic from 'next/dynamic';
+import { usePathname } from 'next/navigation';
 
-import AmourSunrisePreloader from '@/components/ui/amour-sunrise-preloader';
 import { SiteIntroReadyContext } from '@/components/providers/site-intro-context';
 import { ScrollTrigger } from '@/lib/motion/gsap';
+
+// Loaded only for a visit that opens on the home page; the paper it starts on
+// covers the page while its code arrives.
+const AmourSunrisePreloader = dynamic(() => import('@/components/ui/amour-sunrise-preloader'), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 bg-[#F8FA55]" />,
+});
 
 const subscribe = () => () => {};
 const getClientSnapshot = () => true;
@@ -19,7 +27,13 @@ const getServerSnapshot = () => false;
 
 export function SiteIntro({ children }: { children: ReactNode }) {
   const hydrated = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
-  const [complete, setComplete] = useState(false);
+  // The loader opens the site from the home page only; a visit that lands on an
+  // inner page (a project from search, the contact link) opens on its content.
+  const pathname = usePathname();
+  const [entry] = useState(pathname);
+  const [complete, setComplete] = useState(entry !== '/');
+  // The page starts its own entrance as the loader lifts, so the two overlap.
+  const [lifted, setLifted] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const active = hydrated && !complete;
 
@@ -46,6 +60,7 @@ export function SiteIntro({ children }: { children: ReactNode }) {
     };
   }, [active]);
 
+  const lift = useCallback(() => setLifted(true), []);
   const finish = useCallback(() => {
     setComplete(true);
     requestAnimationFrame(() => {
@@ -55,7 +70,7 @@ export function SiteIntro({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <SiteIntroReadyContext value={hydrated && !active}>
+    <SiteIntroReadyContext value={hydrated && (lifted || !active)}>
       <div className="flex min-h-svh flex-1 flex-col" inert={active}>
         {children}
       </div>
@@ -68,7 +83,13 @@ export function SiteIntro({ children }: { children: ReactNode }) {
           aria-label="Opening Osama Abdelnaser’s portfolio"
           data-lenis-prevent
         >
-          <AmourSunrisePreloader onComplete={finish} />
+          <AmourSunrisePreloader
+            caption="complex → simple"
+            mark="➚"
+            fontFamily="var(--font-sans)"
+            onLift={lift}
+            onComplete={finish}
+          />
         </div>
       ) : null}
     </SiteIntroReadyContext>

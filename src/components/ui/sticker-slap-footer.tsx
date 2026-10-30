@@ -483,7 +483,7 @@ const CSS =
   ':where(.ssf) *,:where(.ssf) *::before,:where(.ssf) *::after{box-sizing:border-box}' +
   ':where(.ssf) button{appearance:none;background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer}' +
   ':where(.ssf) a{color:inherit;text-decoration:none}' +
-  ':where(.ssf) ul,:where(.ssf) p,:where(.ssf) h3{margin:0;padding:0;list-style:none;font:inherit}' +
+  ':where(.ssf) ul,:where(.ssf) p,:where(.ssf) h2,:where(.ssf) h3{margin:0;padding:0;list-style:none;font:inherit}' +
   '.ssf svg{display:block;max-width:none;overflow:visible}' +
   '.ssf :focus-visible{outline:2.5px solid var(--ssf-accent);outline-offset:3px;border-radius:6px}' +
   '.ssf-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}' +
@@ -898,7 +898,7 @@ export default function StickerSlapFooter({
   jobsLabel = 'expertise',
   jobs = DEFAULT_JOBS,
   officeLabel = 'location & reach',
-  address = ['Egypt', 'Egypt · Saudi Arabia · Remote'],
+  address = ['Egypt', 'Cairo · Riyadh · Remote'],
   mapLabel = '',
   mapHref = '',
   contactLabel = 'contact',
@@ -1230,7 +1230,7 @@ export default function StickerSlapFooter({
   if (jobs.length)
     cols.push(
       <div className="ssf-col" key="jobs">
-        <h3 className="ssf-tag">{jobsLabel}</h3>
+        <h2 className="ssf-tag">{jobsLabel}</h2>
         <ul className="ssf-big">
           {jobs.map((j, i) => (
             <li key={i} className="ssf-line" style={{ '--i': i } as React.CSSProperties}>
@@ -1243,7 +1243,7 @@ export default function StickerSlapFooter({
   if (address.length)
     cols.push(
       <div className="ssf-col" key="office">
-        <h3 className="ssf-tag">{officeLabel}</h3>
+        <h2 className="ssf-tag">{officeLabel}</h2>
         <address className="ssf-big" style={{ fontStyle: 'normal' }}>
           {address.map((l, i) => (
             <span key={i} className="ssf-line" style={{ '--i': i } as React.CSSProperties}>
@@ -1264,7 +1264,7 @@ export default function StickerSlapFooter({
   if (email || chatHref || socials.length)
     cols.push(
       <div className="ssf-col" key="contact">
-        <h3 className="ssf-tag">{contactLabel}</h3>
+        <h2 className="ssf-tag">{contactLabel}</h2>
         <ul className="ssf-big">
           {email && (
             <li className="ssf-line" style={{ '--i': 0 } as React.CSSProperties}>

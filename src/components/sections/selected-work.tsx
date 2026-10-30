@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 
 import { workProjects } from '@/content/work';
 import { workContent } from '@/content/work-copy';
-import { workSans, workDisplay } from '@/config/work-fonts';
+import { workDisplay } from '@/config/work-fonts';
 import { WorkShowcase } from './work-showcase';
 
 export function SelectedWork({ children }: { children: ReactNode }) {
@@ -12,7 +12,7 @@ export function SelectedWork({ children }: { children: ReactNode }) {
     <section
       id="work"
       aria-label={workContent.title}
-      className={`${workSans.variable} ${workDisplay.variable} relative isolate z-10 overflow-x-clip [font-family:var(--font-work-sans)] text-ink`}
+      className={`${workDisplay.variable} relative isolate z-10 overflow-x-clip font-sans text-ink`}
     >
       <WorkShowcase
         projects={workProjects.slice(0, workContent.featuredCount)}

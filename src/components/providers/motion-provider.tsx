@@ -20,6 +20,7 @@ function MotionRuntime() {
           autoRaf: false,
           anchors: true,
           lerp: motionConfig.scroll.lerp,
+          wheelMultiplier: motionConfig.scroll.wheelMultiplier,
           smoothWheel: true,
           syncTouch: false,
           stopInertiaOnNavigate: true,
@@ -30,6 +31,7 @@ function MotionRuntime() {
 
         let disposed = false;
         let refreshFrame = 0;
+        let refreshTimer: ReturnType<typeof setTimeout> | undefined;
 
         const tick = (seconds: number) => lenis.raf(seconds * 1000);
         const refresh = () => {
@@ -40,8 +42,16 @@ function MotionRuntime() {
             ScrollTrigger.refresh();
           });
         };
+        // An image with its size in its attributes reserves its space before it
+        // loads, so it cannot move anything; only the others call for a refresh,
+        // and a burst of them (a gallery loading in) is measured once.
         const onAssetLoad = (event: Event) => {
-          if (event.target instanceof HTMLImageElement) refresh();
+          const image = event.target;
+          if (!(image instanceof HTMLImageElement)) return;
+          if (image.hasAttribute('width') && image.hasAttribute('height')) return;
+          if (image.closest('[data-nimg="fill"]') || image.dataset.nimg === 'fill') return;
+          clearTimeout(refreshTimer);
+          refreshTimer = setTimeout(refresh, 160);
         };
 
         lenis.on('scroll', ScrollTrigger.update);
@@ -54,6 +64,7 @@ function MotionRuntime() {
           unregisterScroll();
           disposed = true;
           cancelAnimationFrame(refreshFrame);
+          clearTimeout(refreshTimer);
           document.removeEventListener('load', onAssetLoad, true);
           gsap.ticker.remove(tick);
           lenis.off('scroll', ScrollTrigger.update);

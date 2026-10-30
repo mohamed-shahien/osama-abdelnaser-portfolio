@@ -1,13 +1,14 @@
 'use client';
 
 import Image from 'next/image';
-import { useRef, useState, type ReactNode, type RefObject } from 'react';
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 
 import { solutionContent as content } from '@/content/solution';
 import { motionConfig } from '@/lib/motion/config';
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/motion/gsap';
 import { cn } from '@/lib/utils';
 import { canvasGrid } from './canvas-grid';
+import { StepOrb } from './step-orb';
 
 /*
  * The workspace revealed behind the key: Osama's Figma file, where a developer
@@ -16,8 +17,11 @@ import { canvasGrid } from './canvas-grid';
  * the Figma chrome follows the stage index, which changes only ten times.
  */
 
-const mono = "[font-family:'Space_Mono',ui-monospace,monospace]";
-const hand = "[font-family:'Caveat',cursive]";
+// The workspace speaks in the site's own type: BT Grotesk for labels and
+// notes, F37 Bolton for the hand-set annotations; only code stays monospaced.
+const sans = 'font-sans font-medium';
+const code = "[font-family:'Space_Mono',ui-monospace,monospace]";
+const hand = '[font-family:var(--font-work-display)] tracking-[-0.01em]';
 const sticker =
   'rounded-full border-[3px] border-white font-extrabold leading-none [box-shadow:0_1px_0_#17284f14,0_8px_20px_#17284f2e]';
 const hidden = 'invisible opacity-0';
@@ -427,8 +431,36 @@ function buildTimeline(root: HTMLElement, isNarrow: () => boolean, onUpdate: () 
 
 function Header({ stage }: { stage: number }) {
   const current = content.stages[stage] ?? content.stages[0];
+  const trackRef = useRef<HTMLOListElement>(null);
+
+  // One line of steps: the track slides so the step before the current one
+  // leads, and the next steps come in from the overflow on the right.
+  useEffect(() => {
+    const track = trackRef.current;
+    const frame = track?.parentElement;
+    if (!track || !frame) return;
+    const place = () => {
+      const lead = track.children[Math.max(0, stage - 1)];
+      const max = Math.max(0, track.scrollWidth - frame.clientWidth);
+      const x = lead instanceof HTMLElement ? Math.min(lead.offsetLeft, max) : 0;
+      track.style.transform = `translate3d(${-x}px,0,0)`;
+    };
+    place();
+    const resize = new ResizeObserver(place);
+    resize.observe(frame);
+    return () => resize.disconnect();
+  }, [stage]);
+
   return (
-    <div aria-hidden="true" className="flex flex-col gap-[clamp(0.6rem,1.6svh,1rem)]">
+    <div
+      aria-hidden="true"
+      className="relative flex flex-col gap-[clamp(0.6rem,1.6svh,1rem)] pe-[clamp(104px,12vw,210px)]"
+    >
+      {/* The stage's dotted object, in the corner the stickers leave free. */}
+      <StepOrb
+        state={current.id}
+        className="absolute end-[clamp(0px,1vw,12px)] top-0 h-full max-h-[196px] w-auto"
+      />
       <p className="flex flex-wrap items-center gap-3">
         <span
           className={cn(
@@ -448,32 +480,37 @@ function Header({ stage }: { stage: number }) {
           {current.title}
         </span>
       </p>
-      <ol className="flex flex-wrap items-center gap-x-2 gap-y-2.5 max-xl:hidden">
-        {content.stages.map((item, index) => (
-          <li
-            key={item.id}
-            className={cn(
-              sticker,
-              'flex items-center gap-1 py-1 ps-1.5 pe-3 text-[15px] transition-[background-color,color,rotate,scale,opacity] duration-700 motion-reduce:transition-none',
-              index < stage && 'bg-white text-ink',
-              index > stage && 'bg-white text-ink opacity-45',
-              index === stage &&
-                (item.id === 'error'
-                  ? 'scale-110 rotate-[-2deg] bg-accent-rose text-white'
-                  : 'scale-110 rotate-[-2deg] bg-primary text-white'),
-            )}
-          >
-            <Image
-              src={`/steps/${item.id}.webp`}
-              alt={item.id}
-              width={42}
-              height={42}
-              className="size-[42px] shrink-0 object-contain select-none"
-            />
-            <span>{item.id}</span>
-          </li>
-        ))}
-      </ol>
+      <div className="-my-2 overflow-hidden [mask-image:linear-gradient(90deg,#000_88%,transparent)] py-2 ps-1 max-xl:hidden">
+        <ol
+          ref={trackRef}
+          className="flex w-max flex-nowrap items-center gap-2 transition-transform duration-700 ease-[cubic-bezier(.65,0,.35,1)] motion-reduce:transition-none"
+        >
+          {content.stages.map((item, index) => (
+            <li
+              key={item.id}
+              className={cn(
+                sticker,
+                'flex items-center gap-1 py-1 ps-1.5 pe-3 text-[15px] transition-[background-color,color,rotate,scale,opacity] duration-700 motion-reduce:transition-none',
+                index < stage && 'bg-white text-ink',
+                index > stage && 'bg-white text-ink opacity-45',
+                index === stage &&
+                  (item.id === 'error'
+                    ? 'scale-110 rotate-[-2deg] bg-accent-rose text-white'
+                    : 'scale-110 rotate-[-2deg] bg-primary text-white'),
+              )}
+            >
+              <Image
+                src={`/steps/${item.id}.webp`}
+                alt={item.id}
+                width={42}
+                height={42}
+                className="size-[42px] shrink-0 object-contain select-none"
+              />
+              <span>{item.id}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
       <div className="flex items-center gap-4 xl:hidden">
         <span
           className={cn(
@@ -515,7 +552,7 @@ function FigmaWindow({ stage }: { stage: number }) {
   const chip = (who: Person, text: string, className?: string) => (
     <span
       className={cn(
-        mono,
+        sans,
         'flex min-w-0 items-center gap-2 truncate rounded-full px-[0.75rem] py-[0.35rem] text-[14px] leading-none transition-colors duration-700 motion-reduce:transition-none',
         stage === STAGE.error
           ? 'bg-accent-rose text-white'
@@ -734,6 +771,59 @@ function LayersPanel({ stage }: { stage: number }) {
           </li>
         ))}
       </ul>
+      {/* The brief stays pinned under the layers, so the file always says why. */}
+      <div className="m-2 rounded-[8px] border border-[#e6e6e6] bg-[#fafafa] p-3">
+        <p className="flex items-center justify-between text-[11px] font-semibold tracking-[0.08em] text-[#1e1e1e80] uppercase">
+          Brief <span className="rounded-full bg-secondary px-1.5 py-px text-ink">Client</span>
+        </p>
+        <p className="mt-1.5 text-[13px] leading-snug font-semibold">{content.brief}</p>
+        <p className="mt-1 text-[12px] leading-snug text-[#1e1e1eb3]">{content.goal}</p>
+        <p className="mt-2 flex flex-wrap gap-1">
+          {content.tags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full bg-white px-2 py-0.5 text-[11px] ring-1 ring-[#e6e6e6]"
+            >
+              {tag}
+            </span>
+          ))}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/** The stage in words: what is happening and who is doing what. */
+function StageNote({ stage }: { stage: number }) {
+  const current = content.stages[stage] ?? content.stages[0];
+  return (
+    <div className="m-2 mt-auto rounded-[8px] border border-[#e6e6e6] bg-[#fafafa] p-3">
+      <p className="flex items-center justify-between text-[11px] font-semibold tracking-[0.08em] text-[#1e1e1e80] uppercase">
+        Step {String(stage + 1).padStart(2, '0')} / {String(STAGES).padStart(2, '0')}
+        <span className="flex gap-0.5">
+          {content.stages.map((item, index) => (
+            <span
+              key={item.id}
+              className={cn(
+                'h-[4px] w-[8px] rounded-full transition-colors duration-500',
+                index <= stage ? 'bg-primary' : 'bg-[#e6e6e6]',
+              )}
+            />
+          ))}
+        </span>
+      </p>
+      <p className="mt-1.5 text-[14px] leading-tight font-semibold">{current.title}</p>
+      <p className="mt-1 text-[12px] leading-snug text-[#1e1e1eb3]">{current.line}</p>
+      <p className="mt-2.5 grid gap-1 text-[12px]">
+        <span className="flex items-center gap-1.5">
+          <span className="size-[6px] rounded-full bg-accent-rose" />
+          Osama · {current.designer}
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="size-[6px] rounded-full bg-primary" />
+          Developer · {current.developer}
+        </span>
+      </p>
     </div>
   );
 }
@@ -798,7 +888,7 @@ function DesignPanel({ stage }: { stage: number }) {
         <span className="text-[#1e1e1e80]">Prototype</span>
         <span className="ms-auto font-normal text-[#1e1e1e80]">100%</span>
       </div>
-      <div className="min-h-0 flex-1 overflow-hidden">
+      <div className="min-h-0 shrink overflow-hidden">
         {selection === 'page' ? (
           <>
             <PanelSection title="Page">
@@ -868,6 +958,7 @@ function DesignPanel({ stage }: { stage: number }) {
           </>
         )}
       </div>
+      <StageNote stage={stage} />
     </div>
   );
 }
@@ -1199,7 +1290,7 @@ function BriefSection() {
     <>
       <Section name="Brief & research" className="left-[20px]" />
       <div className="absolute top-[64px] left-[44px] w-[380px] rounded-[14px] bg-white p-5 [box-shadow:0_1px_3px_#0000001f]">
-        <p className={cn(mono, 'text-[13px] text-primary')}>Brief · from Client</p>
+        <p className={cn(sans, 'text-[13px] text-primary')}>Brief · from Client</p>
         <p className="mt-2 text-[24px] leading-tight font-bold">“{content.brief}”</p>
         <p className="mt-2 text-[16px] text-[#1e1e1eb3]">{content.goal}</p>
         <p className="mt-3 flex flex-wrap gap-1.5">
@@ -1278,7 +1369,7 @@ function BriefSection() {
           hidden,
         )}
       >
-        <p className={cn(mono, 'text-[12px] text-[#1e1e1e80]')}>Persona</p>
+        <p className={cn(sans, 'text-[12px] text-[#1e1e1e80]')}>Persona</p>
         <p className="mt-1 text-[16px] font-bold">{content.persona.title}</p>
         <p className="mt-1 text-[14px] leading-snug text-[#1e1e1eb3]">{content.persona.goal}</p>
       </div>
@@ -1289,7 +1380,7 @@ function BriefSection() {
           hidden,
         )}
       >
-        <p className={cn(mono, 'text-[12px] text-accent-rose')}>Problem statement</p>
+        <p className={cn(sans, 'text-[12px] text-accent-rose')}>Problem statement</p>
         <p className="mt-1.5 text-[17px] leading-snug font-semibold">
           Shoppers on phones leave at Pay because it is slow and long.
         </p>
@@ -1335,7 +1426,7 @@ function SystemDiagram() {
         <span
           data-el="problem-calls"
           className={cn(
-            mono,
+            sans,
             'absolute top-[500px] left-[1200px] text-[13px] text-accent-rose',
             hidden,
           )}
@@ -1626,7 +1717,7 @@ function BuildSection() {
             <span
               key={label}
               className={cn(
-                mono,
+                sans,
                 'absolute right-[16px] left-[16px] rounded-[8px] border-[1.5px] border-dashed border-[#0d99ff] p-1.5 text-[12px] text-[#0d99ff]',
                 box,
               )}
@@ -1659,7 +1750,7 @@ function BuildSection() {
           <span className="absolute top-[152px] left-[110px] h-px w-[16px] bg-accent-rose" />
           <span
             className={cn(
-              mono,
+              sans,
               'absolute top-[134px] left-[128px] rounded-[4px] bg-accent-rose px-1 text-[12px] text-white',
             )}
           >
@@ -1668,7 +1759,7 @@ function BuildSection() {
           <span className="absolute top-[446px] left-0 h-px w-[16px] bg-accent-rose" />
           <span
             className={cn(
-              mono,
+              sans,
               'absolute top-[448px] left-[1px] rounded-[4px] bg-accent-rose px-1 text-[12px] text-white',
             )}
           >
@@ -1721,7 +1812,7 @@ function BuildSection() {
             ),
           )}
         </span>
-        <span className={cn(mono, 'absolute top-[300px] left-[3130px] flex gap-1.5 text-[13px]')}>
+        <span className={cn(sans, 'absolute top-[300px] left-[3130px] flex gap-1.5 text-[13px]')}>
           <span className="rounded-[6px] bg-white px-2 py-1">space/16</span>
           <span className="rounded-[6px] bg-white px-2 py-1">radius/14</span>
         </span>
@@ -1745,10 +1836,10 @@ function BuildSection() {
           <span className="rounded-[5px] bg-[#0fa958] px-1.5 py-0.5 font-semibold text-white">
             {'</>'} Dev Mode
           </span>
-          <span className={mono}>{content.code.file}</span>
+          <span className={code}>{content.code.file}</span>
           <span className="ms-auto text-[#ffffff66]">React</span>
         </p>
-        <div className={cn(mono, 'px-3 py-2 text-[12.5px] leading-[17px]')}>
+        <div className={cn(code, 'px-3 py-2 text-[12.5px] leading-[17px]')}>
           {content.code.lines.map((line, index) => (
             <p key={line} data-code-line className={cn('flex gap-3 whitespace-pre', hidden)}>
               <span className="w-[14px] text-end text-[#ffffff40]">{index + 1}</span>
@@ -1882,7 +1973,7 @@ function BuildSection() {
       <div
         data-el="test"
         className={cn(
-          mono,
+          code,
           'absolute top-[488px] left-[3110px] w-[220px] origin-top-left rounded-[10px] bg-[#1e1e1e] px-3 py-2 text-[12px] text-[#ffffffb3]',
           hidden,
         )}

@@ -1034,6 +1034,48 @@ function LetterCell({
 }
 
 // #region character
+// Osama's hair: a cloud of curls, scalloped round the crown from behind the ear
+// to the right temple, closed along the hairline over the forehead.
+const HAIR = (() => {
+  const cx = 206;
+  const cy = 84;
+  const at = (a: number, k: number) => {
+    const r = (a * Math.PI) / 180;
+    return [cx + 84 * k * Math.cos(r), cy - 74 * k * Math.sin(r)] as const;
+  };
+  const f = (n: number) => n.toFixed(1);
+  const n = 17;
+  const from = 196;
+  const to = -16;
+  let [x0, y0] = at(from, 1);
+  let d = 'M ' + f(x0) + ' ' + f(y0);
+  for (let i = 1; i <= n; i++) {
+    const a = from + ((to - from) * i) / n;
+    const mid = from + ((to - from) * (i - 0.5)) / n;
+    const [cx1, cy1] = at(mid, 1.17 + 0.05 * Math.sin(i * 2.3));
+    [x0, y0] = at(a, 1);
+    d += ' Q ' + f(cx1) + ' ' + f(cy1) + ' ' + f(x0) + ' ' + f(y0);
+  }
+  return (
+    d +
+    ' C 268 108 262 92 256 82 C 238 64 196 62 176 72 C 164 80 162 96 162 112 C 150 112 132 110 ' +
+    f(at(from, 1)[0]) +
+    ' ' +
+    f(at(from, 1)[1]) +
+    ' Z'
+  );
+})();
+// Curls drawn into the hair, and the loose ones over his forehead.
+const CURLS = [
+  'M 150 62 c -8 -6 -2 -18 8 -14 c 8 4 2 14 -4 10',
+  'M 186 36 c -6 -8 4 -18 12 -12 c 6 6 -2 14 -7 9',
+  'M 232 30 c -4 -9 8 -15 13 -8 c 4 7 -5 12 -9 7',
+  'M 270 52 c -2 -9 10 -12 13 -4 c 2 8 -8 10 -10 5',
+  'M 280 86 c 0 -8 11 -9 12 -1 c 0 8 -10 8 -10 3',
+  'M 172 64 c -4 -8 6 -14 11 -8 c 4 6 -3 11 -7 7',
+  'M 208 54 c -3 -8 8 -13 12 -6 c 3 7 -6 11 -9 6',
+];
+const FRINGE = 'M 176 72 c -2 8 4 14 10 10 M 196 66 c -2 9 5 13 10 8 M 216 66 c 0 8 7 11 11 5';
 // Local frame 0 0 460 600; the bottom edge is the baseline he rises from.
 // Rig pivots (mirrored in the CSS transform-origins): tilt/breathe at the feet
 // (205, 600), shoulder (288, 248), elbow (348, 346), wrist (392, 216), neck
@@ -1129,15 +1171,67 @@ function Character({
 
           {/* his right arm, folded across the waist */}
           {limb('M 118 384 C 140 410 168 428 194 438', 30)}
-          <circle cx={204} cy={440} r={24} fill={ink} />
-          <circle cx={204} cy={440} r={20} fill={paper} />
+          {/* a watch on his wrist */}
+          <path d="M 163 417 L 179 428" stroke={ink} strokeWidth={40} />
+          <circle cx={171} cy={422.5} r={10} fill={paper} stroke={ink} strokeWidth={3.5} />
           <path
-            d="M 206 426 C 214 430 218 438 216 448 M 196 446 C 202 452 210 454 216 450"
+            d="M 171 422.5 L 171 416.5 M 171 422.5 L 175.5 424.5"
             fill="none"
             stroke={ink}
-            strokeWidth={3}
+            strokeWidth={2.2}
             strokeLinecap="round"
           />
+          {/* his hand, resting on the waist, fingers curled over the belt */}
+          <g transform="translate(190 436) rotate(32) scale(1.25)">
+            {[0, 1, 2, 3].map((k) => (
+              <path
+                key={k}
+                d={
+                  'M ' +
+                  (9 + 7.5 * k) +
+                  ' 8 L ' +
+                  (7 + 7.5 * k) +
+                  ' ' +
+                  (25 - Math.abs(k - 1.5) * 3)
+                }
+                stroke={ink}
+                strokeWidth={13}
+                strokeLinecap="round"
+              />
+            ))}
+            {[0, 1, 2, 3].map((k) => (
+              <path
+                key={k}
+                d={
+                  'M ' +
+                  (9 + 7.5 * k) +
+                  ' 8 L ' +
+                  (7 + 7.5 * k) +
+                  ' ' +
+                  (25 - Math.abs(k - 1.5) * 3)
+                }
+                stroke={paper}
+                strokeWidth={5.5}
+                strokeLinecap="round"
+              />
+            ))}
+            <path d="M 8 -12 L 27 -22" stroke={ink} strokeWidth={14} strokeLinecap="round" />
+            <path d="M 8 -12 L 27 -22" stroke={paper} strokeWidth={6.5} strokeLinecap="round" />
+            <path
+              d="M -4 -17 C 12 -20 28 -17 34 -8 C 38 0 37 10 31 15 C 20 20 4 19 -4 15 Z"
+              fill={paper}
+              stroke={ink}
+              strokeWidth={4}
+              strokeLinejoin="round"
+            />
+            <path
+              d="M 14 -6 C 18 -8 22 -8 25 -5 M 16 4 C 20 2 24 2 27 5"
+              fill="none"
+              stroke={ink}
+              strokeWidth={2.4}
+              strokeLinecap="round"
+            />
+          </g>
           <path
             d="M 124 250 C 110 300 106 345 112 382"
             fill="none"
@@ -1239,23 +1333,20 @@ function Character({
                 strokeWidth={2.5}
               />
               <path
-                d="M 160 92 C 158 142 172 180 206 184 C 240 182 258 150 258 100 C 258 64 236 46 208 46 C 180 46 162 64 160 92 Z"
+                d="M 160 98 C 158 150 178 186 208 186 C 240 186 260 152 260 102 C 260 66 238 48 210 48 C 182 48 162 66 160 98 Z"
                 fill={paper}
                 stroke={ink}
                 strokeWidth={4}
               />
+              <path d={HAIR} fill={ink} stroke={ink} strokeWidth={4} strokeLinejoin="round" />
               <path
-                d="M 154 108 C 146 70 156 30 196 18 C 232 8 276 16 284 44 C 288 60 278 72 264 72 C 250 62 226 60 206 66 C 186 72 172 86 168 110 Z"
-                fill={ink}
-              />
-              <path d="M 160 94 L 166 126 L 173 104 Z" fill={ink} />
-              <path
-                d="M 196 30 C 220 22 250 24 266 38 M 190 44 C 210 36 236 38 250 46"
+                d={CURLS.join(' ')}
                 fill="none"
                 stroke={paper}
                 strokeWidth={2.5}
                 strokeLinecap="round"
               />
+              <path d={FRINGE} fill="none" stroke={ink} strokeWidth={5} strokeLinecap="round" />
               <g className="wpl-brows">
                 <path
                   d="M 176 88 C 184 84 194 84 202 87 M 218 87 C 226 84 238 84 246 88"
@@ -1280,31 +1371,31 @@ function Character({
                 strokeLinecap="round"
               />
               <path
-                d="M 172 102 L 160 100 M 206 105 C 209 101 211 101 214 105"
+                d="M 170 103 L 160 101 M 208 106 C 210 102 212 102 214 106"
                 fill="none"
                 stroke={ink}
                 strokeWidth={4}
                 strokeLinecap="round"
               />
               <rect
-                x={172}
-                y={96}
-                width={34}
-                height={26}
-                rx={5}
+                x={170}
+                y={94}
+                width={38}
+                height={30}
+                rx={3}
                 fill="none"
                 stroke={ink}
-                strokeWidth={4.5}
+                strokeWidth={6.5}
               />
               <rect
                 x={214}
-                y={96}
-                width={36}
-                height={26}
-                rx={5}
+                y={94}
+                width={40}
+                height={30}
+                rx={3}
                 fill="none"
                 stroke={ink}
-                strokeWidth={4.5}
+                strokeWidth={6.5}
               />
               <path
                 d="M 214 118 C 211 132 206 142 214 146 C 219 148 224 146 226 143"

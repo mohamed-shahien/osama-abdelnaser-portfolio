@@ -19,7 +19,7 @@ The collection wraps the preceding section as a server-rendered child. Its panel
 - Pages use native WebGL with the measured camera, curved geometry, focus angles,
   hover lift and image zoom. Correct UV orientation keeps cover text readable.
 - Browsing is finite. Six featured projects are followed by an ALL PROJECTS image
-  card. Clicking it fetches the remaining 13 from `/api/work` and inserts them at
+  card. Clicking it fetches the remaining projects from `/api/work` and inserts them at
   the current position in the same scene, without resetting its animation.
 - There are no arrow controls. Wheel, touch and keyboard navigate within bounds.
   At either boundary input passes back to the root scroll runtime. Local events
@@ -39,20 +39,21 @@ The collection wraps the preceding section as a server-rendered child. Its panel
   removes gate movement, 3D, counter blur and page transitions. No-JavaScript users
   receive the complete image/link list.
 
-## What to provide for each real project
+## Project fields
 
-| Field                       | Required                | What to supply                                                                                                   |
-| --------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `name`                      | Yes                     | The actual project name                                                                                          |
-| `slug`                      | Yes                     | A unique lowercase URL name such as `my-product`                                                                 |
-| `description`               | Yes                     | One or two clear sentences about the problem and result; no unsupported metrics                                  |
-| `cover`                     | Yes                     | A landscape cover, about 5:4, ideally 1600×1280px or larger                                                      |
-| `images`                    | Yes                     | Ordered UI screenshots or presentation images; 1440–1920px wide is suitable; natural image heights are preserved |
-| `category`                  | Yes                     | Product, website, mobile app, commerce, or the relevant industry                                                 |
-| `role`                      | Recommended             | Osama's actual role on the project                                                                               |
-| `launch`                    | Optional                | An approved month/year, or an empty string                                                                       |
-| `liveUrl`                   | Optional                | A verified public project/prototype link; `null` hides the link                                                  |
-| `sourceAuthor`, `sourceUrl` | Reference fixtures only | Set both to `null` when replacing with Osama's approved work                                                     |
+| Field         | What it holds                                                                |
+| ------------- | ---------------------------------------------------------------------------- |
+| `name`        | The project name                                                             |
+| `slug`        | A unique lowercase URL name such as `my-product`                             |
+| `category`    | The project type, such as `Salla Store`, `Salla Theme` or `Web Platform`     |
+| `summary`     | One line shown on the gallery card                                           |
+| `description` | The full description on the case page; no unsupported metrics                |
+| `date`        | The delivery month, such as `Aug 2026`                                       |
+| `support`     | Devices and directions, such as `Responsive (Desktop + Mobile) · Arabic RTL` |
+| `cover`       | The 910×732 gallery card                                                     |
+| `images`      | Ordered UI images for the case page, each with a small thumbnail             |
+| `liveUrl`     | A public project link, or `null`                                             |
+| `behanceUrl`  | The project's own Behance page, or `null`                                    |
 
 A cover is separate from the UI screenshots: the cover is the gallery card;
 `images` form the project's scrolling preview. One UI image works, and more
@@ -61,9 +62,10 @@ included in their original proportions.
 
 ## Where to edit
 
-- `src/content/work-reference.json`: project records and all image paths.
+- `src/content/work-projects.json`: project records and image paths, newest first.
 - `src/content/work-copy.ts`: section labels.
-- `public/work/`: the current reference files; real project folders can be added beside `reference/`.
+- `public/work/projects/<slug>/`: `cover.webp`, `01.webp`… and `01.thumb.webp`….
+  `public/work/reference/` now holds only the push character's motion and atlas.
 - `src/types/work.ts`: the typed content shape.
 
 Example image record:
@@ -83,19 +85,24 @@ Supply accurate dimensions to reserve the correct space. `thumbnail` is optional
 when a separate thumbnail is unavailable. Each project's ordered image list can
 be changed independently of its cover.
 
-## Temporary reference material
+## Project source
 
-At the user's request, the initial collection contains the 19 projects shown at
-[huyml.co](https://huyml.co/), with the original cover/interface imagery. They are
-clearly marked as Huy Phan references, not Osama client work. The accompanying
-copy describes those references without claiming their awards or results.
+The collection is Osama's own work, taken from `Osama_Portfolio_Projects_EN.md`
+(Notion, Behance, Drive and the CV). 38 of its 45 rows are shown, newest first:
 
-`public/work/reference/SOURCES.json` records the original page and image URLs.
-There are 19 covers, 124 interface images, and separate small thumbnails. Images
-were encoded as WebP offline with the already installed image encoder; no
-dependency or lockfile was added or changed. The original vector motion is stored
+- Row 23 repeats Bareeq (row 6) and is merged into it.
+- Rows 44 and 45 (Tasawwoq, Wehg) have no confirmed name, type or description.
+- Rows 10, 11, 27 and 36 (Vivian Cosmetics, SoapCover, Rafal, MUHKAM) have no images.
+
+Drive images are used when a project has them, and Behance images otherwise. The
+Behance link is hidden for rows 2, 3, 4, 5 and 7, where the sheet notes it opens the
+base theme rather than the project. Images were downloaded once and encoded as WebP
+(covers 910×732, UI images at most 1440px wide, thumbnails 160×100) with the already
+installed image encoder. No dependency or lockfile changed. The original vector motion is stored
 in `push-character-motion.json` (232 samples, approximately 1.6MB before transfer
 compression), fetched and cached once. The old raster atlas is no longer used.
+
+The former Huy Phan reference collection and its images were removed.
 
 Heavy illustration/gallery work mounts only within one viewport and after the
 initial loader. Gallery drawing is demand-driven; its GSAP ticker detaches once

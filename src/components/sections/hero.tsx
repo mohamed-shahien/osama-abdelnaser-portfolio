@@ -1,19 +1,15 @@
-import { Inter } from 'next/font/google';
 import Link from 'next/link';
 
 import { heroContent } from '@/content/hero';
 import { cn } from '@/lib/utils';
 import { HeroScene } from './hero-scene';
-
-const inter = Inter({ subsets: ['latin'], display: 'swap' });
+import { TransitionLink } from './page-transition';
+import { SiteNav } from './site-nav';
 
 export function Hero() {
   return (
     <section
-      className={cn(
-        'group/hero [overflow:clip] bg-white text-ink [--hero-header-height:88px]',
-        inter.className,
-      )}
+      className="group/hero [overflow:clip] bg-white text-ink [--hero-header-height:88px]"
       aria-label="Osama Abdelnaser — Product Designer"
       data-hero
     >
@@ -26,21 +22,23 @@ export function Hero() {
         )}
       >
         <Link
-          className="pointer-events-auto text-[22px] font-[750] tracking-[-1.3px] [@media(max-width:480px)]:text-[20px]"
+          className="pointer-events-auto text-[22px] font-[750] tracking-[-1.3px] max-sm:sr-only [@media(max-width:480px)]:text-[20px]"
           href="/"
           aria-label="Osama Abdelnaser, home"
         >
           osama
         </Link>
-        <a
+        <SiteNav className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-sm:left-[calc(50%_+_4px)]" />
+        <TransitionLink
           className={cn(
-            'pointer-events-auto rounded-[999px] bg-ink px-[16px] py-[6px] text-[14px] leading-[20px] font-semibold text-white [transition:background_180ms_ease] hover:bg-primary hover:text-ink',
+            'pointer-events-auto rounded-[999px] bg-ink px-[16px] py-[6px] text-[14px] leading-[20px] font-semibold text-white [transition:background_180ms_ease] hover:bg-primary hover:text-ink max-md:hidden',
             '[@media(max-width:480px)]:px-[8px] [@media(max-width:480px)]:py-[4px] [@media(max-width:480px)]:text-[12px] [@media(max-width:480px)]:leading-[18px]',
           )}
-          href={heroContent.contactHref}
+          href="/contact"
+          label={heroContent.contactLabel}
         >
           {heroContent.contactLabel}
-        </a>
+        </TransitionLink>
       </header>
       <HeroScene />
     </section>

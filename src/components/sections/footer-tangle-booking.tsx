@@ -1,60 +1,42 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { usePathname, useRouter } from 'next/navigation';
+import { useCallback } from 'react';
 
-import { TangleFooter } from '@/components/ui/tangle-footer';
 import { footerBookLabel } from '@/content/footer';
-import { scrollPageTo } from '@/lib/motion/page-scroll';
-import { BookingCtaDrop } from './booking-cta-drop';
-import BookingOverlay, { preloadBookingInquiry, type BookingOrigin } from './booking-overlay';
+import { navigateWithTransition } from './page-transition';
 
-const DIALOG_ID = 'booking-inquiry-dialog';
+// Both draw only on the home page, at the very bottom; their code waits for it.
+const TangleFooter = dynamic(() =>
+  import('@/components/ui/tangle-footer').then((module) => module.TangleFooter),
+);
+const BookingCtaDrop = dynamic(() =>
+  import('./booking-cta-drop').then((module) => module.BookingCtaDrop),
+);
 
+const CONTACT = '/contact';
+
+/** The footer's "Book a meeting" button opens the contact page. It shows on the home page only. */
 export function FooterTangleBooking() {
-  const [open, setOpen] = useState(false);
-  const [origin, setOrigin] = useState<BookingOrigin | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const handlePreload = useCallback(() => {
-    void preloadBookingInquiry();
-  }, []);
+  const handlePreload = useCallback(() => router.prefetch(CONTACT), [router]);
   const handleOpen = useCallback(() => {
-    const trigger = document.querySelector<HTMLElement>('[data-tangle-cta]');
-    if (!trigger) return;
-    scrollPageTo(window.scrollY);
-    const rect = trigger.getBoundingClientRect();
-    const face = trigger.querySelector<HTMLElement>('[data-tangle-cta-face]') ?? trigger;
-    setOrigin({
-      left: rect.left,
-      top: rect.top,
-      width: rect.width,
-      height: rect.height,
-      color: getComputedStyle(face).backgroundColor,
-    });
-    void preloadBookingInquiry();
-    setOpen(true);
-  }, []);
+    if (!navigateWithTransition(CONTACT, footerBookLabel)) router.push(CONTACT);
+  }, [router]);
 
-  const handleClose = useCallback(() => {
-    setOpen(false);
-    requestAnimationFrame(() => {
-      const trigger = document.querySelector<HTMLButtonElement>('[data-tangle-cta]');
-      trigger?.focus({ preventScroll: true });
-    });
-  }, []);
-
+  // Inner pages carry their own way to book; their footer starts at the stickers.
+  if (pathname !== '/') return null;
   return (
     <>
       <TangleFooter
         ctaLabel={footerBookLabel}
         onCtaClick={handleOpen}
         onCtaPreload={handlePreload}
-        ctaExpanded={open}
-        ctaControls={DIALOG_ID}
       />
       <BookingCtaDrop />
-      {open && origin ? (
-        <BookingOverlay id={DIALOG_ID} origin={origin} onClose={handleClose} />
-      ) : null}
     </>
   );
 }

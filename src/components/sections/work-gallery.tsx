@@ -6,18 +6,20 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEve
 import { workContent } from '@/content/work-copy';
 import { motionConfig } from '@/lib/motion/config';
 import { gsap, useGSAP } from '@/lib/motion/gsap';
+import { cn } from '@/lib/utils';
 import { createWorkRenderer, type WorkFrame } from '@/lib/motion/work-renderer';
 import type { WorkImage, WorkProject } from '@/types/work';
-import { WorkPageLink } from './work-page-transition';
+import { TransitionLink } from './page-transition';
+import { WorkBadges } from './work-badges';
 import { WorkCounter } from './work-counter';
 
 type GalleryItem = {
   slug: string;
   name: string;
   category: string;
-  description: string;
-  role: string;
-  launch: string;
+  summary: string;
+  support: string;
+  date: string;
   cover: WorkImage;
 } & ({ kind: 'project'; project: WorkProject } | { kind: 'more' });
 const moreCard: GalleryItem = {
@@ -25,9 +27,9 @@ const moreCard: GalleryItem = {
   slug: 'all-projects',
   name: 'All projects',
   category: 'The full collection',
-  description: 'More work. The same curiosity. Open the rest of the collection and keep exploring.',
-  role: 'Product & digital design',
-  launch: '',
+  summary: 'More work. The same curiosity. Open the rest of the collection and keep exploring.',
+  support: 'Web, Salla and Zid',
+  date: '',
   cover: {
     src: '/work/all-projects.svg',
     width: 910,
@@ -61,7 +63,7 @@ export default function WorkGallery({
     canvasRef = useRef<HTMLCanvasElement>(null);
   const [collection, setCollection] = useState<readonly WorkProject[]>(initialProjects);
   const [loading, setLoading] = useState(false),
-    [error, setError] = useState('');
+    [, setError] = useState('');
   const [active, setActive] = useState(0),
     [webgl, setWebgl] = useState(false);
   const hasMore = collection.length < total;
@@ -318,22 +320,27 @@ export default function WorkGallery({
             wake();
           };
           // The deck rolls in from behind, fans out and turns into place as the
-          // push pulls the page away, landing on the first project. Scrubbed by
-          // scroll, so it plays back in reverse when the reader returns.
+          // push pulls the page away, landing on the project the reader was on
+          // (the first one on a first visit). Scrubbed by scroll, so it plays back
+          // in reverse when the reader returns. Keeping that project matters: a
+          // layout refresh can dip the push for a moment, and the deck must not
+          // throw the reader back to the start.
           const copy = Array.from(root.querySelectorAll<HTMLElement>('[data-work-copy]'));
           let wasAssembling = assembled < 1;
+          let home = savedIndex;
           const assemble = () => {
             if (assembled < 1) {
+              if (!wasAssembling) home = clamp(Math.round(target), last());
               wasAssembling = true;
-              frame.current = -2.4 * (1 - easeOut(assembled));
+              frame.current = home - 2.4 * (1 - easeOut(assembled));
               frame.speed = 0;
-              target = 0;
+              target = home;
               pending = 0;
               frame.spacing = 1.2 + 5.8 * easeOut(part(assembled, 0.1, 1));
               frame.focus = easeOut(part(assembled, 0.3, 1));
             } else if (wasAssembling) {
               wasAssembling = false;
-              frame.current = 0;
+              frame.current = home;
               frame.spacing = 7;
               frame.focus = 1;
             }
@@ -562,7 +569,6 @@ export default function WorkGallery({
     moveRef.current(index);
   };
   if (!project) return null;
-  const end = active === items.length - 1;
   const cardClass = webgl
     ? 'absolute inset-0 block cursor-pointer focus-visible:bg-primary/10'
     : 'absolute start-1/2 top-1/2 block aspect-[910/732] w-[64vw] max-w-[520px] [transform:translate(-50%,-50%)] focus-visible:outline-2 focus-visible:outline-primary lg:w-[29vw]';
@@ -614,7 +620,7 @@ export default function WorkGallery({
             {cover(item, index)}
           </button>
         ) : (
-          <WorkPageLink
+          <TransitionLink
             key={item.slug}
             href={`/work/${item.slug}`}
             label={item.name}
@@ -628,25 +634,96 @@ export default function WorkGallery({
             className={cardClass}
           >
             {cover(item, index)}
-          </WorkPageLink>
+          </TransitionLink>
         ),
       )}
       <aside
         data-work-copy
-        className="pointer-events-none absolute start-5 top-[42%] z-50 w-[29%] text-[11px] leading-tight max-lg:hidden"
+        className="pointer-events-none absolute start-[4%] top-[17%] z-50 flex w-[30%] max-w-[420px] flex-col gap-5 max-lg:hidden"
       >
-        <dl className="grid grid-cols-[42px_1fr_64px_1fr] gap-x-3 gap-y-2">
-          <dt className="text-black/45">Role</dt>
-          <dd>{project.role}</dd>
-          <dt className="text-black/45">{project.launch ? 'Launch' : 'Collection'}</dt>
-          <dd>{project.launch || `${total} projects`}</dd>
+        <p className="flex items-center gap-2 text-[11px] tracking-[0.08em] text-black/50 uppercase">
+          <span className="size-[7px] rounded-full bg-accent-rose" aria-hidden="true" />
+          Now viewing · {project.kind === 'more' ? 'the rest' : String(active + 1).padStart(2, '0')}
+        </p>
+        <div className="flex flex-col gap-3">
+          <span className="w-max rounded-full border border-black/15 px-3 py-1 text-[11px]">
+            {project.category}
+          </span>
+          <p className="text-[13px] leading-snug text-black/60">
+            Up next ·{' '}
+            <span className="text-black">{items[active + 1]?.name ?? 'the skills section'}</span>
+          </p>
+        </div>
+        <dl className="grid grid-cols-[92px_1fr] gap-x-4 gap-y-3 border-t border-black/10 pt-4 text-[12px] leading-snug">
+          <dt className="text-black/45">Built for</dt>
+          <dd>
+            {project.kind === 'project' ? (
+              <WorkBadges project={project.project} size="xs" />
+            ) : (
+              project.support
+            )}
+          </dd>
+          <dt className="text-black/45">{project.date ? 'Delivered' : 'Collection'}</dt>
+          <dd>{project.date || `${total} projects`}</dd>
+          {project.kind === 'project' ? (
+            <>
+              <dt className="text-black/45">Inside</dt>
+              <dd>
+                {project.project.images.length}{' '}
+                {project.project.images.length === 1 ? 'screen' : 'screens'} to scroll through
+              </dd>
+            </>
+          ) : null}
         </dl>
+        <p className="flex items-center gap-2 text-[12px] font-semibold">
+          <span
+            className="grid size-[26px] place-items-center rounded-full bg-ink text-secondary"
+            aria-hidden="true"
+          >
+            ↗
+          </span>
+          {project.kind === 'more'
+            ? 'Click to open the full collection'
+            : 'Click the card to open the case'}
+        </p>
+        {project.kind === 'project' && project.project.images.length ? (
+          <TransitionLink
+            key={project.slug}
+            href={`/work/${project.slug}`}
+            label={project.name}
+            prefetch={false}
+            tabIndex={-1}
+            aria-hidden="true"
+            className="pointer-events-auto grid grid-cols-4 gap-2 border-t border-black/10 pt-4"
+          >
+            {project.project.images.slice(0, 4).map((image, index) => (
+              <span
+                key={image.src}
+                className="relative block aspect-[4/3] overflow-hidden rounded-[10px] bg-black/5 [box-shadow:0_1px_0_#17284f14]"
+              >
+                <Image
+                  src={image.thumbnail ?? image.src}
+                  alt=""
+                  fill
+                  unoptimized
+                  sizes="96px"
+                  className="object-cover"
+                />
+                {index === 3 && project.project.images.length > 4 ? (
+                  <span className="absolute inset-0 grid place-items-center bg-ink/70 text-[12px] font-semibold text-white">
+                    +{project.project.images.length - 4}
+                  </span>
+                ) : null}
+              </span>
+            ))}
+          </TransitionLink>
+        ) : null}
       </aside>
       <div
         className="pointer-events-none absolute end-[9.5%] top-1/2 z-50 w-[19%] max-lg:hidden"
         aria-hidden="true"
       >
-        {items.map((item) => (
+        {items.map((item, index) => (
           <div
             key={item.slug}
             data-work-label
@@ -654,10 +731,29 @@ export default function WorkGallery({
           >
             <p className="mb-2 text-[11px] text-black/45">{item.category}</p>
             <h3 className="[font-family:var(--font-work-display)] text-xl leading-none tracking-[-0.04em] uppercase">
-              {item.name}
+              {item.kind === 'project' ? (
+                // The card is the keyboard path; the name is a pointer shortcut.
+                <TransitionLink
+                  href={`/work/${item.slug}`}
+                  label={item.name}
+                  prefetch={false}
+                  tabIndex={-1}
+                  className={cn(
+                    'group inline-flex items-start gap-1 underline decoration-black/20 decoration-1 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-black',
+                    index === active ? 'pointer-events-auto' : 'pointer-events-none',
+                  )}
+                >
+                  {item.name}
+                  <span className="text-[0.6em] transition-transform group-hover:[transform:translate(2px,-2px)]">
+                    ↗
+                  </span>
+                </TransitionLink>
+              ) : (
+                item.name
+              )}
             </h3>
             <span className="my-4 block text-black/30">—</span>
-            <p className="text-[11px] leading-tight">{item.description}</p>
+            <p className="text-[11px] leading-tight">{item.summary}</p>
           </div>
         ))}
       </div>
@@ -667,7 +763,13 @@ export default function WorkGallery({
       >
         <h2 className="text-xl font-medium tracking-[-0.07em] uppercase lg:ms-[12%]">
           {workContent.title}
+          <sup className="ms-1 text-[11px] tracking-normal text-black/45">({total})</sup>
         </h2>
+        <p className="flex items-center gap-2 self-center text-[11px] text-black/50 max-lg:hidden">
+          <span className="rounded-full border border-black/15 px-2 py-0.5">←</span>
+          <span className="rounded-full border border-black/15 px-2 py-0.5">→</span>
+          {workContent.scroll}
+        </p>
         <p className="max-w-36 text-end text-[10px] leading-snug uppercase">
           Ideas into
           <br />
@@ -689,7 +791,7 @@ export default function WorkGallery({
         <h3 className="[font-family:var(--font-work-display)] text-xl leading-none tracking-tight uppercase">
           {project.name}
         </h3>
-        <p className="mx-auto mt-3 max-w-64 text-[11px] leading-snug">{project.description}</p>
+        <p className="mx-auto mt-3 max-w-64 text-[11px] leading-snug">{project.summary}</p>
       </div>
       <p className="sr-only" aria-live="polite">
         {loading
@@ -697,19 +799,6 @@ export default function WorkGallery({
           : project.kind === 'more'
             ? 'Open all projects, or keep scrolling to continue.'
             : `Project ${active + 1} of ${total}: ${project.name}`}
-      </p>
-      <p
-        className="absolute end-5 bottom-5 z-[200] max-w-40 text-end text-[11px] leading-snug"
-        role={error ? 'alert' : undefined}
-      >
-        {error ||
-          (loading
-            ? 'Loading projects…'
-            : project.kind === 'more'
-              ? 'Click for all projects · Scroll to continue'
-              : end
-                ? 'Keep scrolling to continue'
-                : workContent.scroll)}
       </p>
       <div
         data-work-progress

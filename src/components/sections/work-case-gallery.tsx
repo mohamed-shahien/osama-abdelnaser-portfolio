@@ -75,10 +75,11 @@ export function WorkCaseGallery({
               alt={image.alt}
               unoptimized
               loading={index === 0 ? 'eager' : 'lazy'}
+              fetchPriority={index === 0 ? 'high' : undefined}
               sizes="(min-width: 1024px) 47vw, 100vw"
               className="h-auto w-full"
             />
-            <figcaption className="mt-3 text-[10px] text-ink/45 lg:sr-only">
+            <figcaption className="mt-3 text-[10px] text-ink/70 lg:sr-only">
               {String(index + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
             </figcaption>
           </figure>

@@ -23,7 +23,11 @@
   --color-muted: var(--muted);
   --color-border: var(--border);
   --color-focus: var(--focus);
-  --font-sans: var(--font-geist-sans), Arial, sans-serif;
+  /* One hand-drawn face for all running text, the same stack as the booking
+     form's --wbi-hand. Display faces keep their own families. */
+  --font-sans:
+    'Segoe Print', 'Bradley Hand', Noteworthy, 'Ink Free', 'Marker Felt', 'IBM Plex Mono',
+    'JetBrains Mono', 'SF Mono', Menlo, Consolas, 'Liberation Mono', 'Courier New', monospace;
   --font-mono: var(--font-geist-mono), monospace;
   --container-site: 80rem;
 }
