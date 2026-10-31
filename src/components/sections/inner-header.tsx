@@ -1,19 +1,20 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-import { heroContent } from '@/content/hero';
+import { Arrow } from '@/components/ui/arrow';
 import { profile } from '@/content/profile';
 import { cn } from '@/lib/utils';
+import { NavLogo } from './nav-logo';
 import { TransitionLink } from './page-transition';
 
 type Current = 'work' | 'playground' | 'contact';
 
 const linkClass =
-  'w-max py-[3px] [transition:color_160ms_ease] hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary aria-[current=page]:underline aria-[current=page]:decoration-primary aria-[current=page]:decoration-[3px] aria-[current=page]:underline-offset-4';
+  'inline-flex items-center gap-1 py-1 [transition:color_160ms_ease] hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary aria-[current=page]:text-primary';
 
 /**
- * The header every inner page shares: the vertical wordmark, the menu with the
- * current page marked, the role, and a corner that defaults to the inquiry email.
+ * The bar every inner page shares: one short row with the logo, the menu (the
+ * current page marked), the role, and an optional corner for the page's own links.
  */
 export function InnerHeader({
   current,
@@ -24,31 +25,30 @@ export function InnerHeader({
   aside?: ReactNode;
   className?: string;
 }) {
-  const mark = (page: Current) => (page === current ? '→ ' : '');
+  const mark = (page: Current) =>
+    page === current ? <Arrow dir="right" className="size-[0.8em]" /> : null;
   return (
     <header
       className={cn(
-        'grid min-h-56 grid-cols-[auto_1fr] items-start gap-x-8 gap-y-6 p-5 text-ink md:min-h-[30svh] md:grid-cols-[11%_24%_1fr_1fr]',
+        'flex flex-wrap items-start justify-between gap-x-8 gap-y-1 px-5 py-3 text-ink md:py-4',
         className,
       )}
     >
-      <Link
-        href="/"
-        prefetch={false}
-        aria-label="Osama Abdelnaser, home"
-        className="row-span-2 text-2xl leading-none font-extrabold tracking-tighter uppercase focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary md:rotate-180 md:[writing-mode:vertical-rl]"
-      >
-        Osama©
-        <span className="mt-2 block text-[9px] font-medium tracking-normal normal-case md:ms-2">
-          Independent {profile.role} · 2026
-        </span>
-      </Link>
-      <div className="row-span-2">
+      <div className="flex items-start gap-x-4 md:gap-x-10">
+        <Link
+          href="/"
+          prefetch={false}
+          aria-label="Osama Abdelnaser, home"
+          className="shrink-0 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+        >
+          <NavLogo />
+        </Link>
         <nav
           aria-label="Pages"
-          className="flex flex-col text-xl leading-[.95] font-semibold tracking-[-.06em] uppercase"
+          className="flex gap-4 text-base leading-none font-semibold tracking-[-.04em] uppercase md:gap-6 md:text-xl"
         >
-          <Link href="/" prefetch={false} className={linkClass}>
+          {/* On phones the logo is the way home, so the row stays one line. */}
+          <Link href="/" prefetch={false} className={cn(linkClass, 'max-md:hidden')}>
             Home
           </Link>
           <TransitionLink
@@ -69,23 +69,13 @@ export function InnerHeader({
           </TransitionLink>
         </nav>
       </div>
-      <p className="text-[10px] leading-tight max-md:col-start-2">
-        {profile.role}
-        <br />
-        <span className="text-ink/75">Cairo · Riyadh · Remote</span>
-      </p>
-      <div className="text-[10px] leading-tight max-md:col-start-2 md:text-end">
-        {aside ?? (
-          <>
-            <p className="text-ink/75">For inquiries</p>
-            <a
-              href={heroContent.contactHref}
-              className="font-semibold underline underline-offset-2"
-            >
-              {heroContent.contactHref.replace('mailto:', '')}
-            </a>
-          </>
-        )}
+      <div className="flex items-center gap-6 text-[10px] leading-tight">
+        <p className="max-md:hidden">
+          {profile.role}
+          <br />
+          <span className="text-ink/75">Cairo · Riyadh · Remote</span>
+        </p>
+        {aside ? <div className="md:text-end">{aside}</div> : null}
       </div>
     </header>
   );

@@ -118,9 +118,10 @@ export const SCRIPT: Record<string, [number, string, string?, number?]> = {
     '',
     1,
   ],
+  // A printed s from the top, so it reads as an s after a lifting letter.
   s: [
-    8.4,
-    'M0 -1C1.6 -2 3 -7 4.4 -10.2C5.6 -8 7.4 -6 7.4 -3.6C7.4 -1.2 5.6 0 3.6 0C2 0 1 -0.6 0.6 -1.6C1 -0.6 2 0 3.6 0C5.6 0 6.8 -0.8 8.4 -1',
+    9,
+    'M7.2 -8.8C6.6 -9.8 5.2 -10.3 3.8 -10.1C2.2 -9.9 1.5 -8.7 2 -7.5C2.7 -5.9 7 -5.7 7.2 -3C7.4 -0.9 5.6 0.1 3.6 0C2.2 0 1.2 -0.5 0.6 -1.3M3.6 0C5.4 0 7.2 -0.4 9 -1',
   ],
   t: [6.6, 'M0 -1C1 -1.4 2.2 -8 2.4 -15L2.4 -3.2C2.4 -0.8 4 -1 6.6 -1', 'M-0.8 -9.6L6.2 -9.6'],
   u: [
@@ -479,6 +480,9 @@ const ICONS: Record<SocialKind, React.ReactNode> = {
 };
 
 const CSS =
+  // Not inherited: the scroll value is written on the three layers that use it,
+  // so a scroll frame restyles them and not the whole footer.
+  "@property --ssf-sp{syntax:'<number>';inherits:false;initial-value:1}" +
   '.ssf{position:relative;isolation:isolate;overflow:hidden;overflow:clip;container-type:inline-size;display:flex;flex-direction:column;width:100%;box-sizing:border-box;padding:0 clamp(6px,.9cqw,12px) clamp(6px,.9cqw,12px);background:var(--ssf-paper);color:var(--ssf-ink);font-family:var(--ssf-sans);font-weight:500;-webkit-font-smoothing:antialiased}' +
   ':where(.ssf) *,:where(.ssf) *::before,:where(.ssf) *::after{box-sizing:border-box}' +
   ':where(.ssf) button{appearance:none;background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer}' +
@@ -556,6 +560,10 @@ const CSS =
   '.ssf-credits{position:absolute;z-index:6;right:clamp(10px,1.2cqw,16px);bottom:clamp(10px,1.2cqw,16px)}' +
   '.ssf-pill{display:block;padding:.3em .8em .34em;border-radius:999px;background:var(--ssf-ink);color:var(--ssf-paper);font-size:clamp(12px,1cqw,14px);font-weight:600;transition:transform .4s cubic-bezier(.2,1.6,.3,1),background .2s}' +
   '.ssf-pill:hover{transform:rotate(-5deg) scale(1.06)}' +
+  // The custom cursor hides "grab", so a small note says the stickers move.
+  '.ssf-hint{position:absolute;z-index:6;left:clamp(10px,1.2cqw,16px);bottom:clamp(10px,1.2cqw,16px);display:flex;align-items:center;gap:.45em;margin:0;padding:.3em .8em .34em .6em;border:1.5px solid var(--ssf-ink);border-radius:999px;background:var(--ssf-paper);color:var(--ssf-ink);font-size:clamp(12px,1cqw,14px);font-weight:600;pointer-events:none;transition:opacity .4s,translate .4s}' +
+  '.ssf-hint svg{width:1.15em;height:1.15em;flex:none}' +
+  '.ssf-hint.is-gone{opacity:0;translate:0 8px}' +
   '.ssf-pop{position:absolute;right:0;bottom:calc(100% + 10px);width:max-content;max-width:min(300px,80cqw);padding:14px 16px;border-radius:16px;background:var(--ssf-paper);color:var(--ssf-ink);box-shadow:0 0 0 4px #fff,0 18px 40px rgba(23,40,79,.35);transform-origin:90% 100%;animation:ssf-popin .45s cubic-bezier(.2,1.5,.3,1)}' +
   '.ssf-pop li{display:flex;flex-direction:column;padding:6px 0;font-size:13px;line-height:1.3}' +
   '.ssf-pop li+li{border-top:1.5px dashed color-mix(in oklab,var(--ssf-ink) 22%,transparent)}' +
@@ -566,12 +574,12 @@ const CSS =
   '@keyframes ssf-popin{from{opacity:0;transform:translateY(10px) scale(.7) rotate(4deg)}}' +
   // the storyboard: everything above is the finished state; motion only adds the way in
   '@media (prefers-reduced-motion: no-preference){' +
-  '.ssf [data-slot="tangle-footer"]{scale:calc(.82 + .1 * var(--ssf-sp,1))}' +
-  '.ssf-panel{scale:calc(.9 + .1 * var(--ssf-sp,1));border-radius:calc(clamp(14px,1.8cqw,24px) + (1 - var(--ssf-sp,1)) * 60px)}' +
+  '.ssf [data-slot="tangle-footer"]{scale:calc(.82 + .1 * var(--ssf-sp,1));will-change:scale}' +
+  '.ssf-panel{will-change:scale;scale:calc(.9 + .1 * var(--ssf-sp,1));border-radius:calc(clamp(14px,1.8cqw,24px) + (1 - var(--ssf-sp,1)) * 60px)}' +
   '.ssf-stage-in{transform:translateY(calc((1 - var(--ssf-sp,1)) * 18%))}' +
   '.ssf-st{transform:translate(calc(var(--ssf-px,0) * var(--d) * 9px),calc(var(--ssf-py,0) * var(--d) * 6px));transition:transform .7s cubic-bezier(.2,.8,.2,1)}' +
   '.ssf-st.is-drag{transition:none}' +
-  '.ssf:not(.is-in) .ssf-top>*,.ssf:not(.is-in) .ssf-tag,.ssf:not(.is-in) .ssf-line>*,.ssf:not(.is-in) .ssf-map,.ssf:not(.is-in) .ssf-note,.ssf:not(.is-in) .ssf-soc,.ssf:not(.is-in) .ssf-pill{opacity:0}' +
+  '.ssf:not(.is-in) .ssf-top>*,.ssf:not(.is-in) .ssf-tag,.ssf:not(.is-in) .ssf-line>*,.ssf:not(.is-in) .ssf-map,.ssf:not(.is-in) .ssf-note,.ssf:not(.is-in) .ssf-soc,.ssf:not(.is-in) .ssf-pill,.ssf:not(.is-in) .ssf-hint{opacity:0}' +
   '.ssf.is-in .ssf-top>*{animation:ssf-fall .8s cubic-bezier(.2,1.3,.3,1) both}' +
   '.ssf.is-in .ssf-top>:nth-child(2){animation-delay:.08s}.ssf.is-in .ssf-top>:nth-child(3){animation-delay:.16s}' +
   '.ssf.is-in .ssf-panel{animation:ssf-grow 1.1s cubic-bezier(.7,0,.2,1) both}' +
@@ -579,7 +587,7 @@ const CSS =
   '.ssf.is-in .ssf-line>*{animation:ssf-rise .8s cubic-bezier(.2,.9,.2,1) both;animation-delay:calc(.55s + var(--c) * .1s + var(--i) * .07s)}' +
   '.ssf.is-in .ssf-map,.ssf.is-in .ssf-note{animation:ssf-fade .7s ease both;animation-delay:calc(.85s + var(--c) * .1s)}' +
   '.ssf.is-in .ssf-soc{animation:ssf-pop .6s cubic-bezier(.2,1.7,.3,1) both;animation-delay:calc(1s + var(--i) * .05s)}' +
-  '.ssf.is-in .ssf-pill{animation:ssf-pop .6s cubic-bezier(.2,1.7,.3,1) both;animation-delay:var(--end)}' +
+  '.ssf.is-in .ssf-pill,.ssf.is-in .ssf-hint:not(.is-gone){animation:ssf-pop .6s cubic-bezier(.2,1.7,.3,1) both;animation-delay:var(--end)}' +
   '.ssf .ssf-wm path{stroke-dasharray:var(--l,3000px) calc(var(--l,3000px) + 8px);stroke-dashoffset:calc(var(--l,3000px) + 4px)}' +
   '.ssf:not(.is-in) .ssf-wm path{visibility:hidden}' +
   '.ssf.is-in .ssf-wm path{animation:ssf-write var(--dur) var(--at) cubic-bezier(.55,.1,.35,1) both}' +
@@ -1025,7 +1033,12 @@ export default function StickerSlapFooter({
       const p = clamp((vh - r.top) / span, 0, 1);
       // Skip identical writes: while the footer is off screen the value sits at 0.
       const next = (1 - Math.pow(1 - p, 2)).toFixed(4);
-      if (next !== shown) el.style.setProperty('--ssf-sp', (shown = next));
+      if (next === shown) return;
+      shown = next;
+      // Looked up per change: the home page's tangle band mounts later.
+      el.querySelectorAll<HTMLElement>(
+        '[data-slot="tangle-footer"], .ssf-panel, .ssf-stage-in',
+      ).forEach((layer) => layer.style.setProperty('--ssf-sp', next));
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -1213,17 +1226,19 @@ export default function StickerSlapFooter({
     minHeight: height,
   } as React.CSSProperties;
 
+  // The parallax is written on the stage (the stickers' parent), not the root.
   const onPointer = (e: React.PointerEvent<HTMLElement>) => {
-    const el = rootRef.current;
-    if (!el || e.pointerType !== 'mouse') return;
-    const r = el.getBoundingClientRect();
+    const root = rootRef.current;
+    const el = stageRef.current;
+    if (!root || !el || e.pointerType !== 'mouse') return;
+    const r = root.getBoundingClientRect();
     if (!r.width || !r.height) return;
     el.style.setProperty('--ssf-px', (((e.clientX - r.left) / r.width - 0.5) * 2).toFixed(3));
     el.style.setProperty('--ssf-py', (((e.clientY - r.top) / r.height - 0.5) * 2).toFixed(3));
   };
   const onLeave = () => {
-    rootRef.current?.style.setProperty('--ssf-px', '0');
-    rootRef.current?.style.setProperty('--ssf-py', '0');
+    stageRef.current?.style.setProperty('--ssf-px', '0');
+    stageRef.current?.style.setProperty('--ssf-py', '0');
   };
 
   const cols: React.ReactNode[] = [];
@@ -1423,6 +1438,26 @@ export default function StickerSlapFooter({
             ))}
           </div>
         </div>
+
+        {items.length > 0 && (
+          <p
+            className={Object.keys(moved).length ? 'ssf-hint is-gone' : 'ssf-hint'}
+            aria-hidden="true"
+            style={{ '--end': round(endAt) + 's' } as React.CSSProperties}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3" />
+            </svg>
+            drag the stickers
+          </p>
+        )}
 
         {credits.length > 0 && (
           <div className="ssf-credits" ref={popRef}>

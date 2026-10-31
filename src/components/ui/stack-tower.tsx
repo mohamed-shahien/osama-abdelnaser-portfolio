@@ -142,6 +142,8 @@ export function StackTower({
       const run = onScreen && !document.hidden && !still.matches;
       if (run === running) return;
       running = run;
+      // Rows get their own layers only while the ticker moves them.
+      root.dataset.running = String(run);
       if (run) gsap.ticker.add(tick);
       else gsap.ticker.remove(tick);
     };
@@ -242,7 +244,7 @@ export function StackTower({
             <span
               data-tower-word
               className={cn(
-                'block text-center leading-[0.92] tracking-[-0.03em] whitespace-nowrap will-change-transform',
+                'block text-center leading-[0.92] tracking-[-0.03em] whitespace-nowrap [[data-running=true]_&]:will-change-transform',
                 wordClassName,
               )}
             >

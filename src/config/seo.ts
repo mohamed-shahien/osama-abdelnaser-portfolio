@@ -40,7 +40,7 @@ export const seoDescription =
 
 export const whatsappUrl = `https://wa.me/${contactContent.whatsappNumber}`;
 
-/** An absolute URL on the site's domain, or null until NEXT_PUBLIC_SITE_URL is set. */
+/** An absolute URL on the site's domain. */
 export function absoluteUrl(path = '/') {
   return siteConfig.metadataBase ? new URL(path, siteConfig.metadataBase).toString() : null;
 }

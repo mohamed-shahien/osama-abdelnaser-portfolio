@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 
+import { Arrow } from '@/components/ui/arrow';
 import { solutionContent as content } from '@/content/solution';
 import { motionConfig } from '@/lib/motion/config';
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/motion/gsap';
@@ -92,7 +93,7 @@ export function SolutionWorkspace({ trackRef }: { trackRef: RefObject<HTMLDivEle
         start: () => `top -${Math.round(window.innerHeight * 1.3)}px`,
         end: 'bottom bottom',
         animation: timeline,
-        scrub: reduced ? true : 2.2,
+        scrub: reduced ? true : motionConfig.scroll.scrub,
         invalidateOnRefresh: true,
       });
       const visibility = () => {
@@ -1744,7 +1745,7 @@ function BuildSection() {
           >
             {s.cta}
             <span className="grid size-[32px] place-items-center rounded-[9px] bg-[#ffffff26] text-[16px]">
-              →
+              <Arrow dir="right" />
             </span>
           </span>
           <Selection name="sel-pay" className="-inset-[3px]" />
@@ -1799,7 +1800,7 @@ function BuildSection() {
             >
               {label}
               <span className="grid size-[30px] place-items-center rounded-[9px] bg-[#ffffff26]">
-                {index ? '◌' : '→'}
+                {index ? '◌' : <Arrow dir="right" />}
               </span>
             </span>
           ))}
@@ -1946,7 +1947,7 @@ function BuildSection() {
           >
             {a.cta}
             <span className="grid size-[32px] place-items-center rounded-[9px] bg-[#ffffff26] text-[16px]">
-              →
+              <Arrow dir="right" />
             </span>
           </p>
           <span

@@ -1,12 +1,17 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useSiteIntroReady } from '@/components/providers/site-intro-context';
-import SkeletonKeyPreloader from '@/components/ui/skeleton-key-preloader';
 import { solutionContent as content } from '@/content/solution';
 import { ScrollTrigger, useGSAP } from '@/lib/motion/gsap';
-import { SolutionWorkspace } from './solution-workspace';
+
+// Both download when the stage is about a screen away, not with the page.
+const SkeletonKeyPreloader = dynamic(() => import('@/components/ui/skeleton-key-preloader'));
+const SolutionWorkspace = dynamic(() =>
+  import('./solution-workspace').then((module) => module.SolutionWorkspace),
+);
 
 // Runway, in viewport heights, that turns the key and dives through the keyhole.
 const UNLOCK = 1.1;
@@ -26,6 +31,7 @@ export function SolutionShowcase() {
   const [nearby, setNearby] = useState(false);
   const [through, setThrough] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [deep, setDeep] = useState(false);
   const mounted = nearby && introDone;
   // The workspace never re-renders with the count.
   const workspace = useMemo(() => <SolutionWorkspace trackRef={trackRef} />, []);
@@ -45,11 +51,24 @@ export function SolutionShowcase() {
     return () => observer.disconnect();
   }, []);
 
+  // The workspace sits behind the keyhole, a screen of scrolling away. It is
+  // the heaviest DOM on the page, so it is built in a quiet moment after the
+  // gate rather than in the same task as the intro's hand-off.
+  useEffect(() => {
+    if (!mounted) return;
+    if (typeof window.requestIdleCallback === 'function') {
+      const id = window.requestIdleCallback(() => setDeep(true), { timeout: 2500 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = window.setTimeout(() => setDeep(true), 1200);
+    return () => window.clearTimeout(id);
+  }, [mounted]);
+
   useGSAP(
     () => {
       const track = trackRef.current;
       if (!track || !mounted) return;
-      // Scroll is the loading bar: 0 when the stage is 30% on screen, 100 when it fills the view.
+      // Scroll is the loading bar: 0 when the stage is 10% on screen, 100 when it fills the view.
       let shown = -1;
       const write = (value: number) => {
         const next = Math.round(value * 100);
@@ -60,7 +79,7 @@ export function SolutionShowcase() {
       const count = ScrollTrigger.create({
         id: 'solution-key-progress',
         trigger: track,
-        start: 'top 70%',
+        start: 'top 90%',
         end: 'top top',
         onUpdate: (self) => write(self.progress),
         onRefresh: (self) => write(self.progress),
@@ -113,7 +132,7 @@ export function SolutionShowcase() {
             labels={content.key.labels}
           >
             <div inert={!through} className="isolate h-svh w-full">
-              {workspace}
+              {deep || through ? workspace : null}
             </div>
           </SkeletonKeyPreloader>
         ) : null}

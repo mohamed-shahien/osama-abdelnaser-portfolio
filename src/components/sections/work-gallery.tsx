@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react';
 
+import { Arrow } from '@/components/ui/arrow';
 import { workContent } from '@/content/work-copy';
 import { motionConfig } from '@/lib/motion/config';
 import { gsap, useGSAP } from '@/lib/motion/gsap';
@@ -719,7 +720,7 @@ export default function WorkGallery({
             className="grid size-[26px] place-items-center rounded-full bg-ink text-secondary"
             aria-hidden="true"
           >
-            ↗
+            <Arrow className="size-[14px]" />
           </span>
           {project.kind === 'more'
             ? 'Click to open the full collection'
@@ -785,7 +786,7 @@ export default function WorkGallery({
                 >
                   {item.name}
                   <span className="text-[0.6em] transition-transform group-hover:[transform:translate(2px,-2px)]">
-                    ↗
+                    <Arrow />
                   </span>
                 </TransitionLink>
               ) : (
@@ -806,8 +807,12 @@ export default function WorkGallery({
           <sup className="ms-1 text-[11px] tracking-normal text-black/45">({total})</sup>
         </h2>
         <p className="flex items-center gap-2 self-center text-[11px] text-black/50 max-lg:hidden">
-          <span className="rounded-full border border-black/15 px-2 py-0.5">←</span>
-          <span className="rounded-full border border-black/15 px-2 py-0.5">→</span>
+          <span className="rounded-full border border-black/15 px-2 py-1">
+            <Arrow dir="left" />
+          </span>
+          <span className="rounded-full border border-black/15 px-2 py-1">
+            <Arrow dir="right" />
+          </span>
           {workContent.scroll}
         </p>
         <p className="max-w-36 text-end text-[10px] leading-snug uppercase">

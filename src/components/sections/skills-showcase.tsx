@@ -118,8 +118,17 @@ export function SkillsShowcase() {
       const trigger = ScrollTrigger.create({
         id: 'skills-scrub',
         trigger: track,
-        start: () => `top -${Math.round(window.innerHeight * REVEAL)}px`,
-        end: 'bottom bottom',
+        // From 80% of the avatar's close, so the stage never sits empty.
+        start: () => {
+          const close = ScrollTrigger.getById('selected-work-close');
+          return close
+            ? close.start + (close.end - close.start) * 0.8
+            : `top -${Math.round(window.innerHeight * REVEAL)}px`;
+        },
+        // Past the pin by a quarter screen: the stage is already moving up
+        // toward the CV while the iris shuts on the glasses.
+        end: 'bottom 75%',
+        refreshPriority: -1,
         invalidateOnRefresh: true,
         onUpdate: (self) => write(self.progress),
         onRefresh: (self) => write(self.progress, true),

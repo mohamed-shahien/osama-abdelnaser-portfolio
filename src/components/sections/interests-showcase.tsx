@@ -1,8 +1,9 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 
 import { useSiteIntroReady } from '@/components/providers/site-intro-context';
+import { Arrow } from '@/components/ui/arrow';
 import { RingTower, type RingTowerInstance, type RingTowerRing } from '@/components/ui/ring-tower';
 import { StackTower } from '@/components/ui/stack-tower';
 import { interestsContent as content, type Interest } from '@/content/interests';
@@ -15,6 +16,7 @@ import {
   playStage,
   POSE_TALL,
   poseCardClass,
+  poseTailClass,
   poseSrc,
   poses,
   spotClass,
@@ -296,7 +298,7 @@ export function InterestsShowcase() {
       const tl = gsap.timeline();
       actRef.current = tl;
       gsap.set(actor, { rotate: 0, x: 0, y: 0 });
-      gsap.set(q('[data-fx-flash]'), { opacity: 0 });
+      gsap.set(card, { xPercent: 0, yPercent: 0 });
       if (stage.look === 'polaroid') {
         // The print leaves the camera after the flash and floats to its spot.
         tl.call(() => snapshot(track), [], 0.4).fromTo(
@@ -342,19 +344,39 @@ export function InterestsShowcase() {
       else playStage(tl, q, interest.id, actor, push, seek);
       switch (interest.act) {
         case 'flash':
+          // A short pop of light from the flash, not the whole screen.
           tl.fromTo(
-            q('[data-fx-flash]'),
-            { opacity: 0 },
-            { opacity: 0.92, duration: 0.08, ease: 'none' },
-            0.35,
-          ).to(q('[data-fx-flash]'), { opacity: 0, duration: 0.7, ease: 'power2.out' });
+            q('[data-fx-glow]'),
+            { scale: 0.2, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.14, ease: 'power2.out' },
+            0.4,
+          )
+            .to(
+              q('[data-fx-glow]'),
+              { scale: 1.25, opacity: 0, duration: 0.6, ease: 'power2.in' },
+              0.56,
+            )
+            .fromTo(
+              q('[data-fx-ray]'),
+              { scale: 0.4, opacity: 1 },
+              { scale: 1.2, opacity: 0, duration: 0.55, ease: 'power2.out' },
+              0.42,
+            );
           break;
         case 'waves':
           tl.fromTo(
             q('[data-fx-wave]'),
-            { scale: 0.3, opacity: 0.95 },
-            { scale: 1.6, opacity: 0, duration: 1.1, ease: 'sine.out', stagger: 0.22, repeat: 2 },
-            0.2,
+            { scale: 0.85, opacity: 0 },
+            {
+              scale: 1.08,
+              opacity: 1,
+              duration: 0.45,
+              ease: 'sine.out',
+              stagger: 0.16,
+              yoyo: true,
+              repeat: 5,
+            },
+            0.3,
           );
           break;
         case 'bubbles': {
@@ -453,6 +475,10 @@ export function InterestsShowcase() {
         ? 'bg-ink text-white'
         : toneClass[interest.tone];
   const glyphs = interest?.glyphs ?? [];
+  const dark =
+    Boolean(interest) &&
+    stage.look !== 'polaroid' &&
+    (stage.look === 'screen' || stage.look === 'onair' || interest?.tone === 'ink');
   const pose = interest ? poses[interest.id] : undefined;
   // Poses are sized in the avatar box's container units, so every drawing keeps one scale.
   const cq = (px: number) => `${(px / POSE_TALL) * 100}cqh`;
@@ -472,12 +498,6 @@ export function InterestsShowcase() {
           'bg-[#fbf7ec] bg-[radial-gradient(rgba(23,40,79,.16)_1.1px,transparent_1.4px)] bg-[size:26px_26px]',
         )}
       >
-        <div
-          data-fx-flash
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-40 bg-white opacity-0"
-        />
-
         {/* Title, beside the rings on wide screens and on top on phones. */}
         <header className="relative z-20 px-5 pt-14 md:order-3 md:flex md:flex-col md:justify-start md:px-8 md:pt-[14svh] lg:px-12">
           <p
@@ -511,7 +531,7 @@ export function InterestsShowcase() {
             data-title-line
             className="mt-3 hidden items-center gap-2 text-[13px] font-bold text-ink/60 md:flex"
           >
-            <span aria-hidden="true">↔</span> {content.hint}
+            <Arrow dir="both" /> {content.hint}
           </p>
         </header>
 
@@ -581,20 +601,58 @@ export function InterestsShowcase() {
                 <StageProps id={interest.id} />
               </div>
             ) : null}
-            {/* Hand-cut voice waves and speech bubble around the head. */}
+            {interest?.act === 'flash' && fxAt ? (
+              <div aria-hidden="true" className="absolute" style={fxAt}>
+                <span
+                  data-fx-glow
+                  className="absolute -top-[60px] -left-[60px] size-[120px] rounded-full bg-[radial-gradient(circle,#ffffff_0%,#fffbd6_28%,rgba(248,250,85,0)_70%)] opacity-0 md:-top-[90px] md:-left-[90px] md:size-[180px]"
+                />
+                <svg
+                  data-fx-ray
+                  viewBox="-50 -50 100 100"
+                  className="absolute -top-[40px] -left-[40px] size-[80px] opacity-0 md:-top-[56px] md:-left-[56px] md:size-[112px]"
+                >
+                  {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
+                    <path
+                      key={a}
+                      d="M 0 -26 L 0 -42"
+                      transform={`rotate(${a})`}
+                      stroke={a % 90 ? '#f3d061' : '#1d1d1f'}
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                    />
+                  ))}
+                </svg>
+              </div>
+            ) : null}
+            {/* Drawn voice waves at the mic, and the speech bubble by his mouth. */}
             {interest?.act === 'waves' ? (
               <div
                 aria-hidden="true"
                 className={cn('absolute', !fxAt && 'top-[20%] left-[10%]')}
                 style={fxAt}
               >
-                {[0, 1, 2].map((wave) => (
-                  <span
-                    key={wave}
-                    data-fx-wave
-                    className="absolute -top-6 -left-6 size-12 rounded-full border-[3px] border-accent-rose opacity-0"
-                  />
-                ))}
+                <svg
+                  viewBox="-48 -32 96 64"
+                  className="absolute -top-[24px] -left-[36px] h-[48px] w-[72px] overflow-visible md:-top-[32px] md:-left-[48px] md:h-[64px] md:w-[96px]"
+                >
+                  {[14, 23, 32].map((r) => {
+                    const x = (r * 0.62).toFixed(1);
+                    const y = (r * 0.78).toFixed(1);
+                    return (
+                      <path
+                        key={r}
+                        data-fx-wave
+                        d={`M -${x} -${y} Q -${r * 1.3} 0 -${x} ${y} M ${x} -${y} Q ${r * 1.3} 0 ${x} ${y}`}
+                        fill="none"
+                        stroke="#1d1d1f"
+                        strokeWidth="2.6"
+                        strokeLinecap="round"
+                        opacity={0}
+                      />
+                    );
+                  })}
+                </svg>
               </div>
             ) : null}
             {interest?.act === 'bubbles' ? (
@@ -646,155 +704,181 @@ export function InterestsShowcase() {
               </div>
             ) : null}
 
-            {/* The card: each interest lands it somewhere of its own. */}
+            {/* The card: a taped sticker beside (or above) the drawing, its tail pointing at him. */}
             <div
               data-interest-card
               className={cn(
-                'absolute w-[156px] rounded-[16px] border-4 border-white p-3 shadow-[0_14px_28px_-12px_rgba(23,40,79,.55)] md:w-[252px] md:rounded-[20px] md:p-4',
-                pose ? poseCardClass[pose.card] : spotClass[stage.spot],
-                stage.look === 'polaroid' && 'rounded-[6px] border-0 pb-5 md:rounded-[8px] md:pb-6',
-                stage.look === 'bubble' && 'border-[3px] border-ink shadow-[0_6px_0_#17284f]',
-                stage.look === 'block' && 'md:w-[272px] md:py-6',
-                tone,
+                'absolute',
+                pose
+                  ? cn('w-[150px] md:w-[240px]', poseCardClass[pose.card])
+                  : cn('w-[156px] md:w-[252px]', spotClass[stage.spot]),
               )}
-              style={pose ? { right: `calc(${cq(pose.w)} + 10px)` } : undefined}
+              style={
+                pose ? ({ '--pw': cq(pose.w), '--ph': cq(pose.h) } as CSSProperties) : undefined
+              }
             >
-              {interest ? (
-                <>
-                  {stage.look === 'polaroid' ? (
-                    <div className="relative mb-2 aspect-[4/3] overflow-hidden rounded-[3px] bg-ink">
-                      <canvas data-snap width={480} height={360} className="size-full" />
-                      <span data-develop className="absolute inset-0 bg-[#f4efe2]" />
+              <div
+                className={cn(
+                  'relative rounded-[18px] border-[2.5px] border-ink px-3 pt-4 pb-3 shadow-[4px_5px_0_#17284f] md:rounded-[22px] md:px-4 md:pt-5 md:pb-4',
+                  tone,
+                )}
+              >
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-[11px] left-1/2 h-[18px] w-14 -translate-x-1/2 -rotate-3 bg-white/80 shadow-[0_1px_0_rgba(23,40,79,.15)] md:w-16"
+                />
+                {interest && pose ? (
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'absolute size-[15px] rotate-45 border-ink bg-inherit',
+                      poseTailClass[pose.card === 'above' ? 'above' : 'side'],
+                    )}
+                  />
+                ) : null}
+                {interest ? (
+                  <>
+                    {stage.look === 'polaroid' ? (
+                      <div className="relative mb-2.5 aspect-[4/3] overflow-hidden rounded-[8px] border-2 border-ink bg-ink">
+                        <canvas data-snap width={480} height={360} className="size-full" />
+                        <span data-develop className="absolute inset-0 bg-[#f4efe2]" />
+                      </div>
+                    ) : null}
+                    <div className="flex items-center justify-between gap-2">
+                      <span
+                        className={cn(
+                          'rounded-full px-2 py-0.5 font-[family-name:var(--font-work-display)] text-[10px] font-bold tracking-[0.1em] md:text-[11px]',
+                          dark ? 'bg-secondary text-ink' : 'bg-ink text-secondary',
+                        )}
+                      >
+                        {pad((shown ?? 0) + 1)}/{pad(content.interests.length)}
+                      </span>
+                      {stage.look === 'onair' ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-accent-rose px-2 py-0.5 font-[family-name:var(--font-work-display)] text-[10px] font-bold tracking-[0.12em] text-white md:text-[11px]">
+                          <span data-rec className="size-1.5 rounded-full bg-white" /> ON AIR
+                        </span>
+                      ) : stage.look === 'screen' ? (
+                        <span className="font-[family-name:var(--font-work-display)] text-[10px] font-bold tracking-[0.12em] text-secondary md:text-[11px]">
+                          P1 READY
+                        </span>
+                      ) : (
+                        <span aria-hidden="true" className="flex gap-1">
+                          <span className="size-1.5 rounded-full bg-accent-rose" />
+                          <span className="size-1.5 rounded-full bg-primary" />
+                          <span className="size-1.5 rounded-full bg-accent-warm" />
+                        </span>
+                      )}
                     </div>
-                  ) : null}
-                  {stage.look === 'onair' ? (
-                    <p className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-accent-rose px-2 py-0.5 font-[family-name:var(--font-work-display)] text-[11px] font-bold tracking-[0.12em] md:text-[12px]">
-                      <span data-rec className="size-2 rounded-full bg-white" /> ON AIR
+                    <p className="mt-2 font-[family-name:var(--font-work-display)] text-[19px] leading-[0.9] font-bold tracking-[-0.03em] uppercase md:text-[28px]">
+                      {interest.label}
                     </p>
-                  ) : null}
-                  {stage.look === 'screen' ? (
-                    <p className="mb-2 font-[family-name:var(--font-work-display)] text-[11px] font-bold tracking-[0.14em] text-secondary md:text-[12px]">
-                      ▶ PLAYER 1 READY
-                    </p>
-                  ) : null}
-                  {stage.look === 'bubble' ? (
-                    <span
-                      aria-hidden="true"
-                      className="absolute right-[22%] -bottom-[11px] size-4 rotate-45 border-r-[3px] border-b-[3px] border-ink bg-white"
-                    />
-                  ) : null}
-                  {interest.id === 'writing' ? (
-                    <svg aria-hidden="true" viewBox="0 0 200 30" className="mb-1 h-6 w-full">
-                      <path
-                        data-scribble
-                        d="M4 20 C20 4 30 28 46 14 S70 6 84 18 S110 26 124 12 S150 6 164 18 S186 22 196 10"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        strokeDasharray="240"
-                      />
-                    </svg>
-                  ) : null}
-                  {interest.id === 'strategy' ? (
-                    <svg aria-hidden="true" viewBox="0 0 200 50" className="mb-1 h-9 w-full">
-                      <path
-                        data-plan
-                        d="M10 40 C50 40 60 8 100 14 S160 40 186 12 M176 10 L188 11 L184 22"
-                        fill="none"
-                        stroke="#e43468"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeDasharray="200"
-                      />
-                      <circle cx="10" cy="40" r="5" fill="currentColor" />
-                    </svg>
-                  ) : null}
-                  {interest.id === 'interactions'
-                    ? [0, 1].map((ring) => (
-                        <span
-                          key={ring}
-                          data-ripple
-                          aria-hidden="true"
-                          className="absolute inset-0 rounded-[inherit] border-[3px] border-secondary opacity-0"
+                    {interest.id === 'writing' ? (
+                      <svg aria-hidden="true" viewBox="0 0 200 30" className="mt-1 h-5 w-full">
+                        <path
+                          data-scribble
+                          d="M4 20 C20 4 30 28 46 14 S70 6 84 18 S110 26 124 12 S150 6 164 18 S186 22 196 10"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeDasharray="240"
                         />
-                      ))
-                    : null}
-                  <p className="font-[family-name:var(--font-work-display)] text-[12px] font-bold tracking-[0.08em] opacity-70 md:text-[13px]">
-                    {pad((shown ?? 0) + 1)} / {pad(content.interests.length)}
-                  </p>
-                  <p className="mt-1 font-[family-name:var(--font-work-display)] text-[18px] leading-[0.95] font-bold tracking-[-0.02em] uppercase md:text-[26px]">
-                    {interest.label}
-                  </p>
-                  <p className="mt-2 hidden text-[13px] leading-snug font-bold md:block">
-                    {interest.act === 'type' ? (
-                      <>
-                        {interest.note.split('').map((char, index) => (
-                          <span key={index} data-note-char>
-                            {char}
+                      </svg>
+                    ) : null}
+                    {interest.id === 'strategy' ? (
+                      <svg aria-hidden="true" viewBox="0 0 200 50" className="mt-1 h-8 w-full">
+                        <path
+                          data-plan
+                          d="M10 40 C50 40 60 8 100 14 S160 40 186 12 M176 10 L188 11 L184 22"
+                          fill="none"
+                          stroke="#e43468"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeDasharray="200"
+                        />
+                        <circle cx="10" cy="40" r="5" fill="currentColor" />
+                      </svg>
+                    ) : null}
+                    {interest.id === 'interactions'
+                      ? [0, 1].map((ring) => (
+                          <span
+                            key={ring}
+                            data-ripple
+                            aria-hidden="true"
+                            className="absolute inset-0 rounded-[inherit] border-[3px] border-secondary opacity-0"
+                          />
+                        ))
+                      : null}
+                    <p className="mt-2 hidden border-t-[1.5px] border-dashed border-current/30 pt-2 text-[14px] leading-snug md:block">
+                      {interest.act === 'type' ? (
+                        <>
+                          {interest.note.split('').map((char, index) => (
+                            <span key={index} data-note-char>
+                              {char}
+                            </span>
+                          ))}
+                          <span
+                            data-fx-caret
+                            aria-hidden="true"
+                            className="ms-0.5 inline-block h-[1em] w-[2px] translate-y-[2px] bg-current"
+                          />
+                        </>
+                      ) : (
+                        interest.note
+                      )}
+                    </p>
+                    {interest.act === 'ticks' ? (
+                      <div aria-hidden="true" className="mt-2 flex gap-1.5">
+                        {[0, 1, 2, 3, 4].map((tick) => (
+                          <span
+                            key={tick}
+                            className="grid size-5 place-items-center rounded-[6px] border-2 border-current md:size-6"
+                          >
+                            <span
+                              data-fx-tick
+                              className="text-[13px] leading-none font-bold text-secondary md:text-[15px]"
+                            >
+                              ✓
+                            </span>
                           </span>
                         ))}
-                        <span
-                          data-fx-caret
-                          aria-hidden="true"
-                          className="ms-0.5 inline-block h-[1em] w-[2px] translate-y-[2px] bg-current"
-                        />
-                      </>
-                    ) : (
-                      interest.note
-                    )}
-                  </p>
-                  {interest.act === 'ticks' ? (
-                    <div aria-hidden="true" className="mt-2 flex gap-1.5">
-                      {[0, 1, 2, 3, 4].map((tick) => (
-                        <span
-                          key={tick}
-                          className="grid size-5 place-items-center rounded-[5px] border-2 border-current md:size-6"
-                        >
+                      </div>
+                    ) : null}
+                    {interest.act === 'stamp' ? (
+                      <span
+                        data-fx-stamp
+                        aria-hidden="true"
+                        className="absolute -top-5 -left-5 grid size-12 place-items-center rounded-full border-[2.5px] border-ink bg-white text-[24px] leading-none text-accent-rose opacity-0 shadow-[2px_3px_0_#17284f] md:size-14 md:text-[28px]"
+                      >
+                        {glyphs[0]}
+                      </span>
+                    ) : null}
+                    {interest.act === 'burst'
+                      ? spray.map((_, index) => (
                           <span
-                            data-fx-tick
-                            className="text-[13px] leading-none font-bold text-secondary md:text-[15px]"
+                            key={index}
+                            data-fx-particle
+                            aria-hidden="true"
+                            className="absolute top-1/2 left-1/2 -mt-3 -ml-3 grid size-6 place-items-center text-[20px] leading-none font-bold text-accent-rose opacity-0 [text-shadow:0_2px_0_#fff] md:text-[24px]"
                           >
-                            ✓
+                            {glyphs[index % Math.max(1, glyphs.length)]}
                           </span>
-                        </span>
-                      ))}
-                    </div>
-                  ) : null}
-                  {interest.act === 'stamp' ? (
-                    <span
-                      data-fx-stamp
-                      aria-hidden="true"
-                      className="absolute -top-5 -right-5 grid size-14 place-items-center rounded-full border-[3px] border-accent-rose bg-white text-[28px] leading-none text-accent-rose opacity-0 md:size-16 md:text-[32px]"
-                    >
-                      {glyphs[0]}
+                        ))
+                      : null}
+                  </>
+                ) : (
+                  <>
+                    <span className="rounded-full bg-ink px-2 py-0.5 font-[family-name:var(--font-work-display)] text-[10px] font-bold tracking-[0.1em] text-secondary md:text-[11px]">
+                      {pad(content.interests.length)} INTERESTS
                     </span>
-                  ) : null}
-                  {interest.act === 'burst'
-                    ? spray.map((_, index) => (
-                        <span
-                          key={index}
-                          data-fx-particle
-                          aria-hidden="true"
-                          className="absolute top-1/2 left-1/2 -mt-3 -ml-3 grid size-6 place-items-center text-[20px] leading-none font-bold text-accent-rose opacity-0 [text-shadow:0_2px_0_#fff] md:text-[24px]"
-                        >
-                          {glyphs[index % Math.max(1, glyphs.length)]}
-                        </span>
-                      ))
-                    : null}
-                </>
-              ) : (
-                <>
-                  <p className="font-[family-name:var(--font-work-display)] text-[12px] font-bold tracking-[0.08em] text-accent-rose md:text-[13px]">
-                    {pad(content.interests.length)} INTERESTS
-                  </p>
-                  <p className="mt-1 text-[14px] leading-snug font-bold md:text-[16px]">
-                    <span className="hidden md:inline">← Hover a word to see what moves him.</span>
-                    <span className="md:hidden">↓ Tap a word below.</span>
-                  </p>
-                </>
-              )}
+                    <p className="mt-2 text-[14px] leading-snug font-bold md:text-[16px]">
+                      <span className="hidden md:inline">Hover a word to see what moves him.</span>
+                      <span className="md:hidden">Tap a word below.</span>
+                    </p>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>

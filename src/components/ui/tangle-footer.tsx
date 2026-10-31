@@ -276,7 +276,7 @@ export function TangleFooter({
               trigger: root,
               start: 'clamp(top 90%)',
               end: 'clamp(bottom 72%)',
-              scrub: 1.6,
+              scrub: 0.35,
               invalidateOnRefresh: true,
             },
           });

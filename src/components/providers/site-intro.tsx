@@ -11,6 +11,7 @@ import {
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 
+import { shouldPlayLogoIntro } from '@/components/providers/logo-intro';
 import { SiteCursor } from '@/components/providers/site-cursor';
 import { SiteIntroReadyContext } from '@/components/providers/site-intro-context';
 import { ScrollTrigger } from '@/lib/motion/gsap';
@@ -21,6 +22,11 @@ const AmourSunrisePreloader = dynamic(() => import('@/components/ui/amour-sunris
   ssr: false,
   loading: () => <div className="absolute inset-0 bg-[#F8FA55]" />,
 });
+// A visit that lands on an inner page opens on the logo video instead.
+const LogoIntro = dynamic(
+  () => import('@/components/providers/logo-intro').then((module) => module.LogoIntro),
+  { ssr: false, loading: () => <div className="fixed inset-0 z-50 bg-[#fbfbfb]" /> },
+);
 
 const subscribe = () => () => {};
 const getClientSnapshot = () => true;
@@ -33,10 +39,25 @@ export function SiteIntro({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [entry] = useState(pathname);
   const [complete, setComplete] = useState(entry !== '/');
+  // Read on the client only; the overlay itself waits for hydration below.
+  const [logo, setLogo] = useState(
+    () => entry !== '/' && typeof window !== 'undefined' && shouldPlayLogoIntro(),
+  );
+  const logoActive = hydrated && logo;
   // The page starts its own entrance as the loader lifts, so the two overlap.
   const [lifted, setLifted] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const active = hydrated && !complete;
+
+  useEffect(() => {
+    if (!logoActive) return;
+    const root = document.documentElement;
+    const previousOverflow = root.style.overflow;
+    root.style.overflow = 'hidden';
+    return () => {
+      root.style.overflow = previousOverflow;
+    };
+  }, [logoActive]);
 
   useEffect(() => {
     if (!active) return;
@@ -70,9 +91,16 @@ export function SiteIntro({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const closeLogo = useCallback(() => {
+    setLogo(false);
+    requestAnimationFrame(() =>
+      document.getElementById('main-content')?.focus({ preventScroll: true }),
+    );
+  }, []);
+
   return (
-    <SiteIntroReadyContext value={hydrated && (lifted || !active)}>
-      <div className="flex min-h-svh flex-1 flex-col" inert={active}>
+    <SiteIntroReadyContext value={hydrated && (lifted || !active) && !logo}>
+      <div className="flex min-h-svh flex-1 flex-col" inert={active || logoActive}>
         {children}
       </div>
       {active ? (
@@ -93,6 +121,7 @@ export function SiteIntro({ children }: { children: ReactNode }) {
           />
         </div>
       ) : null}
+      {logoActive ? <LogoIntro onDone={closeLogo} /> : null}
       {/* The loader's arrow becomes the pointer as the loader lifts. */}
       <SiteCursor waiting={!hydrated || (active && !lifted)} handoff={entry === '/'} />
     </SiteIntroReadyContext>

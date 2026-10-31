@@ -276,6 +276,7 @@ export function SkillBubbles({
       idle = moving || pointer.active || grab.body ? 0 : idle + 1;
       if (idle > 40 || document.hidden) {
         frame = 0;
+        root.dataset.moving = 'false';
         return;
       }
       frame = requestAnimationFrame(step);
@@ -284,6 +285,8 @@ export function SkillBubbles({
     const wake = () => {
       if (!frame && dropped && !document.hidden) {
         idle = 0;
+        // Bubbles get their own layers only while they move.
+        root.dataset.moving = 'true';
         frame = requestAnimationFrame(step);
       }
     };
@@ -411,7 +414,7 @@ export function SkillBubbles({
           <li
             key={skill.label}
             data-gravity=""
-            className="absolute start-0 top-0 inline-flex cursor-grab touch-none items-center rounded-full px-4 py-2.5 text-[15px] font-bold whitespace-nowrap opacity-0 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.75)] transition-[opacity,box-shadow] duration-300 will-change-transform select-none group-data-[dropped=true]/tags:opacity-100 data-[held=true]:cursor-grabbing data-[held=true]:shadow-[0_22px_40px_-14px_rgba(0,0,0,0.85)] md:px-6 md:py-3 md:text-[19px]"
+            className="absolute start-0 top-0 inline-flex cursor-grab touch-none items-center rounded-full px-4 py-2.5 text-[15px] font-bold whitespace-nowrap opacity-0 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.75)] transition-[opacity,box-shadow] duration-300 select-none group-data-[dropped=true]/tags:opacity-100 group-data-[moving=true]/tags:will-change-transform data-[held=true]:cursor-grabbing data-[held=true]:shadow-[0_22px_40px_-14px_rgba(0,0,0,0.85)] md:px-6 md:py-3 md:text-[19px]"
             style={{ background: color, color: readableInk(color) }}
           >
             {skill.label}

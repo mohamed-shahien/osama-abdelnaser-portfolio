@@ -7,7 +7,6 @@ import { useSiteIntroReady } from '@/components/providers/site-intro-context';
 import { motionConfig } from '@/lib/motion/config';
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/motion/gsap';
 import { mountPushCharacter } from '@/lib/motion/push-character';
-import { scrollPageTo } from '@/lib/motion/page-scroll';
 import type { WorkProject } from '@/types/work';
 import type { GalleryAssembly } from './work-gallery';
 
@@ -103,10 +102,6 @@ export function WorkShowcase({
             const actor = actorMetrics(mobile);
             return 1 + (actor.width - actor.offset) / width + 0.04;
           };
-          const alignGallery = () => {
-            const y = root.getBoundingClientRect().top + window.scrollY + window.innerHeight * 11.9;
-            if (Math.abs(window.scrollY - y) < window.innerHeight * 0.45) scrollPageTo(y);
-          };
           const paint = () => {
             const value = position.value;
             const metrics = actorMetrics(mobile);
@@ -140,7 +135,6 @@ export function WorkShowcase({
               wasOpen = nextOpen;
               setOpen(nextOpen);
               root.dataset.workOpen = String(nextOpen);
-              if (nextOpen) alignGallery();
             }
           };
           void mountPushCharacter(graphic)
@@ -170,17 +164,9 @@ export function WorkShowcase({
             animation: timeline,
             start: () => `top -${window.innerHeight * 10.65}px`,
             end: () => `top -${window.innerHeight * 11.9}px`,
-            scrub: 1.6,
+            scrub: motionConfig.scroll.scrub,
             invalidateOnRefresh: true,
             onRefresh: paint,
-            onLeave: () => {
-              if (wasOpen) return;
-              const end =
-                root.getBoundingClientRect().top + window.scrollY + window.innerHeight * 11.9;
-              // Cancel the root Lenis inertia when the local gallery takes input.
-              if (window.scrollY >= end && window.scrollY < end + window.innerHeight * 0.4)
-                scrollPageTo(end);
-            },
           });
           const exitPosition = { value: 0 };
           let exitX = Number.NaN;
@@ -215,7 +201,6 @@ export function WorkShowcase({
               wasClosing = nextClosing;
               setClosing(nextClosing);
               root.dataset.workClosing = String(nextClosing);
-              if (!nextClosing) alignGallery();
             }
           };
           void mountPushCharacter(exitGraphic)
@@ -227,8 +212,9 @@ export function WorkShowcase({
             })
             .catch(() => {});
           const exitTimeline = gsap.timeline({ paused: true, onUpdate: paintExit });
-          // The close is one unbroken walk over about two screens of
-          // scroll, slow enough to watch the avatar draw the gallery away.
+          // A quarter screen after the push holds the gallery open, so a fling
+          // lands on it instead of starting the close; the close is one walk
+          // over a little more than a screen, with Skills drawing in under it.
           exitTimeline
             .to(exitPosition, { value: 0.45, duration: 0.9, ease: 'sine.inOut' })
             .to(exitPosition, { value: finish, duration: 1.3, ease: 'sine.inOut' });
@@ -236,9 +222,9 @@ export function WorkShowcase({
             id: 'selected-work-close',
             trigger: root,
             animation: exitTimeline,
-            start: () => `top -${window.innerHeight * 11.9}px`,
-            end: () => `top -${window.innerHeight * 13.9}px`,
-            scrub: 1.6,
+            start: () => `top -${window.innerHeight * 12.15}px`,
+            end: () => `top -${window.innerHeight * 13.35}px`,
+            scrub: motionConfig.scroll.scrub,
             invalidateOnRefresh: true,
             onRefresh: paintExit,
           });

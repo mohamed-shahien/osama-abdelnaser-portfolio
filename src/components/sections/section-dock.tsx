@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { Arrow } from '@/components/ui/arrow';
 import { useSiteIntroReady } from '@/components/providers/site-intro-context';
 import type { RemixTake } from '@/components/ui/type-remix-preloader';
 import { cvContent } from '@/content/cv';
@@ -366,7 +367,7 @@ export function SectionDock() {
                   download
                   className="flex items-center justify-between gap-[10px] rounded-[10px] bg-secondary px-[10px] py-[8px] text-[13px] font-semibold text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-rose"
                 >
-                  Download CV <span aria-hidden="true">↓</span>
+                  Download CV <Arrow dir="down" />
                 </a>
               </li>
             ) : null}

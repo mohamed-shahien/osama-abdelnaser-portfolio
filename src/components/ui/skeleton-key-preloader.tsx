@@ -24,6 +24,8 @@
 
 import * as React from 'react';
 
+import { Arrow } from '@/components/ui/arrow';
+
 export type SkeletonKeyMetal = 'gold' | 'silver' | 'rose' | 'bronze' | 'brand';
 
 export interface SkeletonKeyPreloaderProps {
@@ -1645,7 +1647,7 @@ export default function SkeletonKeyPreloader({
                 className="skp-hud-hint"
                 data-off={scrub ? lock || done : !loading || pct < AT.key + 4 || reduced}
               >
-                {labels?.hint ?? 'Grab the key ↗'}
+                {labels?.hint ?? 'Grab the key'} <Arrow dir={scrub ? 'down' : 'up-right'} />
               </span>
               <span className="skp-hud-links">{links.join('  ·  ')}</span>
             </div>

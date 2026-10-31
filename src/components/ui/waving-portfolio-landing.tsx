@@ -784,12 +784,7 @@ export default function WavingPortfolioLanding({
                 onClick={wave}
                 onKeyDown={onCharKey}
               >
-                <Character
-                  ink={ink}
-                  paper={paper}
-                  shirtId={'wpl-' + uid + '-shirt'}
-                  headRef={headRef}
-                />
+                <Character paper={paper} shirtId={'wpl-' + uid + '-shirt'} headRef={headRef} />
               </g>
             </svg>
           </g>
@@ -1080,17 +1075,39 @@ const FRINGE = 'M 176 72 c -2 8 4 14 10 10 M 196 66 c -2 9 5 13 10 8 M 216 66 c 
 // Rig pivots (mirrored in the CSS transform-origins): tilt/breathe at the feet
 // (205, 600), shoulder (288, 248), elbow (348, 346), wrist (392, 216), neck
 // (203, 200).
+// The avatar's own palette (as in the push avatar and the interest poses):
+// near-black line, white skin, a pale-yellow ringer tee with blue flowers and
+// pink trim, blue shorts, a backwards cap and a light-blue watch.
+const AV = {
+  line: '#1d1d1f',
+  shirt: '#fbf5b0',
+  flower: '#a9c1f7',
+  trim: '#f6a9be',
+  shorts: '#a9c1f7',
+  cap: '#f9e39a',
+  watch: '#bcd3fb',
+};
+// Flowers on the shirt: a jittered grid, fixed so the drawing never changes.
+const FLOWERS = Array.from({ length: 30 }, (_, k) => {
+  const row = Math.floor(k / 5);
+  const col = k % 5;
+  return [
+    104 + col * 46 + (row % 2) * 23 + (hash(k * 4.1) - 0.5) * 12,
+    236 + row * 48 + (hash(k * 7.3 + 1) - 0.5) * 14,
+    hash(k * 2.7 + 3) * 72,
+  ] as const;
+});
+
 function Character({
-  ink,
   paper,
   shirtId,
   headRef,
 }: {
-  ink: string;
   paper: string;
   shirtId: string;
   headRef: React.Ref<SVGGElement>;
 }) {
+  const K = AV.line;
   const torso =
     'M 120 240 C 134 222 166 213 202 213 C 240 213 272 221 290 238 C 300 285 298 345 292 392 C 288 440 288 478 290 520 L 120 520 C 120 478 118 440 114 392 C 108 345 108 285 120 240 Z';
   const limb = (d: string, w: number) => (
@@ -1098,7 +1115,7 @@ function Character({
       <path
         d={d}
         fill="none"
-        stroke={ink}
+        stroke={K}
         strokeWidth={w + 8}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -1113,75 +1130,97 @@ function Character({
       />
     </>
   );
+  // A short sleeve: round at the shoulder, cut square at the pink cuff.
+  const sleeve = (d: string, cuff: string, x: number, y: number) => (
+    <>
+      <circle cx={x} cy={y} r={29} fill={K} />
+      <path d={d} fill="none" stroke={K} strokeWidth={58} />
+      <circle cx={x} cy={y} r={25} fill={AV.shirt} />
+      <path d={d} fill="none" stroke={AV.shirt} strokeWidth={50} />
+      <path d={cuff} stroke={K} strokeWidth={60} />
+      <path d={cuff} stroke={AV.trim} strokeWidth={52} />
+    </>
+  );
+  const flower = (x: number, y: number, turn: number, k: number) => (
+    <g key={k} transform={'translate(' + x + ' ' + y + ') rotate(' + turn + ')'}>
+      {[0, 72, 144, 216, 288].map((a) => (
+        <circle
+          key={a}
+          cx={6 * Math.cos((a * Math.PI) / 180)}
+          cy={6 * Math.sin((a * Math.PI) / 180)}
+          r={5.4}
+          fill={AV.flower}
+        />
+      ))}
+      <circle r={2.6} fill={AV.shirt} />
+    </g>
+  );
+  // An open cartoon hand: a round palm, four short fingers and a thumb.
   const fingers = [
-    'M 388 170 L 380 116',
-    'M 399 166 L 399 106',
-    'M 410 168 L 418 112',
-    'M 419 178 L 434 136',
-    'M 382 192 L 352 170',
+    'M 385 170 L 381 146',
+    'M 396 165 L 395 139',
+    'M 407 166 L 410 141',
+    'M 417 173 L 423 152',
+    'M 380 194 L 363 183',
   ];
-  const specks = Array.from({ length: 64 }, (_, k) => [
-    110 + hash(k * 3.1) * 190,
-    215 + hash(k * 5.7 + 1) * 305,
-    1 + hash(k * 9.3 + 2) * 1.8,
-  ]);
   return (
     <g className="wpl-rise">
       <g className="wpl-tilt">
         <g className="wpl-breathe">
-          <path d="M 128 505 L 286 505 L 294 640 L 120 640 Z" fill={ink} />
-          <path d="M 206 548 L 208 640" stroke={paper} strokeWidth={3} />
+          <path
+            d="M 128 505 L 286 505 L 294 640 L 120 640 Z"
+            fill={AV.shorts}
+            stroke={K}
+            strokeWidth={4}
+            strokeLinejoin="round"
+          />
+          <path d="M 206 548 L 208 640" stroke={K} strokeWidth={3} />
 
           <path
             d="M 184 158 L 184 226 L 222 226 L 222 158 Z"
             fill={paper}
-            stroke={ink}
+            stroke={K}
             strokeWidth={4}
           />
           <clipPath id={shirtId}>
             <path d={torso} />
           </clipPath>
-          <path d={torso} fill={ink} />
-          <g clipPath={'url(#' + shirtId + ')'} fill={paper} opacity={0.8}>
-            {specks.map(([x, y, r], k) => (
-              <circle key={k} cx={x} cy={y} r={r} />
-            ))}
+          <path d={torso} fill={AV.shirt} stroke={K} strokeWidth={4} strokeLinejoin="round" />
+          <g clipPath={'url(#' + shirtId + ')'}>
+            {FLOWERS.map(([x, y, turn], k) => flower(x, y, turn, k))}
           </g>
-          <path d="M 178 216 L 203 262 L 228 216 Z" fill={paper} />
+          {/* the ringer collar */}
           <path
-            d="M 168 218 L 180 252 L 200 267 M 238 218 L 226 252 L 206 267"
+            d="M 168 220 C 180 246 228 246 240 220"
             fill="none"
-            stroke={paper}
-            strokeWidth={3}
-            strokeLinejoin="round"
-          />
-          <path
-            d="M 203 280 L 203 505"
-            stroke={paper}
-            strokeWidth={6}
+            stroke={K}
+            strokeWidth={17}
             strokeLinecap="round"
-            strokeDasharray="0 36"
           />
           <path
-            d="M 122 512 C 160 518 250 518 288 512"
+            d="M 168 220 C 180 246 228 246 240 220"
             fill="none"
-            stroke={paper}
-            strokeWidth={3}
+            stroke={AV.trim}
+            strokeWidth={10}
+            strokeLinecap="round"
           />
 
           {/* his right arm, folded across the waist */}
+          {limb('M 110 318 C 110 348 112 370 118 384', 30)}
           {limb('M 118 384 C 140 410 168 428 194 438', 30)}
+          {sleeve('M 124 250 C 114 278 110 300 110 316', 'M 110 315 L 110 328', 124, 250)}
           {/* a watch on his wrist */}
-          <path d="M 163 417 L 179 428" stroke={ink} strokeWidth={40} />
-          <circle cx={171} cy={422.5} r={10} fill={paper} stroke={ink} strokeWidth={3.5} />
+          <path d="M 163 417 L 179 428" stroke={K} strokeWidth={40} />
+          <path d="M 164.5 418 L 177.5 427" stroke={AV.watch} strokeWidth={32} />
+          <circle cx={171} cy={422.5} r={10} fill={paper} stroke={K} strokeWidth={3.5} />
           <path
             d="M 171 422.5 L 171 416.5 M 171 422.5 L 175.5 424.5"
             fill="none"
-            stroke={ink}
+            stroke={K}
             strokeWidth={2.2}
             strokeLinecap="round"
           />
-          {/* his hand, resting on the waist, fingers curled over the belt */}
+          {/* his hand, resting on the waist, fingers curled over the hem */}
           <g transform="translate(190 436) rotate(32) scale(1.25)">
             {[0, 1, 2, 3].map((k) => (
               <path
@@ -1192,9 +1231,9 @@ function Character({
                   ' 8 L ' +
                   (7 + 7.5 * k) +
                   ' ' +
-                  (25 - Math.abs(k - 1.5) * 3)
+                  (22 - Math.abs(k - 1.5) * 3)
                 }
-                stroke={ink}
+                stroke={K}
                 strokeWidth={13}
                 strokeLinecap="round"
               />
@@ -1208,137 +1247,83 @@ function Character({
                   ' 8 L ' +
                   (7 + 7.5 * k) +
                   ' ' +
-                  (25 - Math.abs(k - 1.5) * 3)
+                  (22 - Math.abs(k - 1.5) * 3)
                 }
                 stroke={paper}
                 strokeWidth={5.5}
                 strokeLinecap="round"
               />
             ))}
-            <path d="M 8 -12 L 27 -22" stroke={ink} strokeWidth={14} strokeLinecap="round" />
-            <path d="M 8 -12 L 27 -22" stroke={paper} strokeWidth={6.5} strokeLinecap="round" />
+            <path d="M 8 -12 L 24 -20" stroke={K} strokeWidth={14} strokeLinecap="round" />
+            <path d="M 8 -12 L 24 -20" stroke={paper} strokeWidth={6.5} strokeLinecap="round" />
             <path
               d="M -4 -17 C 12 -20 28 -17 34 -8 C 38 0 37 10 31 15 C 20 20 4 19 -4 15 Z"
               fill={paper}
-              stroke={ink}
+              stroke={K}
               strokeWidth={4}
               strokeLinejoin="round"
             />
-            <path
-              d="M 14 -6 C 18 -8 22 -8 25 -5 M 16 4 C 20 2 24 2 27 5"
-              fill="none"
-              stroke={ink}
-              strokeWidth={2.4}
-              strokeLinecap="round"
-            />
           </g>
-          <path
-            d="M 124 250 C 110 300 106 345 112 382"
-            fill="none"
-            stroke={ink}
-            strokeWidth={50}
-            strokeLinecap="round"
-          />
-          <path
-            d="M 144 282 C 136 320 134 350 138 376"
-            fill="none"
-            stroke={paper}
-            strokeWidth={2.5}
-            strokeLinecap="round"
-          />
-          <path
-            d="M 90 380 C 102 394 126 396 140 386"
-            fill="none"
-            stroke={paper}
-            strokeWidth={2.5}
-            strokeLinecap="round"
-          />
 
           {/* the waving arm */}
           <g className="wpl-uarm">
+            {limb('M 312 290 C 326 312 338 330 350 350', 30)}
             <g className="wpl-farm">
               {limb('M 350 350 L 392 214', 30)}
-              <path d="M 381 252 L 387 233" stroke={ink} strokeWidth={40} />
-              <circle cx={384} cy={243} r={8} fill={paper} stroke={ink} strokeWidth={3} />
+              <path d="M 381 252 L 387 233" stroke={K} strokeWidth={40} />
+              <path d="M 382 249 L 386 236" stroke={AV.watch} strokeWidth={32} />
+              <circle cx={384} cy={243} r={8} fill={paper} stroke={K} strokeWidth={3} />
               <g className="wpl-hand">
-                <ellipse
-                  cx={400}
-                  cy={180}
-                  rx={31}
-                  ry={35}
-                  fill={ink}
-                  transform="rotate(12 400 180)"
-                />
                 {fingers.map((d) => (
-                  <path key={'o' + d} d={d} stroke={ink} strokeWidth={24} strokeLinecap="round" />
+                  <path key={'o' + d} d={d} stroke={K} strokeWidth={20} strokeLinecap="round" />
                 ))}
                 <ellipse
                   cx={400}
-                  cy={180}
-                  rx={27}
-                  ry={31}
+                  cy={186}
+                  rx={29}
+                  ry={30}
+                  fill={K}
+                  transform="rotate(12 400 186)"
+                />
+                {fingers.map((d) => (
+                  <path key={'f' + d} d={d} stroke={paper} strokeWidth={12} strokeLinecap="round" />
+                ))}
+                <ellipse
+                  cx={400}
+                  cy={186}
+                  rx={25}
+                  ry={26}
                   fill={paper}
-                  transform="rotate(12 400 180)"
+                  transform="rotate(12 400 186)"
                 />
-                {fingers.map((d) => (
-                  <path key={'f' + d} d={d} stroke={paper} strokeWidth={16} strokeLinecap="round" />
-                ))}
                 <path
-                  d="M 392 196 C 400 202 410 200 416 192 M 394 150 L 394 164 M 405 148 L 405 162"
+                  d="M 389 197 C 397 202 407 201 413 193"
                   fill="none"
-                  stroke={ink}
+                  stroke={K}
                   strokeWidth={2.5}
                   strokeLinecap="round"
                 />
               </g>
             </g>
-            <path
-              d="M 288 250 C 312 280 330 310 344 340"
-              fill="none"
-              stroke={ink}
-              strokeWidth={50}
-              strokeLinecap="round"
-            />
-            <path
-              d="M 282 294 C 296 316 306 334 314 350"
-              fill="none"
-              stroke={paper}
-              strokeWidth={2.5}
-              strokeLinecap="round"
-            />
-            <path
-              d="M 318 344 Q 342 356 364 324"
-              fill="none"
-              stroke={paper}
-              strokeWidth={2.5}
-              strokeLinecap="round"
-            />
+            {sleeve('M 288 250 C 298 264 306 278 312 290', 'M 311.5 289 L 317.5 301', 288, 250)}
           </g>
 
           <g className="wpl-head" ref={headRef}>
             <g className="wpl-look">
-              <ellipse
-                cx={158}
-                cy={118}
-                rx={12}
-                ry={18}
-                fill={paper}
-                stroke={ink}
-                strokeWidth={4}
-              />
+              <ellipse cx={158} cy={118} rx={12} ry={18} fill={paper} stroke={K} strokeWidth={4} />
               <path
                 d="M 156 110 C 162 112 162 124 156 126"
                 fill="none"
-                stroke={ink}
+                stroke={K}
                 strokeWidth={2.5}
               />
               <path
                 d="M 160 98 C 158 150 178 186 208 186 C 240 186 260 152 260 102 C 260 66 238 48 210 48 C 182 48 162 66 160 98 Z"
                 fill={paper}
-                stroke={ink}
+                stroke={K}
                 strokeWidth={4}
               />
-              <path d={HAIR} fill={ink} stroke={ink} strokeWidth={4} strokeLinejoin="round" />
+              <path d={HAIR} fill={K} stroke={K} strokeWidth={4} strokeLinejoin="round" />
               <path
                 d={CURLS.join(' ')}
                 fill="none"
@@ -1346,34 +1331,57 @@ function Character({
                 strokeWidth={2.5}
                 strokeLinecap="round"
               />
-              <path d={FRINGE} fill="none" stroke={ink} strokeWidth={5} strokeLinecap="round" />
+              {/* the cap, worn backwards: brim to the back of his head */}
+              <path
+                d="M 142 68 C 120 62 98 66 86 78 C 98 88 126 84 150 74 Z"
+                fill={AV.cap}
+                stroke={K}
+                strokeWidth={4}
+                strokeLinejoin="round"
+              />
+              <path
+                d="M 136 72 C 130 32 164 6 206 6 C 248 6 282 32 276 72 C 238 60 174 60 136 72 Z"
+                fill={AV.cap}
+                stroke={K}
+                strokeWidth={4}
+                strokeLinejoin="round"
+              />
+              <path
+                d="M 206 8 C 198 26 196 46 198 62 M 160 26 C 168 40 172 52 172 64"
+                fill="none"
+                stroke={K}
+                strokeWidth={2.5}
+                strokeLinecap="round"
+              />
+              <circle cx={206} cy={8} r={5} fill={AV.cap} stroke={K} strokeWidth={3} />
+              <path d={FRINGE} fill="none" stroke={K} strokeWidth={5} strokeLinecap="round" />
               <g className="wpl-brows">
                 <path
-                  d="M 176 88 C 184 84 194 84 202 87 M 218 87 C 226 84 238 84 246 88"
+                  d="M 176 86 C 184 82 194 82 202 85 M 218 85 C 226 82 238 82 246 86"
                   fill="none"
-                  stroke={ink}
+                  stroke={K}
                   strokeWidth={4.5}
                   strokeLinecap="round"
                 />
               </g>
               <g className="wpl-eyes">
                 <g className="wpl-pupils">
-                  <circle cx={189} cy={110} r={4.4} fill={ink} />
-                  <circle cx={232} cy={110} r={4.4} fill={ink} />
+                  <circle cx={189} cy={110} r={4.4} fill={K} />
+                  <circle cx={232} cy={110} r={4.4} fill={K} />
                 </g>
               </g>
               <path
                 className="wpl-happy"
                 d="M 182 113 Q 189 104 196 113 M 225 113 Q 232 104 239 113"
                 fill="none"
-                stroke={ink}
+                stroke={K}
                 strokeWidth={3.5}
                 strokeLinecap="round"
               />
               <path
                 d="M 170 103 L 160 101 M 208 106 C 210 102 212 102 214 106"
                 fill="none"
-                stroke={ink}
+                stroke={K}
                 strokeWidth={4}
                 strokeLinecap="round"
               />
@@ -1384,8 +1392,8 @@ function Character({
                 height={30}
                 rx={3}
                 fill="none"
-                stroke={ink}
-                strokeWidth={6.5}
+                stroke={K}
+                strokeWidth={5}
               />
               <rect
                 x={214}
@@ -1394,13 +1402,13 @@ function Character({
                 height={30}
                 rx={3}
                 fill="none"
-                stroke={ink}
-                strokeWidth={6.5}
+                stroke={K}
+                strokeWidth={5}
               />
               <path
                 d="M 214 118 C 211 132 206 142 214 146 C 219 148 224 146 226 143"
                 fill="none"
-                stroke={ink}
+                stroke={K}
                 strokeWidth={3.5}
                 strokeLinecap="round"
               />
@@ -1408,22 +1416,22 @@ function Character({
                 className="wpl-smile"
                 d="M 196 158 C 206 166 222 166 234 156"
                 fill="none"
-                stroke={ink}
+                stroke={K}
                 strokeWidth={3.5}
                 strokeLinecap="round"
               />
               <path
                 className="wpl-grin"
                 d="M 195 156 C 206 174 226 172 236 154 Z"
-                fill={ink}
-                stroke={ink}
+                fill={AV.trim}
+                stroke={K}
                 strokeWidth={3}
                 strokeLinejoin="round"
               />
               <path
                 d="M 238 150 C 241 153 241 157 239 160"
                 fill="none"
-                stroke={ink}
+                stroke={K}
                 strokeWidth={2.5}
                 strokeLinecap="round"
               />

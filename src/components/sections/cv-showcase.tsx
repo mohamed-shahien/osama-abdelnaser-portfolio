@@ -1,13 +1,16 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useEffect, useRef, useState } from 'react';
 
 import { useSiteIntroReady } from '@/components/providers/site-intro-context';
-import TypeRemixPreloader from '@/components/ui/type-remix-preloader';
 import type { RemixSlides } from '@/components/ui/type-remix-preloader';
 import { cvContent as content } from '@/content/cv';
 import { followTo } from '@/lib/motion/follow';
 import { ScrollTrigger, useGSAP } from '@/lib/motion/gsap';
+
+// Its code downloads when the stage is about a screen away, not with the page.
+const TypeRemixPreloader = dynamic(() => import('@/components/ui/type-remix-preloader'));
 
 /**
  * A 1100svh runway (about a screen per take) with a sticky stage. Scroll drives the Type Remix takes both

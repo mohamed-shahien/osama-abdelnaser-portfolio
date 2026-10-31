@@ -1,11 +1,10 @@
 import { profile } from '@/content/profile';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+// The production domain. Previews (the vercel.app address) still point their
+// canonical links and social images here; NEXT_PUBLIC_SITE_URL can override it.
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://osama-abdelnaser.com';
 
-// Do not invent a canonical production domain during setup.
 function getMetadataBase() {
-  if (!siteUrl) return undefined;
-
   const url = new URL(siteUrl);
   if (url.protocol !== 'https:' && url.protocol !== 'http:') {
     throw new Error('NEXT_PUBLIC_SITE_URL must be an absolute HTTP(S) URL.');

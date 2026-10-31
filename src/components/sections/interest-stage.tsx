@@ -48,7 +48,8 @@ export const stageOf = (id: string | undefined) => (id ? (stages[id] ?? fallback
 
 /** Card position classes per spot, written out for Tailwind. */
 export const spotClass: Record<CardSpot, string> = {
-  hands: 'top-[31%] right-[86%] -translate-y-1/2',
+  // No translate utilities here: GSAP folds CSS translate into its own transform.
+  hands: 'top-[12%] right-[86%]',
   above: 'right-[18%] bottom-[96%] md:right-[22%]',
   'left-high': '-top-[8%] right-[92%]',
   'left-low': 'right-[94%] bottom-[6%]',
@@ -482,39 +483,53 @@ export function playStage(
  * The drawn poses in `public/interests/poses`: trimmed to the figure and all
  * scaled alike, so `h / POSE_TALL` keeps the avatar one size across poses.
  * `card` is where the card sits beside the figure; `fx` is the point (as a
- * fraction of the drawing) that the act's effect comes from: the mic, the
- * mouth, the cup.
+ * fraction of the drawing) that the act's effect comes from: the flash, the
+ * mic, the mouth, the cup.
  */
 export type Pose = {
   w: number;
   h: number;
-  card: 'high' | 'mid' | 'low';
+  card: 'left-top' | 'left-mid' | 'left-low' | 'above';
   fx?: readonly [number, number];
 };
 export const POSE_TALL = 860;
 export const poses: Record<string, Pose> = {
-  photography: { w: 592, h: 738, card: 'high' },
-  voiceover: { w: 534, h: 815, card: 'mid', fx: [0.31, 0.17] },
-  languages: { w: 441, h: 821, card: 'low', fx: [0.3, 0.06] },
-  chess: { w: 619, h: 788, card: 'high' },
-  learning: { w: 512, h: 817, card: 'high' },
-  writing: { w: 588, h: 709, card: 'high' },
-  reading: { w: 336, h: 827, card: 'mid' },
-  playstation: { w: 755, h: 780, card: 'high' },
-  strategy: { w: 701, h: 828, card: 'high' },
-  ai: { w: 591, h: 805, card: 'mid' },
-  'e-commerce': { w: 726, h: 814, card: 'high' },
-  interactions: { w: 661, h: 803, card: 'mid' },
-  coffee: { w: 325, h: 810, card: 'mid', fx: [0.16, 0.2] },
-  heritage: { w: 554, h: 839, card: 'high' },
-  community: { w: 645, h: 860, card: 'low' },
-  discipline: { w: 562, h: 844, card: 'mid' },
+  photography: { w: 592, h: 738, card: 'left-top', fx: [0.08, 0.17] },
+  voiceover: { w: 534, h: 815, card: 'left-mid', fx: [0.31, 0.17] },
+  languages: { w: 441, h: 821, card: 'left-low', fx: [0.3, 0.06] },
+  chess: { w: 619, h: 788, card: 'above' },
+  learning: { w: 512, h: 817, card: 'left-mid' },
+  writing: { w: 588, h: 709, card: 'above' },
+  reading: { w: 336, h: 827, card: 'left-top' },
+  playstation: { w: 755, h: 780, card: 'above' },
+  strategy: { w: 701, h: 828, card: 'above' },
+  ai: { w: 591, h: 805, card: 'left-low' },
+  'e-commerce': { w: 726, h: 814, card: 'above' },
+  interactions: { w: 661, h: 803, card: 'left-low' },
+  coffee: { w: 325, h: 810, card: 'left-low', fx: [0.16, 0.2] },
+  heritage: { w: 554, h: 839, card: 'left-low' },
+  community: { w: 645, h: 860, card: 'left-low' },
+  discipline: { w: 562, h: 844, card: 'above' },
 };
 export const poseSrc = (id: string) => `/interests/poses/${id}.webp`;
+// Cards sit beside the drawing (--pw is its width) or above it (--ph, its height).
+// On short screens there is no room above, so those move beside it, top left.
 export const poseCardClass: Record<Pose['card'], string> = {
-  high: '-top-[6%]',
-  mid: 'top-[26%]',
-  low: 'bottom-[6%]',
+  'left-top': 'right-[calc(var(--pw)+16px)] -top-[4%]',
+  'left-mid': 'right-[calc(var(--pw)+16px)] top-[24%]',
+  'left-low': 'right-[calc(var(--pw)+16px)] bottom-[4%]',
+  above:
+    'right-0 bottom-[calc(var(--ph)+18px)] ' +
+    'max-md:[@media(max-height:740px)]:right-[calc(var(--pw)+16px)] max-md:[@media(max-height:740px)]:bottom-auto max-md:[@media(max-height:740px)]:-top-[4%] ' +
+    'md:[@media(max-height:860px)]:right-[calc(var(--pw)+16px)] md:[@media(max-height:860px)]:bottom-auto md:[@media(max-height:860px)]:-top-[4%]',
+};
+/** The card's tail: toward the drawing, below the card when it sits above. */
+export const poseTailClass: Record<'side' | 'above', string> = {
+  side: 'top-1/2 -right-[9px] -translate-y-1/2 border-t-[2.5px] border-r-[2.5px]',
+  above:
+    'right-[28%] -bottom-[9px] border-r-[2.5px] border-b-[2.5px] ' +
+    'max-md:[@media(max-height:740px)]:top-1/2 max-md:[@media(max-height:740px)]:right-[-9px] max-md:[@media(max-height:740px)]:bottom-auto max-md:[@media(max-height:740px)]:-translate-y-1/2 max-md:[@media(max-height:740px)]:border-b-0 max-md:[@media(max-height:740px)]:border-t-[2.5px] ' +
+    'md:[@media(max-height:860px)]:top-1/2 md:[@media(max-height:860px)]:right-[-9px] md:[@media(max-height:860px)]:bottom-auto md:[@media(max-height:860px)]:-translate-y-1/2 md:[@media(max-height:860px)]:border-b-0 md:[@media(max-height:860px)]:border-t-[2.5px]',
 };
 
 /**

@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 import { absoluteUrl } from '@/config/seo';
 import { workProjects } from '@/content/work';
 
-// Absolute URLs need the domain; the sitemap stays empty until NEXT_PUBLIC_SITE_URL is set.
+// Absolute URLs use the site domain (src/config/site.ts).
 export default function sitemap(): MetadataRoute.Sitemap {
   if (!absoluteUrl()) return [];
   const url = (path: string) => absoluteUrl(path) ?? path;

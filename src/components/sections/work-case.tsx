@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { Arrow } from '@/components/ui/arrow';
 import type { WorkProject } from '@/types/work';
 import { workDisplay } from '@/config/work-fonts';
 import { WorkCaseGallery } from './work-case-gallery';
@@ -33,12 +34,13 @@ export function WorkCase({
               prefetch={false}
               className="font-semibold underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-primary"
             >
-              ← Back to work
+              <Arrow dir="left" className="me-1" />
+              Back to work
             </Link>
           </>
         }
       />
-      <div className="pt-64 lg:pt-[30svh]">
+      <div className="pt-28 lg:pt-[16svh]">
         <WorkCaseGallery key={project.slug} images={images}>
           <dl className="grid grid-cols-[72px_1fr] gap-x-7 gap-y-10 leading-tight">
             <dt className="text-black/60">About</dt>
@@ -59,7 +61,7 @@ export function WorkCase({
                   rel="noreferrer"
                   className="underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-primary"
                 >
-                  Visit site ↗
+                  Visit site <Arrow />
                 </a>
               ) : null}
               {project.behanceUrl ? (
@@ -69,7 +71,7 @@ export function WorkCase({
                   rel="noreferrer"
                   className="underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-primary"
                 >
-                  Behance ↗
+                  Behance <Arrow />
                 </a>
               ) : null}
             </p>
@@ -85,7 +87,7 @@ export function WorkCase({
         >
           <span className="text-xs">Next project</span>
           <span className="[font-family:var(--font-work-display)] text-[clamp(2.5rem,6vw,7rem)] leading-none tracking-tight uppercase">
-            {next.name} ↗
+            {next.name} <Arrow className="size-[0.7em] align-[0.05em]" />
           </span>
         </TransitionLink>
       ) : null}

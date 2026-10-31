@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 
+import { Arrow } from '@/components/ui/arrow';
 import { playgroundFilters } from '@/content/playground';
 import { workProjects } from '@/content/work';
 import { workGroupOf, type WorkGroupId } from '@/content/work-groups';
@@ -136,7 +137,7 @@ export function PlaygroundGallery() {
                     className="absolute end-3 top-3 grid size-9 scale-75 place-items-center rounded-full bg-secondary text-ink opacity-0 [transition:opacity_200ms_ease,scale_260ms_cubic-bezier(.3,1.6,.5,1)] group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
                     aria-hidden="true"
                   >
-                    ↗
+                    <Arrow />
                   </span>
                 </span>
                 <span className="mt-4 flex items-center justify-between gap-3 text-xs text-ink/75">

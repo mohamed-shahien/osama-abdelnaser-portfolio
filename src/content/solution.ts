@@ -20,7 +20,7 @@ export const solutionContent = {
       load: 'Opening Checkout.fig',
       ready: 'File ready',
       unlocking: 'Opening the file',
-      hint: 'Scroll to turn the key ↓',
+      hint: 'Scroll to turn the key',
     },
   },
   eyebrow: 'Osama × Developer',

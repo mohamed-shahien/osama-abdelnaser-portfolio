@@ -95,7 +95,9 @@ export function ContactInquiry() {
       onSubmit={send}
       palette={{ field: '#FFFFFF', muted: 'rgba(23, 40, 79, 0.72)' }}
       theme="light"
-      height="100svh"
+      height="auto"
+      // The bar above is the page's top; the notebook starts right under it.
+      className="!pt-2"
     />
   );
 }

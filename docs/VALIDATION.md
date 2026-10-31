@@ -552,3 +552,33 @@ New last chapter before the footer (`#interests`, also a dock stop), built from 
 - Interests: the 16 supplied drawings (Picflow export) are trimmed and scaled alike (×0.72, so the figure stays one size) into `public/interests/poses/<id>.webp`, 53–113KB each, ~800px tall (over 2× the largest display size).
 - `interest-stage.tsx` holds each pose's size, card spot (high / mid / low beside the figure) and effect point (mic, mouth, cup). The figure pops in and plays a short, finite move per interest (`playPose`); the card's own pieces (ON AIR blink, scribble, plan arrow, ripples) still play. Without a pose the pushing avatar and props remain as the fallback.
 - Poses are fetched and decoded in idle time once the section is reached. Checked on 1440×900, 820×1180 and 390×844 with several interests picked: no errors.
+
+## Hero avatar, interest cards, footer, arrows, inner header, production pass
+
+- `waving-portfolio-landing.tsx` (user-requested redraw of `wpl-char` only): the hero character now matches the pushing avatar: flower shirt with a pink ringer collar, short sleeves with cuffs, light-blue watches, blue shorts, backwards cap, round glasses and a filled grin. The waving hand is redrawn as an open palm with short fingers (it read as deformed). Every class name and pivot the wave, look and breathe animations use is unchanged.
+- Interests: each card now sits beside or above its drawing (`poseCardClass`), never over it, with a short-screen fallback beside the figure. The card is restyled as an on-brand sticker card (ink rim, offset shadow, washi tape, tail, counter chip). The camera act no longer flashes the whole screen: a small glow and rays pop at the camera. The voice-over act draws black line arcs at the mic, like the drawing, instead of red rings.
+- `sticker-slap-footer.tsx` (user-requested and performance):
+  - Scroll stutter: `--ssf-sp` was written on the footer root every scroll frame, so the whole footer restyled. It is now a registered, non-inherited property (`@property`), written only on the three layers that use it (tangle band, panel, stage). The band and panel get `will-change: scale`. The mouse parallax vars are written on the stage, not the root.
+  - The script "s" is redrawn as a printed s from the top, so "osama" reads correctly.
+  - Dragging already worked (mouse and touch, checked with CDP). The custom cursor hides "grab", so a small "drag the stickers" note now shows until the first drag.
+- `arrow.tsx` (new): one bold, round-capped SVG arrow replaces the text glyphs ↗ → ← ↓ ↔ in the work gallery, case pages, playground, dock, interests hint, solution mock-ups, the CV moodboard tile (`type-remix-preloader.tsx`) and the key hint (`skeleton-key-preloader.tsx`, glyph only).
+- `inner-header.tsx`: one short row (menu, role, and the page's own links on case pages). The "Osama©" block, the "For inquiries" label and the email are gone. The current page is marked with the arrow. Contact: the notebook starts right under the bar (`!pt-2`, auto height). Case pages: the top gap shrinks to match.
+- Performance:
+  - `TypeRemixPreloader`, `SkeletonKeyPreloader` and `SolutionWorkspace` load with `next/dynamic` when their stage is near, not with the page. The home page's main chunk went from 120KB to 70KB gzipped.
+  - The workspace, the heaviest DOM on the page, is built in an idle callback after the key gate, not in the same task as the intro hand-off.
+  - `skill-bubbles.tsx` and `stack-tower.tsx` set `will-change` only while their loop moves, so 46 layers no longer persist when they are idle or off screen.
+- Checked on the production build (port 3002), mobile 390×844 with 4× CPU and 4G: first and largest paint about 0.6–1.2s on all pages, CLS ≤ 0.02. Footer scroll at 4× CPU after the intro: worst frame 600ms → about 200ms.
+
+## Domain and the logo intro
+
+- Domain: `src/config/site.ts` defaults to `https://osama-abdelnaser.com` (`NEXT_PUBLIC_SITE_URL` still overrides it). Canonical links, the sitemap, robots and social images now use it, including on the Vercel preview (`osama-abdelnaser-portfolio.vercel.app`), so the preview never competes with the real domain in search.
+- Logo intro: the user's video (`public/intro/logo-intro.mp4`, 1070×1302, 5s, 0.9MB) opens a visit that lands on an inner page (project, playground, contact). The home page keeps the Amour Sunrise loader. It plays once per browser session, never under reduced motion, can be skipped with a click, tap, key or the Skip button, and fades out when it ends or after 7s if the video stalls. Page entrances wait for it (`SiteIntroReadyContext`). Its code loads only when it plays (`next/dynamic`). Checked on `/contact` at 390×844: it plays, fades out, and the page and scrolling come back.
+- Inner header logo: the "osama" wordmark with its heart and cursor is cut from the video's last frame, with its paper and dots removed (`public/brand/osama-logo.webp`, 372×120, 27KB). It sits at the start of the inner header as the home link, where "Osama©" was. On phones the "Home" text link hides, since the logo goes home, so the bar stays one line. Checked at 1440, 390 and 360 wide on contact, playground and a case page.
+
+## Scenes follow the scroll, work push, skills and CV hand-offs, looping nav logo
+
+- Scroll feel: the scenes stacked three smoothings (Lenis lerp 0.06, 1.6s scrubs, a 0.9s follow), so a scene kept moving after the scroll stopped. Now Lenis carries the glide (lerp 0.1, wheel 1) and scenes sit on the scroll: `motionConfig.scroll.scrub` 0.35 (hero, work push and close, solution workspace; `tangle-footer.tsx` 1.6 → 0.35) and `follow` 0.25s. A scene can be stopped halfway.
+- Solution (second section): its loading bar starts when the stage is 10% on screen (was 30%).
+- Work: removed the scroll snaps (`alignGallery`, the push trigger's `onLeave`) that pulled the page back while the user scrolled on, which reversed the push and restarted the close. A quarter screen now holds the gallery open after the push (close starts at 12.15 screens, was 11.9). The close is 1.2 screens (was 2).
+- Skills: its scrub starts at 80% of the avatar's close (read from the `selected-work-close` trigger), so the title draws in while the curtain is still moving and the stage is never a flat black screen. Its end is `bottom 75%`, so the stage is already moving up toward the CV while the iris shuts on the glasses, instead of a flat navy screen.
+- Inner header: the logo is the whole video at its own ratio (`nav-logo.tsx`), rounded, larger, looping only while on screen and the tab is visible, as the home link. The other items sit at the top of the row.

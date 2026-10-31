@@ -23,6 +23,8 @@
 
 import * as React from 'react';
 
+import { Arrow } from '@/components/ui/arrow';
+
 export type RemixTake = 'sticker' | 'felt' | 'bubble' | 'script' | 'stretch' | 'vector' | 'cutout';
 
 /** A sticker placed on a take: x and y in percent of the stage, rot in degrees. */
@@ -2444,7 +2446,7 @@ export default function TypeRemixPreloader({
                         <div className="rtp-tile-big">CV</div>
                         <div className="rtp-tile-cta">
                           <span>{cta.label}</span>
-                          <span aria-hidden="true">↓</span>
+                          <Arrow dir="down" />
                         </div>
                         <div className="rtp-tile-k" aria-hidden="true">
                           <span>{cta.note}</span>
@@ -2459,7 +2461,7 @@ export default function TypeRemixPreloader({
                         <div className="rtp-tile-big">100</div>
                         <div className="rtp-tile-k">
                           <span>Enter</span>
-                          <span>↗</span>
+                          <Arrow />
                         </div>
                       </div>
                     )}
