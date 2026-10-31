@@ -55,7 +55,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang={siteConfig.language} dir={siteConfig.direction} className="h-full antialiased">
+    <html
+      lang={siteConfig.language}
+      dir={siteConfig.direction}
+      className="h-full [scrollbar-width:none] antialiased [&::-webkit-scrollbar]:hidden"
+    >
       <body className="flex min-h-full flex-col font-sans" suppressHydrationWarning>
         <a
           href="#main-content"

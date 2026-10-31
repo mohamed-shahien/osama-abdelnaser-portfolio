@@ -245,12 +245,9 @@ export function TangleFooter({
       cy: innerRing.cy,
       strokeWidth,
       fontSize,
-      text: buildRingCopy(
-        ctaLabel.toUpperCase(),
-        ctaLabel.toUpperCase(),
-        false,
-        circumference,
-        fontSize,
+      // Whole labels only, spaced to close the circle without a seam.
+      text: (ctaLabel.toUpperCase() + '  ·  ').repeat(
+        Math.max(2, Math.round(circumference / ((ctaLabel.length + 5) * fontSize * 0.6))),
       ),
       duration: 34,
       phase: 0.12,
@@ -279,7 +276,7 @@ export function TangleFooter({
               trigger: root,
               start: 'clamp(top 90%)',
               end: 'clamp(bottom 72%)',
-              scrub: 1,
+              scrub: 1.6,
               invalidateOnRefresh: true,
             },
           });
@@ -309,13 +306,20 @@ export function TangleFooter({
               { scaleY: 1, duration: 1, ease: 'power2.out' },
               ctaStart,
             );
-          if (icon)
+          if (icon) {
             drawing.fromTo(
               icon,
-              { opacity: 0, y: 6 },
-              { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
-              ctaStart + 0.35,
+              { opacity: 0, scale: 0.6 },
+              { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(2)' },
+              ctaStart + 0.3,
             );
+            drawing.fromTo(
+              icon.querySelectorAll('[data-tangle-cta-draw]'),
+              { strokeDashoffset: 1 },
+              { strokeDashoffset: 0, duration: 0.55, ease: 'power2.out', stagger: 0.18 },
+              ctaStart + 0.4,
+            );
+          }
 
           // Each ring is its own layer, turned on the compositor, so spinning never
           // repaints the text. The reveal mask must stay put while the ring turns, so
@@ -488,7 +492,15 @@ export function TangleFooter({
                       pointerEvents: 'none',
                     }}
                   >
-                    <textPath href={'#' + uid + '-path-' + index} startOffset="0" method="align">
+                    <textPath
+                      href={'#' + uid + '-path-' + index}
+                      startOffset="0"
+                      method="align"
+                      textLength={
+                        ring.isCta ? Math.round(2 * Math.PI * ring.radius * 10) / 10 : undefined
+                      }
+                      lengthAdjust={ring.isCta ? 'spacing' : undefined}
+                    >
                       {ring.text}
                     </textPath>
                   </text>
@@ -517,24 +529,42 @@ export function TangleFooter({
           <span
             data-tangle-cta-face
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 origin-bottom rounded-t-full bg-ink transition-colors duration-300 group-hover/cta:bg-accent-rose group-focus-visible/cta:bg-accent-rose"
+            className="pointer-events-none absolute inset-0 origin-bottom rounded-t-full border-[3px] border-b-0 border-ink bg-accent-rose [box-shadow:inset_0_0_0_5px_#e43468,inset_0_0_0_7px_#17284f55] transition-colors duration-300 group-hover/cta:bg-ink group-focus-visible/cta:bg-ink"
           />
           <span
             data-tangle-cta-icon
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-[58%] flex justify-center text-secondary"
+            className="pointer-events-none absolute inset-x-0 top-[38%] flex justify-center"
           >
             <svg
-              width={Math.max(6, Math.min(26, ctaHitRadius * 0.25))}
-              height={Math.max(6, Math.min(26, ctaHitRadius * 0.25))}
-              viewBox="0 0 24 24"
+              width={Math.max(14, Math.min(48, ctaHitRadius * 0.46))}
+              height={Math.max(14, Math.min(48, ctaHitRadius * 0.46))}
+              viewBox="0 0 48 48"
               fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
               strokeLinecap="round"
               strokeLinejoin="round"
+              className="transition-transform duration-300 group-hover/cta:rotate-45 group-focus-visible/cta:rotate-45"
             >
-              <path d="M6 18 18 6M6 6h12v12" />
+              <circle cx="24" cy="24" r="22" className="fill-secondary" />
+              <circle
+                data-tangle-cta-draw
+                cx="24"
+                cy="24"
+                r="19"
+                pathLength={1}
+                strokeDasharray="1 1"
+                strokeWidth="2"
+                transform="rotate(-90 24 24)"
+                className="stroke-ink"
+              />
+              <path
+                data-tangle-cta-draw
+                d="M16 32 32 16M19 16h13v13"
+                pathLength={1}
+                strokeDasharray="1 1"
+                strokeWidth="3.2"
+                className="stroke-ink"
+              />
             </svg>
           </span>
           <span className="sr-only">{ctaLabel}</span>

@@ -90,6 +90,36 @@ export default function WorkGallery({
     replaceRef.current();
   }, [items]);
   useEffect(() => () => requestRef.current?.abort(), []);
+  // The copy beside the deck turns over with the card: each line rises in, one
+  // after another, so a new project reads as a new page.
+  const copyKey = project?.slug ?? '';
+  const firstCopy = useRef(true);
+  useGSAP(
+    () => {
+      if (firstCopy.current) {
+        firstCopy.current = false;
+        return;
+      }
+      if (!window.matchMedia(motionConfig.queries.full).matches) return;
+      const lines = rootRef.current?.querySelectorAll<HTMLElement>('[data-copy-line]');
+      if (!lines?.length) return;
+      gsap.fromTo(
+        lines,
+        { yPercent: 60, opacity: 0, clipPath: 'inset(0 0 100% 0)' },
+        {
+          yPercent: 0,
+          opacity: 1,
+          clipPath: 'inset(0 0 0% 0)',
+          duration: 0.6,
+          ease: 'power3.out',
+          stagger: 0.05,
+          overwrite: true,
+          clearProps: 'clipPath,transform,opacity',
+        },
+      );
+    },
+    { dependencies: [copyKey], scope: rootRef },
+  );
   useEffect(() => {
     enabledRef.current = enabled;
     wakeRef.current();
@@ -641,20 +671,29 @@ export default function WorkGallery({
         data-work-copy
         className="pointer-events-none absolute start-[4%] top-[17%] z-50 flex w-[30%] max-w-[420px] flex-col gap-5 max-lg:hidden"
       >
-        <p className="flex items-center gap-2 text-[11px] tracking-[0.08em] text-black/50 uppercase">
+        <p
+          data-copy-line
+          className="flex items-center gap-2 text-[11px] tracking-[0.08em] text-black/50 uppercase"
+        >
           <span className="size-[7px] rounded-full bg-accent-rose" aria-hidden="true" />
           Now viewing · {project.kind === 'more' ? 'the rest' : String(active + 1).padStart(2, '0')}
         </p>
         <div className="flex flex-col gap-3">
-          <span className="w-max rounded-full border border-black/15 px-3 py-1 text-[11px]">
+          <span
+            data-copy-line
+            className="w-max rounded-full border border-black/15 px-3 py-1 text-[11px]"
+          >
             {project.category}
           </span>
-          <p className="text-[13px] leading-snug text-black/60">
+          <p data-copy-line className="text-[13px] leading-snug text-black/60">
             Up next ·{' '}
             <span className="text-black">{items[active + 1]?.name ?? 'the skills section'}</span>
           </p>
         </div>
-        <dl className="grid grid-cols-[92px_1fr] gap-x-4 gap-y-3 border-t border-black/10 pt-4 text-[12px] leading-snug">
+        <dl
+          data-copy-line
+          className="grid grid-cols-[92px_1fr] gap-x-4 gap-y-3 border-t border-black/10 pt-4 text-[12px] leading-snug"
+        >
           <dt className="text-black/45">Built for</dt>
           <dd>
             {project.kind === 'project' ? (
@@ -675,7 +714,7 @@ export default function WorkGallery({
             </>
           ) : null}
         </dl>
-        <p className="flex items-center gap-2 text-[12px] font-semibold">
+        <p data-copy-line className="flex items-center gap-2 text-[12px] font-semibold">
           <span
             className="grid size-[26px] place-items-center rounded-full bg-ink text-secondary"
             aria-hidden="true"
@@ -694,6 +733,7 @@ export default function WorkGallery({
             prefetch={false}
             tabIndex={-1}
             aria-hidden="true"
+            data-copy-line
             className="pointer-events-auto grid grid-cols-4 gap-2 border-t border-black/10 pt-4"
           >
             {project.project.images.slice(0, 4).map((image, index) => (
@@ -787,11 +827,18 @@ export default function WorkGallery({
         <span className="ms-2 text-[10px]">/{String(total).padStart(2, '0')}</span>
       </div>
       <div className="pointer-events-none absolute inset-x-5 bottom-[22%] z-[200] text-center lg:hidden">
-        <p className="mb-2 text-[10px] text-black/50">{project.category}</p>
-        <h3 className="[font-family:var(--font-work-display)] text-xl leading-none tracking-tight uppercase">
+        <p data-copy-line className="mb-2 text-[10px] text-black/50">
+          {project.category}
+        </p>
+        <h3
+          data-copy-line
+          className="[font-family:var(--font-work-display)] text-xl leading-none tracking-tight uppercase"
+        >
           {project.name}
         </h3>
-        <p className="mx-auto mt-3 max-w-64 text-[11px] leading-snug">{project.summary}</p>
+        <p data-copy-line className="mx-auto mt-3 max-w-64 text-[11px] leading-snug">
+          {project.summary}
+        </p>
       </div>
       <p className="sr-only" aria-live="polite">
         {loading

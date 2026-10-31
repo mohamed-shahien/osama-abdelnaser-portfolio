@@ -55,10 +55,10 @@ export function WorkShowcase({
       trigger: marker,
       start: 'top bottom+=100%',
       end: 'max',
-      onEnter: () => {
-        setNearby(true);
-        trigger.kill();
-      },
+      // `once` kills it after the first enter; that can fire inside `create`
+      // when the page reloads below this point, before `trigger` is assigned.
+      once: true,
+      onEnter: () => setNearby(true),
     });
     return () => trigger.kill();
   }, []);
@@ -104,7 +104,7 @@ export function WorkShowcase({
             return 1 + (actor.width - actor.offset) / width + 0.04;
           };
           const alignGallery = () => {
-            const y = root.getBoundingClientRect().top + window.scrollY + window.innerHeight * 11.4;
+            const y = root.getBoundingClientRect().top + window.scrollY + window.innerHeight * 11.9;
             if (Math.abs(window.scrollY - y) < window.innerHeight * 0.45) scrollPageTo(y);
           };
           const paint = () => {
@@ -169,14 +169,14 @@ export function WorkShowcase({
             trigger: root,
             animation: timeline,
             start: () => `top -${window.innerHeight * 10.65}px`,
-            end: () => `top -${window.innerHeight * 11.4}px`,
-            scrub: 1,
+            end: () => `top -${window.innerHeight * 11.9}px`,
+            scrub: 1.6,
             invalidateOnRefresh: true,
             onRefresh: paint,
             onLeave: () => {
               if (wasOpen) return;
               const end =
-                root.getBoundingClientRect().top + window.scrollY + window.innerHeight * 11.4;
+                root.getBoundingClientRect().top + window.scrollY + window.innerHeight * 11.9;
               // Cancel the root Lenis inertia when the local gallery takes input.
               if (window.scrollY >= end && window.scrollY < end + window.innerHeight * 0.4)
                 scrollPageTo(end);
@@ -227,7 +227,7 @@ export function WorkShowcase({
             })
             .catch(() => {});
           const exitTimeline = gsap.timeline({ paused: true, onUpdate: paintExit });
-          // The close is one unbroken walk over about a screen and a half of
+          // The close is one unbroken walk over about two screens of
           // scroll, slow enough to watch the avatar draw the gallery away.
           exitTimeline
             .to(exitPosition, { value: 0.45, duration: 0.9, ease: 'sine.inOut' })
@@ -236,9 +236,9 @@ export function WorkShowcase({
             id: 'selected-work-close',
             trigger: root,
             animation: exitTimeline,
-            start: () => `top -${window.innerHeight * 11.4}px`,
-            end: () => `top -${window.innerHeight * 12.9}px`,
-            scrub: 1,
+            start: () => `top -${window.innerHeight * 11.9}px`,
+            end: () => `top -${window.innerHeight * 13.9}px`,
+            scrub: 1.6,
             invalidateOnRefresh: true,
             onRefresh: paintExit,
           });
@@ -303,7 +303,7 @@ export function WorkShowcase({
       <span
         id="work-viewer"
         aria-hidden="true"
-        className="absolute top-[1140svh] size-px [scroll-margin-top:-2rem] motion-reduce:top-[1165svh]"
+        className="absolute top-[1190svh] size-px [scroll-margin-top:-2rem] motion-reduce:top-[1165svh]"
       />
       <div
         data-work-stage
@@ -348,7 +348,7 @@ export function WorkShowcase({
       >
         {children}
       </div>
-      <div aria-hidden="true" className="order-3 h-[245svh] shrink-0 motion-reduce:hidden" />
+      <div aria-hidden="true" className="order-3 h-[345svh] shrink-0 motion-reduce:hidden" />
     </div>
   );
 }

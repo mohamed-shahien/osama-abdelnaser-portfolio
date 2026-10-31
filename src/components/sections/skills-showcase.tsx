@@ -11,6 +11,7 @@ import {
   type BubbleKeepOut,
 } from '@/components/ui/skill-bubbles';
 import { skillsContent as content } from '@/content/skills';
+import { followTo } from '@/lib/motion/follow';
 import { ScrollTrigger, useGSAP } from '@/lib/motion/gsap';
 
 // The bubbles fall while the stage rests, between the hands' fling and the iris.
@@ -111,8 +112,8 @@ export function SkillsShowcase() {
     () => {
       const track = trackRef.current;
       if (!track || !mounted) return;
-      const write = (value: number) => {
-        scrubRef.current = value;
+      const write = (value: number, immediate = false) => {
+        followTo(scrubRef, 'current', value, immediate);
       };
       const trigger = ScrollTrigger.create({
         id: 'skills-scrub',
@@ -121,9 +122,9 @@ export function SkillsShowcase() {
         end: 'bottom bottom',
         invalidateOnRefresh: true,
         onUpdate: (self) => write(self.progress),
-        onRefresh: (self) => write(self.progress),
+        onRefresh: (self) => write(self.progress, true),
       });
-      write(trigger.progress);
+      write(trigger.progress, true);
       return () => trigger.kill();
     },
     { scope: trackRef, dependencies: [mounted] },

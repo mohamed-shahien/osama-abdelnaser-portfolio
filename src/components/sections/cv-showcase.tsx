@@ -6,10 +6,11 @@ import { useSiteIntroReady } from '@/components/providers/site-intro-context';
 import TypeRemixPreloader from '@/components/ui/type-remix-preloader';
 import type { RemixSlides } from '@/components/ui/type-remix-preloader';
 import { cvContent as content } from '@/content/cv';
+import { followTo } from '@/lib/motion/follow';
 import { ScrollTrigger, useGSAP } from '@/lib/motion/gsap';
 
 /**
- * A 560svh runway with a sticky stage. Scroll drives the Type Remix takes both
+ * A 1100svh runway (about a screen per take) with a sticky stage. Scroll drives the Type Remix takes both
  * ways, one CV chapter per take, and lands on the moodboard whose last tile
  * downloads the CV.
  */
@@ -39,8 +40,8 @@ export function CvShowcase({ slides }: { slides: RemixSlides }) {
     () => {
       const track = trackRef.current;
       if (!track || !mounted) return;
-      const write = (value: number) => {
-        scrubRef.current = value;
+      const write = (value: number, immediate = false) => {
+        followTo(scrubRef, 'current', value, immediate);
       };
       const trigger = ScrollTrigger.create({
         id: 'cv-scrub',
@@ -49,9 +50,9 @@ export function CvShowcase({ slides }: { slides: RemixSlides }) {
         end: 'bottom bottom',
         invalidateOnRefresh: true,
         onUpdate: (self) => write(self.progress),
-        onRefresh: (self) => write(self.progress),
+        onRefresh: (self) => write(self.progress, true),
       });
-      write(trigger.progress);
+      write(trigger.progress, true);
       return () => trigger.kill();
     },
     { scope: trackRef, dependencies: [mounted] },
@@ -59,7 +60,7 @@ export function CvShowcase({ slides }: { slides: RemixSlides }) {
 
   const { shared } = content;
   return (
-    <div ref={trackRef} data-cv-track className="h-[560svh] motion-reduce:h-[400svh]">
+    <div ref={trackRef} data-cv-track className="h-[1100svh] motion-reduce:h-[400svh]">
       <div className="sticky top-0 h-svh overflow-hidden bg-[#17284f]">
         {mounted ? (
           <TypeRemixPreloader

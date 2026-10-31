@@ -669,10 +669,17 @@ const RTP_CSS = `
 .rtp-t-bubble .rtp-fact dt { font-family: var(--rtp-round); letter-spacing: .06em; opacity: .85; }
 .rtp-t-bubble .rtp-fact dd { font-family: var(--rtp-round); font-weight: 400; }
 /* Each service carries its proof: a count of shipped projects, and a badge when one is given. */
-.rtp-t-bubble .rtp-fact { position: relative; padding-top: 1.35em; }
-.rtp-t-bubble .rtp-fact:has(.rtp-fact-icon) { display: grid; grid-template-columns: 2.6em 1fr; column-gap: .7em; align-items: center; }
-.rtp-t-bubble .rtp-fact:has(.rtp-fact-icon) .rtp-fact-icon { float: none; grid-row: span 2; width: 2.6em; height: 2.6em; margin: 0; filter: drop-shadow(0 4px 6px rgba(0,0,0,.25)); }
-.rtp-t-bubble .rtp-fact:has(.rtp-fact-icon) dt, .rtp-t-bubble .rtp-fact:has(.rtp-fact-icon) dd { grid-column: 2; }
+/* Six even balloons under a lifted title: count badge top-left, the service's
+   badge popping off the top-right corner, then the name and the proof. */
+.rtp-t-bubble:has(.rtp-facts) .rtp-word { font-size: min(calc(100cqw / var(--n2)), 23cqh); translate: 0 -10cqh; }
+.rtp-t-bubble .rtp-facts { left: 5cqw; right: 5cqw; bottom: 6cqh; gap: 2cqh 1.3cqw; align-items: stretch; }
+.rtp-t-bubble .rtp-fact { position: relative; display: flex; flex-direction: column; padding: 2em 1.1em 1.2em; border-radius: 1.6em; }
+.rtp-t-bubble .rtp-fact .rtp-fact-icon {
+  float: none; position: absolute; right: -.5em; top: -1.4em; width: 3.3em; height: 3.3em; margin: 0;
+  transform: rotate(calc(var(--r) * -3)); filter: drop-shadow(0 4px 6px rgba(0,0,0,.3));
+}
+.rtp-t-bubble .rtp-fact dt { padding-right: 1.6em; font-size: clamp(8px, .78cqw, 11px); line-height: 1.25; }
+.rtp-t-bubble .rtp-fact dd { margin-top: .5em; padding-top: .55em; border-top: 1.5px dashed color-mix(in srgb, currentColor 30%, transparent); font-size: clamp(11px, 1.05cqw, 15px); line-height: 1.25; }
 .rtp-fact-n {
   position: absolute; left: 1em; top: 0; translate: 0 -55%; padding: .35em .8em .4em; border-radius: 99em;
   background: #17284f; color: #f8fa55; box-shadow: 0 0 0 2px #fff, 0 4px 10px rgba(0,0,0,.3);
@@ -775,7 +782,9 @@ const RTP_CSS = `
   .rtp-t-felt .rtp-fact dt { font-size: 7.5px; }
   /* Clear of the page's bottom shortcut bar on phones. */
   .rtp-t-bubble .rtp-facts { gap: 2.2cqh 3cqw; bottom: calc(2cqh + 58px); }
-  .rtp-t-bubble .rtp-fact { padding: .55em .8em .65em; border-radius: 1.4em; }
+  .rtp-t-bubble .rtp-fact { padding: 1.5em .8em .7em; border-radius: 1.2em; }
+  .rtp-t-bubble .rtp-fact .rtp-fact-icon { width: 2.6em; height: 2.6em; top: -1.1em; }
+  .rtp-t-bubble:has(.rtp-facts) .rtp-word { translate: 0 -16cqh; }
   .rtp-decal { left: var(--mx) !important; top: var(--my) !important; width: calc(min(11cqw, 17cqh) * var(--ds) * .9) !important; }
 }
 

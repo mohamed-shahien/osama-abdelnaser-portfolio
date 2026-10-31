@@ -1418,7 +1418,12 @@ function SystemDiagram() {
           <span
             key={service}
             data-el={`service-${index}`}
-            className={cn(box, 'left-[1380px] h-[42px] w-[130px]', hidden, serviceSpots[index])}
+            className={cn(
+              box,
+              'left-[1380px] h-[42px] w-[156px] px-2 text-[13px] whitespace-nowrap',
+              hidden,
+              serviceSpots[index],
+            )}
           >
             {service}
           </span>

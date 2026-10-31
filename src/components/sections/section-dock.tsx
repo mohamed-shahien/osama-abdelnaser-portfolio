@@ -38,6 +38,7 @@ const stops: readonly Stop[] = [
     label: cvContent.labels[take],
     take: index,
   })),
+  { id: 'interests', label: 'Interests', selector: '#interests' },
   { id: 'contact', label: 'Contact' },
 ];
 const firstCv = stops.findIndex((stop) => stop.take === 0);
@@ -254,8 +255,8 @@ export function SectionDock() {
       <nav
         aria-label="Sections"
         className={cn(
-          'fixed top-1/2 right-[10px] z-40 -translate-y-1/2 [transition:opacity_500ms_ease,translate_500ms_ease]',
-          'max-sm:top-auto max-sm:right-auto max-sm:bottom-[12px] max-sm:left-1/2 max-sm:-translate-x-1/2 max-sm:translate-y-0',
+          'fixed top-1/2 right-0 z-40 -translate-y-1/2 [transition:opacity_500ms_ease,translate_500ms_ease]',
+          'max-sm:top-auto max-sm:right-auto max-sm:bottom-0 max-sm:left-1/2 max-sm:-translate-x-1/2 max-sm:translate-y-0',
           // On phones the bar steps aside for the footer's own button.
           atContact &&
             !open &&
@@ -268,8 +269,8 @@ export function SectionDock() {
           className={cn(
             'flex [scrollbar-width:none] flex-col items-center gap-[2px] bg-[#17284fee] p-[5px] text-white [box-shadow:0_6px_18px_#17284f33] [&::-webkit-scrollbar]:hidden',
             open
-              ? 'max-h-[calc(100svh_-_40px)] items-stretch overflow-y-auto rounded-[18px] p-[8px] max-sm:mb-[8px] max-sm:w-[min(320px,calc(100vw_-_24px))]'
-              : 'rounded-full max-sm:flex-row',
+              ? 'max-h-[calc(100svh_-_40px)] items-stretch overflow-y-auto rounded-s-[18px] rounded-e-none p-[8px] max-sm:w-[min(320px,calc(100vw_-_24px))] max-sm:rounded-t-[18px] max-sm:rounded-b-none'
+              : 'rounded-s-[16px] rounded-e-none px-[7px] py-[10px] max-sm:flex-row max-sm:rounded-t-[18px] max-sm:rounded-b-none max-sm:px-[10px] max-sm:py-[5px] max-sm:pb-[max(6px,env(safe-area-inset-bottom))]',
           )}
           data-lenis-prevent
         >
@@ -374,22 +375,38 @@ export function SectionDock() {
             className={cn(
               'mt-[3px] border-t border-[#ffffff26] pt-[3px]',
               open
-                ? 'mt-[6px] flex justify-start pt-[6px]'
+                ? 'mt-[6px] flex pt-[6px]'
                 : 'max-sm:ms-[3px] max-sm:mt-0 max-sm:border-s max-sm:border-t-0 max-sm:ps-[3px] max-sm:pt-0',
             )}
           >
             <button
               type="button"
-              className="group/stop relative grid size-[26px] cursor-pointer place-items-center rounded-full bg-transparent [border:0] focus-visible:outline-2 focus-visible:outline-accent-rose"
+              className={cn(
+                'group/stop relative grid cursor-pointer place-items-center bg-transparent [border:0] focus-visible:outline-2 focus-visible:outline-accent-rose',
+                open
+                  ? 'flex h-[36px] w-full items-center justify-between gap-[10px] rounded-[10px] bg-[#ffffff14] px-[10px] text-[13px] font-semibold hover:bg-[#ffffff22]'
+                  : 'size-[26px] rounded-full',
+              )}
               aria-pressed={playing}
               aria-label={playing ? 'Pause the studio radio' : 'Play the studio radio'}
               onClick={toggleMusic}
             >
+              {open ? (
+                <span className="flex flex-col items-start leading-tight" aria-hidden="true">
+                  Studio radio
+                  <span className="text-[11px] font-normal text-[#ffffff99]">
+                    {playing ? 'Playing · tap to pause' : 'Off · tap to play'}
+                  </span>
+                </span>
+              ) : null}
               <MusicBars
                 className={cn('h-[12px]', playing ? 'text-accent-rose' : 'text-[#ffffff99]')}
               />
               <span
-                className="pointer-events-none absolute top-1/2 right-[calc(100%_+_12px)] translate-x-[6px] -translate-y-1/2 rounded-full bg-ink px-[10px] py-[4px] text-[11px] leading-[14px] font-semibold whitespace-nowrap text-secondary opacity-0 [transition:opacity_180ms_ease,translate_180ms_ease] group-hover/stop:translate-x-0 group-hover/stop:opacity-100 group-focus-visible/stop:translate-x-0 group-focus-visible/stop:opacity-100 max-sm:hidden"
+                className={cn(
+                  open && 'hidden',
+                  'pointer-events-none absolute top-1/2 right-[calc(100%_+_12px)] translate-x-[6px] -translate-y-1/2 rounded-full bg-ink px-[10px] py-[4px] text-[11px] leading-[14px] font-semibold whitespace-nowrap text-secondary opacity-0 [transition:opacity_180ms_ease,translate_180ms_ease] group-hover/stop:translate-x-0 group-hover/stop:opacity-100 group-focus-visible/stop:translate-x-0 group-focus-visible/stop:opacity-100 max-sm:hidden',
+                )}
                 aria-hidden="true"
               >
                 {playing ? 'Radio on' : 'Radio off'}

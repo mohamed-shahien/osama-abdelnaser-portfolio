@@ -1,5 +1,6 @@
 import { Cv } from '@/components/sections/cv';
 import { Hero } from '@/components/sections/hero';
+import { Interests } from '@/components/sections/interests';
 import { SelectedWork } from '@/components/sections/selected-work';
 import { Solution } from '@/components/sections/solution';
 import { Skills } from '@/components/sections/skills';
@@ -14,6 +15,7 @@ export default function Home() {
       </SelectedWork>
       <Skills />
       <Cv />
+      <Interests />
       <SectionDock />
     </main>
   );

@@ -520,3 +520,35 @@ Integration changes:
 - The work section's motion mounts through a ScrollTrigger, so a dock jump straight past its start (to Skills) no longer leaves the Solution plate on screen.
 - Section dock: rows faded by closing the index had kept `opacity: 0`, which hid the rail's dots; they are cleared now. Opening and closing morph the panel's size between rail and index.
 - Inner pages' header drops the "Menu" label and the Work/About links (they only pointed at home-page anchors).
+
+## Interests section — 2026-10-31
+
+New last chapter before the footer (`#interests`, also a dock stop), built from two components the user supplied:
+
+- `stack-tower.tsx` (supplied as framer-motion): ported to the GSAP ticker, no new dependency (the user declined adding one). The cosine cycle, row offset, squash, slide, skew, color mix and hover easing are unchanged. Added: words from props, rows as buttons (hover, focus, click), a staggered rise-in, `touch-action: pan-y` instead of `none` so the page still scrolls over the list on phones, and the ticker stops off screen, in hidden tabs and under reduced motion.
+- `ring-tower.tsx` (supplied as three.js): redrawn on a 2D canvas with the same scene constants (radius 4, band 2, spacing 3.5, 7° camera at 70, tilt 14°, quarter-turn zig-zag, crawl, drag inertia, opposite parallax, backface fade). Each band is sliced into 72 (56 on touch) affine strips, depth sorted. Added: up to 12 rings, a scroll-driven camera pan, a focus tag that dims other photos, a drop-in entrance, and drawn placeholder cards for photos without a `src`. Pauses off screen and in hidden tabs.
+- `interests-showcase.tsx`: the list holds still, the rings pan through a 250svh runway, the title sits beside the rings, and the Selected Work avatar (mirrored, smaller) walks in pushing an interest card. Hovering or tapping an interest swaps the card and plays that interest's act (flash, voice waves, greeting bubbles, glyph burst, typing, steam, stamp, ticks). Every act is a finite timeline.
+- Content in `src/content/interests.ts`: the sixteen interests are the user's list; the one-line notes and the thirty photo slots are placeholders until the real copy and photos arrive.
+
+## Interest stages, the loader's cursor, slower scroll — 2026-10-31
+
+- Interests: Novelty, Coding and Systems became Chess, Reading and PlayStation. Each interest now has its own set (`interest-stage.tsx`): a prop the avatar holds or stands behind (camera, studio desk with mic and headphones, chess table, controller, shopping cart, lantern, sign...), its own card spot and dressing (a polaroid that shows a snapshot of the rings, an ON AIR card, a speech bubble, a game screen, a pushed block), and a short finite choreography. An interest can take a drawn pose image instead (`pose`, prompts in `docs/interest-pose-prompts.md`).
+- Cursor (`site-cursor.tsx`): fine pointers get the loader's arrow as the pointer. As the loader lifts, the arrow leaves the sun at its own size and shrinks onto the mouse; it grows over links and buttons. The native cursor is hidden only while it is live. `amour-sunrise-preloader.tsx` is untouched; its mark is hidden from outside at the handover.
+- Motion: Lenis lerp 0.075 → 0.06 and wheel 0.9 → 0.75; GSAP scrubs 1 → 1.6 (hero, work, footer tangle); the CV and Skills scroll values ease toward their target over 0.9s (`followTo`) instead of tracking each notch.
+- The page scrollbar is hidden; the section dock sits flush against the right edge (the bottom edge on phones).
+
+## Slower scroll scenes, project copy motion, services, dock and footer polish
+
+- CV: the seven takes run over a 1100svh track (about a screen and a half each). Work: the avatar's push now takes 10.65→11.9 screens and the close 11.9→13.9; the viewer and tail spacer moved with it, so Skills keeps its place.
+- Diagram: service boxes are 156px wide with no wrap, so "Payment gateway" fits.
+- Work gallery: the left copy and the phone caption rise in line by line when the project changes (full motion only). New on-brand `public/work/all-projects.svg` (sticker deck, palette only).
+- `type-remix-preloader.tsx` (bubble take, styles only): six even service balloons with the count badge top-left and the service badge off the top-right corner, the title lifted so the cards no longer cover it. Text and data unchanged.
+- Section dock: the closed panel uses a 16px radius with vertical padding, so the menu and music icons sit inside it; the open panel shows a full-width "Studio radio" control.
+- Footer: the floating "Book a meeting" chip is gone (the ring already says it; the pulse stays). `tangle-footer.tsx` (user-requested style change): the CTA ring holds whole labels spaced to close the circle (no "BOOBOOK" seam), the button face is rose with an ink rim, and its arrow badge draws itself in after the rings. The yellow footer sheet has rounded top corners and a warm shadow.
+
+## Refresh mid-page error, drawn interest poses
+
+- `work-showcase.tsx`: the mount trigger used `trigger.kill()` inside its own `onEnter`, which fires during `ScrollTrigger.create` when the page reloads below it ("Cannot access 'trigger' before initialization"). It now uses `once: true`. Checked by reloading at 8 scroll positions on desktop (1440×900) and 5 on mobile (390×844): no exceptions or console errors.
+- Interests: the 16 supplied drawings (Picflow export) are trimmed and scaled alike (×0.72, so the figure stays one size) into `public/interests/poses/<id>.webp`, 53–113KB each, ~800px tall (over 2× the largest display size).
+- `interest-stage.tsx` holds each pose's size, card spot (high / mid / low beside the figure) and effect point (mic, mouth, cup). The figure pops in and plays a short, finite move per interest (`playPose`); the card's own pieces (ON AIR blink, scribble, plan arrow, ripples) still play. Without a pose the pushing avatar and props remain as the fallback.
+- Poses are fetched and decoded in idle time once the section is reached. Checked on 1440×900, 820×1180 and 390×844 with several interests picked: no errors.

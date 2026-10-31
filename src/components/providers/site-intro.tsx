@@ -11,6 +11,7 @@ import {
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 
+import { SiteCursor } from '@/components/providers/site-cursor';
 import { SiteIntroReadyContext } from '@/components/providers/site-intro-context';
 import { ScrollTrigger } from '@/lib/motion/gsap';
 
@@ -92,6 +93,8 @@ export function SiteIntro({ children }: { children: ReactNode }) {
           />
         </div>
       ) : null}
+      {/* The loader's arrow becomes the pointer as the loader lifts. */}
+      <SiteCursor waiting={!hydrated || (active && !lifted)} handoff={entry === '/'} />
     </SiteIntroReadyContext>
   );
 }

@@ -1,18 +1,69 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="910" height="732" viewBox="0 0 910 732">
-  <rect width="910" height="732" fill="#5B8DFB"/>
-  <g fill="none" stroke="#17284F" stroke-width="2" opacity=".32">
-    <rect x="614" y="49" width="237" height="172" transform="rotate(14 732 135)"/>
-    <rect x="614" y="49" width="237" height="172" transform="rotate(7 732 135)"/>
-    <rect x="614" y="49" width="237" height="172"/>
-  </g>
-  <circle cx="735" cy="135" r="34" fill="#F8FA55"/>
-  <g fill="#17284F" font-family="Arial,Helvetica,sans-serif" font-weight="700" letter-spacing="-10">
-    <text x="46" y="363" font-size="180">ALL</text>
-    <text x="46" y="512" font-size="140">PROJECTS</text>
-  </g>
-  <path d="M50 600H860" stroke="#17284F" stroke-width="2"/>
-  <g fill="#17284F" font-family="Arial,Helvetica,sans-serif" font-size="22" letter-spacing="1">
-    <text x="50" y="652">MORE WORK. SAME CURIOSITY.</text>
-    <text x="860" y="652" text-anchor="end">OPEN COLLECTION +</text>
+  <defs>
+    <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="2" fill="#17284F" opacity=".14"/>
+    </pattern>
+    <clipPath id="frame"><rect width="910" height="732" rx="0"/></clipPath>
+  </defs>
+  <g clip-path="url(#frame)">
+    <rect width="910" height="732" fill="#5B8DFB"/>
+    <rect width="910" height="732" fill="url(#dots)"/>
+
+    <!-- A fanned deck of project cards, the collection waiting behind this one. -->
+    <g transform="translate(640 196)">
+      <g transform="rotate(16)">
+        <rect x="-118" y="-84" width="236" height="168" rx="18" fill="#17284F" transform="translate(8 10)"/>
+        <rect x="-118" y="-84" width="236" height="168" rx="18" fill="#E43468" stroke="#17284F" stroke-width="5"/>
+      </g>
+      <g transform="rotate(6)">
+        <rect x="-118" y="-84" width="236" height="168" rx="18" fill="#17284F" transform="translate(8 10)"/>
+        <rect x="-118" y="-84" width="236" height="168" rx="18" fill="#F3D061" stroke="#17284F" stroke-width="5"/>
+      </g>
+      <g transform="rotate(-5)">
+        <rect x="-118" y="-84" width="236" height="168" rx="18" fill="#17284F" transform="translate(8 10)"/>
+        <rect x="-118" y="-84" width="236" height="168" rx="18" fill="#FFFFFF" stroke="#17284F" stroke-width="5"/>
+        <rect x="-118" y="-84" width="236" height="34" rx="18" fill="#17284F"/>
+        <rect x="-118" y="-66" width="236" height="16" fill="#17284F"/>
+        <circle cx="-94" cy="-67" r="6" fill="#E43468"/>
+        <circle cx="-74" cy="-67" r="6" fill="#F3D061"/>
+        <circle cx="-54" cy="-67" r="6" fill="#F8FA55"/>
+        <rect x="-96" y="-28" width="104" height="14" rx="7" fill="#17284F"/>
+        <rect x="-96" y="-4" width="150" height="10" rx="5" fill="#17284F" opacity=".25"/>
+        <rect x="-96" y="14" width="124" height="10" rx="5" fill="#17284F" opacity=".25"/>
+        <rect x="-96" y="40" width="70" height="24" rx="12" fill="#5B8DFB" stroke="#17284F" stroke-width="3"/>
+      </g>
+    </g>
+
+    <!-- The "+" sticker slapped on the deck. -->
+    <g transform="translate(784 92) rotate(-12)">
+      <circle r="54" fill="#17284F" transform="translate(5 7)"/>
+      <circle r="54" fill="#F8FA55" stroke="#17284F" stroke-width="5"/>
+      <path d="M0 -24V24M-24 0H24" stroke="#17284F" stroke-width="10" stroke-linecap="round"/>
+    </g>
+
+    <!-- Label pill. -->
+    <g transform="translate(52 72)">
+      <rect width="262" height="46" rx="23" fill="#17284F"/>
+      <circle cx="26" cy="23" r="7" fill="#E43468"/>
+      <text x="46" y="30" fill="#FFFFFF" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="700" letter-spacing="2.5">THE COLLECTION</text>
+    </g>
+
+    <!-- Title, set like a sticker: ink offset under white. -->
+    <g font-family="'Arial Black','Arial',Helvetica,sans-serif" font-weight="900" letter-spacing="-6">
+      <text x="58" y="452" font-size="196" fill="#17284F">ALL</text>
+      <text x="50" y="442" font-size="196" fill="#FFFFFF" stroke="#17284F" stroke-width="5" paint-order="stroke">ALL</text>
+      <text x="58" y="586" font-size="118" fill="#17284F">PROJECTS</text>
+      <text x="50" y="576" font-size="118" fill="#F8FA55" stroke="#17284F" stroke-width="5" paint-order="stroke">PROJECTS</text>
+    </g>
+
+    <!-- Footer bar. -->
+    <rect x="0" y="632" width="910" height="100" fill="#17284F"/>
+    <text x="52" y="692" fill="#FFFFFF" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700" letter-spacing="2">MORE WORK. SAME CURIOSITY.</text>
+    <g transform="translate(858 682)">
+      <rect x="-262" y="-28" width="262" height="56" rx="28" fill="#F8FA55"/>
+      <text x="-236" y="8" fill="#17284F" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" letter-spacing="1.5">OPEN ALL</text>
+      <circle cx="-30" cy="0" r="20" fill="#17284F"/>
+      <path d="M-37 7L-23 -7M-33 -7H-23V3" stroke="#F8FA55" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
   </g>
 </svg>
