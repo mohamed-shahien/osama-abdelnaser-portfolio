@@ -64,7 +64,7 @@ export function CvShowcase({ slides }: { slides: RemixSlides }) {
   const { shared } = content;
   return (
     <div ref={trackRef} data-cv-track className="h-[1100svh] motion-reduce:h-[400svh]">
-      <div className="sticky top-0 h-svh overflow-hidden bg-[#17284f]">
+      <div className="sticky top-0 h-lvh overflow-hidden bg-[#17284f]">
         {mounted ? (
           <TypeRemixPreloader
             scrub={scrubRef}
@@ -82,7 +82,7 @@ export function CvShowcase({ slides }: { slides: RemixSlides }) {
             labels={content.labels}
             cta={content.cta}
             ground="#17284f"
-            height="100svh"
+            height="100%"
             label={content.label}
             hud={false}
             stickers={false}

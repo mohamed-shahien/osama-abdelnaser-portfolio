@@ -43,7 +43,7 @@ export function NavLogo() {
   }, [ready]);
 
   return (
-    <span className="group relative block aspect-[1070/1302] h-24 overflow-hidden rounded-xl md:h-36">
+    <span className="group relative block aspect-[1070/1302] h-24 overflow-hidden rounded-b-xl md:h-36">
       <Image
         src="/brand/osama-logo.webp"
         alt=""

@@ -72,7 +72,12 @@ export function WorkShowcase({
       const stage = root.querySelector<HTMLElement>('[data-work-stage]');
       const exitActor = root.querySelector<HTMLElement>('[data-work-exit-actor]');
       const exitGraphic = root.querySelector<HTMLElement>('[data-work-exit-vector]');
-      if (!plate || !actor || !graphic || !stage || !exitActor || !exitGraphic) return;
+      const pushStart = root.querySelector<HTMLElement>('[data-push-start]');
+      if (!plate || !actor || !graphic || !stage || !exitActor || !exitGraphic || !pushStart)
+        return;
+      // One small viewport, read off the svh anchor the plate's sticky offset
+      // uses; on phones innerHeight grows with the hidden toolbar and drifts.
+      const screen = () => pushStart.offsetTop / 10.65;
       const media = gsap.matchMedia();
       media.add(
         {
@@ -162,8 +167,8 @@ export function WorkShowcase({
             id: 'selected-work-push',
             trigger: root,
             animation: timeline,
-            start: () => `top -${window.innerHeight * 10.65}px`,
-            end: () => `top -${window.innerHeight * 11.9}px`,
+            start: () => `top -${screen() * 10.65}px`,
+            end: () => `top -${screen() * 11.9}px`,
             scrub: motionConfig.scroll.scrub,
             invalidateOnRefresh: true,
             onRefresh: paint,
@@ -222,8 +227,8 @@ export function WorkShowcase({
             id: 'selected-work-close',
             trigger: root,
             animation: exitTimeline,
-            start: () => `top -${window.innerHeight * 12.15}px`,
-            end: () => `top -${window.innerHeight * 13.35}px`,
+            start: () => `top -${screen() * 12.15}px`,
+            end: () => `top -${screen() * 13.35}px`,
             scrub: motionConfig.scroll.scrub,
             invalidateOnRefresh: true,
             onRefresh: paintExit,
@@ -293,7 +298,7 @@ export function WorkShowcase({
       />
       <div
         data-work-stage
-        className="sticky top-0 order-1 -mb-[100svh] h-svh shrink-0 overflow-hidden bg-[#ededed] motion-reduce:static motion-reduce:order-3 motion-reduce:mb-0"
+        className="sticky top-0 order-1 -mb-[100lvh] h-lvh shrink-0 overflow-hidden bg-[#ededed] motion-reduce:static motion-reduce:order-3 motion-reduce:mb-0"
       >
         <div inert={!open || closing} className="h-full">
           {mounted ? (
@@ -308,7 +313,7 @@ export function WorkShowcase({
       </div>
       <div
         aria-hidden="true"
-        className="pointer-events-none sticky top-0 z-50 order-1 -mb-[100svh] h-svh shrink-0 overflow-hidden motion-reduce:hidden"
+        className="pointer-events-none sticky top-0 z-50 order-1 -mb-[100lvh] h-lvh shrink-0 overflow-hidden motion-reduce:hidden"
       >
         <div
           data-work-actor
@@ -319,7 +324,7 @@ export function WorkShowcase({
       </div>
       <div
         aria-hidden="true"
-        className="pointer-events-none sticky top-0 z-[60] order-1 -mb-[100svh] h-svh shrink-0 overflow-hidden motion-reduce:hidden"
+        className="pointer-events-none sticky top-0 z-[60] order-1 -mb-[100lvh] h-lvh shrink-0 overflow-hidden motion-reduce:hidden"
       >
         <div
           data-work-exit-actor

@@ -114,7 +114,7 @@ export function SolutionWorkspace({ trackRef }: { trackRef: RefObject<HTMLDivEle
   return (
     <div
       ref={rootRef}
-      className="relative flex h-svh w-full flex-col gap-2 overflow-hidden bg-white p-3 text-start text-ink"
+      className="relative flex h-full w-full flex-col gap-2 overflow-hidden bg-white p-3 text-start text-ink"
       style={{ backgroundImage: canvasGrid }}
     >
       <ol className="sr-only" aria-label={content.label}>
@@ -481,7 +481,7 @@ function Header({ stage }: { stage: number }) {
           {current.title}
         </span>
       </p>
-      <div className="-my-2 overflow-hidden [mask-image:linear-gradient(90deg,#000_88%,transparent)] py-2 ps-1 max-xl:hidden">
+      <div className="-my-2 overflow-hidden [mask-image:linear-gradient(90deg,#000_88%,transparent)] py-2 ps-1">
         <ol
           ref={trackRef}
           className="flex w-max flex-nowrap items-center gap-2 transition-transform duration-700 ease-[cubic-bezier(.65,0,.35,1)] motion-reduce:transition-none"
@@ -511,30 +511,6 @@ function Header({ stage }: { stage: number }) {
             </li>
           ))}
         </ol>
-      </div>
-      <div className="flex items-center gap-4 xl:hidden">
-        <span
-          className={cn(
-            sticker,
-            'flex shrink-0 rotate-[-1.5deg] items-center gap-2 py-1 ps-1.5 pe-3.5 text-[15px] text-white',
-            current.id === 'error' ? 'bg-accent-rose' : 'bg-primary',
-          )}
-        >
-          <Image
-            src={`/steps/${current.id}.webp`}
-            alt={current.id}
-            width={42}
-            height={42}
-            className="size-[42px] shrink-0 object-contain select-none"
-          />
-          <span>{current.id}</span>
-        </span>
-        <span className="h-[6px] flex-1 overflow-hidden rounded-full bg-[#17284f14]">
-          <span
-            className="block h-full origin-left rounded-full bg-primary transition-[scale] duration-700 motion-reduce:transition-none"
-            style={{ scale: `${(stage + 1) / STAGES} 1` }}
-          />
-        </span>
       </div>
     </div>
   );
@@ -1450,7 +1426,7 @@ function SystemDiagram() {
         {[
           'M0 76H50',
           'M200 76C215 76 215 43 230 43',
-          'M200 76H230',
+          'M200 76C215 76 215 101 230 101',
           'M200 76C215 76 215 159 230 159',
         ].map((d, index) => (
           <path

@@ -275,6 +275,28 @@ export function SectionDock() {
           )}
           data-lenis-prevent
         >
+          {/* Phones: a small scroll cue beside the index, gone at the last stop. */}
+          {!open && active < stops.length - 1 ? (
+            <span
+              aria-hidden="true"
+              className="me-[4px] flex h-[26px] items-center gap-[3px] border-e border-[#ffffff26] pe-[8px] sm:hidden"
+            >
+              <span className="relative block h-[17px] w-[11px] rounded-full border-[1.5px] border-secondary">
+                <span className="absolute top-[3px] left-1/2 -ms-[1px] block h-[4px] w-[2px] animate-scroll-hint rounded-full bg-secondary motion-reduce:animate-none" />
+              </span>
+              <svg
+                viewBox="0 0 10 10"
+                className="size-[9px] text-secondary"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M2 3.5 5 6.5 8 3.5" />
+              </svg>
+            </span>
+          ) : null}
           <button
             type="button"
             aria-expanded={open}

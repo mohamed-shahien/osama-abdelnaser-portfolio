@@ -215,6 +215,8 @@ const THEMES: RemixThemeMap = {
  * scroll pulls back onto the moodboard by `board`, both ways.
  */
 export const RTP_SCROLL = { takes: 0.7, zoom: 0.74, board: 0.86 } as const;
+// Scroll mode: the last share of each take's slice wipes the next take in.
+const RTP_WIPE = 0.45;
 
 const FONT_HREF =
   'https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Anton&family=Archivo+Black&family=Caveat:wght@700&family=DM+Serif+Display&family=Rubik:wght@900&family=Shrikhand&family=Space+Mono:wght@400;700&family=Titan+One&display=swap';
@@ -387,6 +389,7 @@ const RTP_CSS = `
 .rtp-slide[data-dir="2"] { animation-name: rtp-wipe-t; }
 .rtp-slide[data-dir="3"] { animation-name: rtp-wipe-r; }
 .rtp-slide[data-first="true"] { animation-name: rtp-fade-in; animation-duration: 500ms; }
+.rtp-gate[data-scrub="true"] .rtp-slide { animation: none; transform-origin: 50% 50%; }
 @keyframes rtp-wipe-b { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
 @keyframes rtp-wipe-l { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 @keyframes rtp-wipe-t { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
@@ -792,6 +795,20 @@ const RTP_CSS = `
 
 
 .rtp-take[data-still="true"] .rtp-facts { display: none; }
+/* Phones in scroll mode: each title clears its cards, the cards clear the page's
+   bottom bar, and the group sits nearer the middle instead of the foot. */
+@container (max-width: 560px) {
+  .rtp-gate[data-scrub="true"] .rtp-t-sticker .rtp-word { translate: 0 -12cqh; }
+  .rtp-gate[data-scrub="true"] .rtp-t-sticker .rtp-facts[data-at="bottom"] { bottom: calc(1.5cqh + 60px); }
+  .rtp-gate[data-scrub="true"] .rtp-t-felt .rtp-facts { top: 11cqh; }
+  .rtp-gate[data-scrub="true"] .rtp-t-felt .rtp-col { translate: 0 9cqh; }
+  .rtp-gate[data-scrub="true"] .rtp-t-script .rtp-word { translate: 0 -15cqh; }
+  .rtp-gate[data-scrub="true"] .rtp-t-script .rtp-sub { translate: -50% -12cqh; }
+  .rtp-gate[data-scrub="true"] .rtp-t-script .rtp-facts { bottom: calc(13.5cqh + 60px); }
+  .rtp-gate[data-scrub="true"] .rtp-t-stretch .rtp-band { height: 37cqh; }
+  .rtp-gate[data-scrub="true"] .rtp-t-stretch .rtp-stretch-row { bottom: 37cqh; }
+  .rtp-gate[data-scrub="true"] .rtp-t-vector .rtp-word { translate: 0 -10cqh; }
+}
 @container (max-width: 560px) { .rtp-facts[data-at="band"] { left: 4cqw; bottom: 3cqh; } .rtp-t-stretch .rtp-stretch-name { display: none; } }
 /* Phones: the four sheets pack two to a row (after the base rules, so these win). */
 @container (max-width: 560px) {
@@ -2109,6 +2126,44 @@ export default function TypeRemixPreloader({
     };
   }, [fontHref]);
 
+  // Scroll mode: the take wiping in over the current one, and how far (0–1).
+  // The wipe is written straight to the two slides, and again before paint
+  // whenever they remount, so a swap never flashes.
+  const [upcoming, setUpcoming] = React.useState(-1);
+  const wipeRef = React.useRef(0);
+  const wipeCache = React.useRef(new WeakMap<HTMLElement, string>());
+  const paintWipe = React.useCallback(() => {
+    const stage = rootRef.current?.querySelector('.rtp-stage');
+    if (!stage) return;
+    const w = wipeRef.current;
+    const e = w < 0.5 ? 4 * w * w * w : 1 - Math.pow(-2 * w + 2, 3) / 2;
+    for (const el of Array.from(stage.children)) {
+      if (!(el instanceof HTMLElement)) continue;
+      let clip = '';
+      let transform = '';
+      if (el.dataset.role === 'next') {
+        const x = ((1 - e) * 100).toFixed(2) + '%';
+        const d = el.dataset.dir;
+        clip =
+          d === '1'
+            ? 'inset(0 ' + x + ' 0 0)'
+            : d === '2'
+              ? 'inset(0 0 ' + x + ' 0)'
+              : d === '3'
+                ? 'inset(0 0 0 ' + x + ')'
+                : 'inset(' + x + ' 0 0 0)';
+      } else if (e > 0) transform = 'scale(' + (1 - 0.08 * e).toFixed(4) + ')';
+      const key = clip + '|' + transform;
+      if (wipeCache.current.get(el) === key) continue;
+      wipeCache.current.set(el, key);
+      el.style.clipPath = clip;
+      el.style.transform = transform;
+    }
+  }, []);
+  React.useLayoutEffect(() => {
+    if (scrub) paintWipe();
+  }, [scrub, take, upcoming, paintWipe]);
+
   // Scroll mode: off screen, the gate is idle (CSS loops paused, no frames).
   const [idle, setIdle] = React.useState(Boolean(scrub));
   React.useEffect(() => {
@@ -2141,6 +2196,7 @@ export default function TypeRemixPreloader({
     let last = performance.now();
     let shownPct = -1;
     let shownTake = -1;
+    let shownNext = -1;
     let zoomFrom = 1;
     let shownBoard: HTMLElement | null = null;
     let shownScale = '';
@@ -2157,11 +2213,22 @@ export default function TypeRemixPreloader({
         shownPct = p;
         setPct(p);
       }
-      const k = rtpTakeAt(p, n);
+      // The take is read off the continuous position, and the end of its
+      // slice wipes the next one in, so the cut follows the scroll both ways.
+      const f = Math.min(n, (su / RTP_SCROLL.takes) * n);
+      const k = Math.min(n - 1, Math.floor(f));
+      const w = k >= n - 1 ? 0 : rtpClamp01((f - k - (1 - RTP_WIPE)) / RTP_WIPE);
+      const next = w > 0 ? k + 1 : -1;
       if (k !== shownTake) {
         shownTake = k;
         setTake(k);
       }
+      if (next !== shownNext) {
+        shownNext = next;
+        setUpcoming(next);
+      }
+      wipeRef.current = w;
+      paintWipe();
       const want = su >= RTP_SCROLL.zoom ? 'board' : su >= RTP_SCROLL.takes ? 'hold' : 'load';
       if (want !== scrollPhase.current) {
         scrollPhase.current = want;
@@ -2192,7 +2259,7 @@ export default function TypeRemixPreloader({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [scrub, fontsPending, idle, reduced, n]);
+  }, [scrub, fontsPending, idle, reduced, n, paintWipe]);
 
   // The count, and the take it is on: simulated or eased toward real progress,
   // never backwards, and never cutting faster than one take per MIN_TAKE_MS.
@@ -2324,6 +2391,14 @@ export default function TypeRemixPreloader({
     { k: trail.prev, key: trail.prev + '-' + (trail.visit - 1) },
     { k: take, key: take + '-' + trail.visit },
   ].filter((slide) => slide.k >= 0);
+  // Scroll mode keys slides by take, so the one wiping in stays mounted as it
+  // becomes the current take, and its entrance never replays mid-cut.
+  const stageSlides = scrub
+    ? [
+        { k: take, key: 'take-' + take, role: 'base' },
+        ...(upcoming > take ? [{ k: upcoming, key: 'take-' + upcoming, role: 'next' }] : []),
+      ]
+    : shownSlides.map((slide) => ({ ...slide, role: 'base' }));
 
   return (
     <div
@@ -2353,6 +2428,7 @@ export default function TypeRemixPreloader({
           data-stick={canStick}
           data-loop={loop}
           data-idle={idle}
+          data-scrub={Boolean(scrub)}
           {...(scrub
             ? { role: 'group', 'aria-label': label || name + ' — ' + cleanWord.toLowerCase() }
             : {
@@ -2368,11 +2444,12 @@ export default function TypeRemixPreloader({
         >
           {phase === 'fonts' || showBoard ? null : (
             <div className="rtp-stage" key={'run' + run}>
-              {shownSlides.map(({ k, key }) => (
+              {stageSlides.map(({ k, key, role }) => (
                 <div
                   key={key}
                   className="rtp-slide"
                   data-dir={k % 4}
+                  data-role={role}
                   data-first={k === 0 && firstSlide}
                 >
                   <Take id={takeAt(k)} {...scene(takeAt(k))} t={theme(takeAt(k))} still={false} />

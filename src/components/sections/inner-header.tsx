@@ -30,7 +30,7 @@ export function InnerHeader({
   return (
     <header
       className={cn(
-        'flex flex-wrap items-start justify-between gap-x-8 gap-y-1 px-5 py-3 text-ink md:py-4',
+        'flex flex-wrap items-start justify-between gap-x-8 gap-y-1 px-5 text-ink',
         className,
       )}
     >
@@ -39,13 +39,13 @@ export function InnerHeader({
           href="/"
           prefetch={false}
           aria-label="Osama Abdelnaser, home"
-          className="shrink-0 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          className="shrink-0 rounded-b-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           <NavLogo />
         </Link>
         <nav
           aria-label="Pages"
-          className="flex gap-4 text-base leading-none font-semibold tracking-[-.04em] uppercase md:gap-6 md:text-xl"
+          className="flex gap-4 pt-4 text-base leading-none font-semibold tracking-[-.04em] uppercase md:gap-6 md:pt-6 md:text-xl"
         >
           {/* On phones the logo is the way home, so the row stays one line. */}
           <Link href="/" prefetch={false} className={cn(linkClass, 'max-md:hidden')}>
@@ -69,7 +69,7 @@ export function InnerHeader({
           </TransitionLink>
         </nav>
       </div>
-      <div className="flex items-center gap-6 text-[10px] leading-tight">
+      <div className="flex items-center gap-6 pt-4 pb-3 text-[10px] leading-tight md:pt-6">
         <p className="max-md:hidden">
           {profile.role}
           <br />

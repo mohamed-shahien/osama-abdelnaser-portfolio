@@ -125,9 +125,10 @@ export function SkillsShowcase() {
             ? close.start + (close.end - close.start) * 0.8
             : `top -${Math.round(window.innerHeight * REVEAL)}px`;
         },
-        // Past the pin by a quarter screen: the stage is already moving up
-        // toward the CV while the iris shuts on the glasses.
-        end: 'bottom 75%',
+        // Past the pin by about half a screen: the stage lets go mid-iris, so it
+        // is already moving up toward the CV while the iris shuts on the
+        // glasses at its foot, which stay in view.
+        end: 'bottom 45%',
         refreshPriority: -1,
         invalidateOnRefresh: true,
         onUpdate: (self) => write(self.progress),
@@ -149,7 +150,7 @@ export function SkillsShowcase() {
 
   return (
     <div ref={trackRef} className="h-[690svh] motion-reduce:h-[520svh]">
-      <div className="sticky top-0 h-svh overflow-hidden bg-black [--skills-card-top:30%] max-md:[--skills-card-top:24%]">
+      <div className="sticky top-0 h-lvh overflow-hidden bg-black [--skills-card-top:30%] max-md:[--skills-card-top:24%]">
         {mounted ? (
           <AnimatorTitlePreloader
             scrub={scrubRef}

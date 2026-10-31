@@ -18,7 +18,7 @@ export function WorkCase({
   const images = project.images.length ? project.images : [project.cover];
   return (
     <article className={`${workDisplay.variable} relative bg-[#ededed] font-sans text-[#181818]`}>
-      <div className="pointer-events-none sticky top-0 z-20 -mb-[100svh] flex h-svh items-end justify-center overflow-hidden pb-5">
+      <div className="pointer-events-none sticky top-0 z-20 -mb-[100lvh] flex h-lvh items-end justify-center overflow-hidden pb-5">
         <h1 className="max-w-full text-center [font-family:var(--font-work-display)] text-[clamp(2.75rem,9vw,10rem)] leading-[0.8] tracking-[-0.055em] [overflow-wrap:anywhere] text-primary uppercase max-lg:pb-5">
           {project.name}
         </h1>

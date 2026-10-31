@@ -160,8 +160,44 @@ function run() {
   }
 }
 
+/**
+ * iPhones keep Web Audio silent under the ring/silent switch unless the page
+ * plays media: ask for a playback session, and play a moment of silence through
+ * an <audio> element in the same tap (older Safari).
+ */
+function unlockPlayback() {
+  const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
+  if (session) session.type = 'playback';
+  const rate = 8000;
+  const samples = rate / 10;
+  const wav = new DataView(new ArrayBuffer(44 + samples));
+  const text = (at: number, value: string) =>
+    [...value].forEach((char, i) => wav.setUint8(at + i, char.charCodeAt(0)));
+  text(0, 'RIFF');
+  wav.setUint32(4, 36 + samples, true);
+  text(8, 'WAVEfmt ');
+  wav.setUint32(16, 16, true);
+  wav.setUint16(20, 1, true);
+  wav.setUint16(22, 1, true);
+  wav.setUint32(24, rate, true);
+  wav.setUint32(28, rate, true);
+  wav.setUint16(32, 1, true);
+  wav.setUint16(34, 8, true);
+  text(36, 'data');
+  wav.setUint32(40, samples, true);
+  for (let i = 0; i < samples; i += 1) wav.setUint8(44 + i, 128);
+  const url = URL.createObjectURL(new Blob([wav.buffer], { type: 'audio/wav' }));
+  const silence = new Audio(url);
+  silence.setAttribute('playsinline', '');
+  void silence
+    .play()
+    .catch(() => {})
+    .finally(() => URL.revokeObjectURL(url));
+}
+
 export function toggleMusic() {
   if (!ctx) {
+    unlockPlayback();
     build();
     document.addEventListener('visibilitychange', run);
   }

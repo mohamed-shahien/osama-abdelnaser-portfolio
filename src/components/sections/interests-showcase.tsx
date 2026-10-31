@@ -494,7 +494,7 @@ export function InterestsShowcase() {
     <div ref={trackRef} className="relative h-[250svh] motion-reduce:h-auto">
       <div
         className={cn(
-          'sticky top-0 flex h-svh flex-col overflow-hidden md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)_minmax(0,1fr)]',
+          'sticky top-0 flex h-lvh flex-col overflow-hidden md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)_minmax(0,1fr)]',
           'bg-[#fbf7ec] bg-[radial-gradient(rgba(23,40,79,.16)_1.1px,transparent_1.4px)] bg-[size:26px_26px]',
         )}
       >

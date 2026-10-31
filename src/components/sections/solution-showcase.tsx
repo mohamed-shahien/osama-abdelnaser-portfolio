@@ -68,7 +68,7 @@ export function SolutionShowcase() {
     () => {
       const track = trackRef.current;
       if (!track || !mounted) return;
-      // Scroll is the loading bar: 0 when the stage is 10% on screen, 100 when it fills the view.
+      // Scroll is the loading bar: 0 when the stage is 15% on screen, 100 when it fills the view.
       let shown = -1;
       const write = (value: number) => {
         const next = Math.round(value * 100);
@@ -79,7 +79,7 @@ export function SolutionShowcase() {
       const count = ScrollTrigger.create({
         id: 'solution-key-progress',
         trigger: track,
-        start: 'top 90%',
+        start: 'top 85%',
         end: 'top top',
         onUpdate: (self) => write(self.progress),
         onRefresh: (self) => write(self.progress),
@@ -115,7 +115,7 @@ export function SolutionShowcase() {
 
   return (
     <div ref={trackRef} className="h-[1165svh]">
-      <div className="sticky top-0 h-svh overflow-hidden bg-secondary">
+      <div className="sticky top-0 h-lvh overflow-hidden bg-secondary">
         {mounted ? (
           <SkeletonKeyPreloader
             progress={progress}
@@ -131,7 +131,7 @@ export function SolutionShowcase() {
             signature={content.key.signature}
             labels={content.key.labels}
           >
-            <div inert={!through} className="isolate h-svh w-full">
+            <div inert={!through} className="isolate h-full w-full">
               {deep || through ? workspace : null}
             </div>
           </SkeletonKeyPreloader>

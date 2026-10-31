@@ -467,7 +467,14 @@ export default function WorkGallery({
               touch.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
             }
             const delta = touch.axis === 'x' ? dx : dy;
-            if (atBoundary(-delta)) return;
+            if (atBoundary(-delta)) {
+              // The open deck owns the gesture (touch-action: none), so past
+              // either end the finger scrolls the page on.
+              if (touch.axis === 'y') window.scrollBy(0, -dy);
+              touch.x = point.clientX;
+              touch.y = point.clientY;
+              return;
+            }
             event.preventDefault();
             (event as TouchEvent & { lenisStopPropagation?: boolean }).lenisStopPropagation = true;
             const step = Math.max(
@@ -622,11 +629,12 @@ export default function WorkGallery({
       data-work-gallery
       data-work-count={collection.length}
       data-work-total={total}
+      data-work-enabled={enabled}
       tabIndex={0}
       role="region"
       aria-label="Project gallery. Scroll or use arrow keys. Scroll past the last card to continue."
       onKeyDown={keyboard}
-      className="relative isolate h-full overflow-hidden bg-[#ededed] text-[#181818] outline-offset-[-4px] focus-visible:outline-2 focus-visible:outline-primary"
+      className="relative isolate h-full overflow-hidden bg-[#ededed] text-[#181818] outline-offset-[-4px] focus-visible:outline-2 focus-visible:outline-primary data-[work-enabled=true]:touch-none"
     >
       <canvas
         ref={canvasRef}
