@@ -532,7 +532,7 @@ const RTP_CSS = `
 @keyframes rtp-breathe { 50% { scale: 1 calc(var(--sy) * .84); } }
 .rtp-band { position: absolute; left: 0; right: 0; bottom: 0; height: 30cqh; background: linear-gradient(180deg, #17284f, #0c1530); }
 .rtp-band::before { content: ""; position: absolute; inset: 0 0 auto; height: 1px; background: linear-gradient(90deg, transparent, rgba(248,250,85,.5), transparent); }
-.rtp-stretch-name { left: 4cqw; bottom: 11cqh; text-align: left; font-family: var(--rtp-text); font-weight: 700; font-size: clamp(16px, 2.6cqw, 36px); letter-spacing: -.03em; color: #fff; }
+.rtp-stretch-name { left: 4cqw; bottom: 11cqh; text-align: left; font-family: var(--rtp-heavy); font-weight: 400; font-size: clamp(16px, 2.6cqw, 36px); letter-spacing: -.03em; color: #fff; }
 .rtp-stretch-name i { display: block; font-family: var(--rtp-mono); font-style: normal; font-size: .38em; letter-spacing: .2em; text-transform: uppercase; opacity: .7; margin-top: .9em; }
 
 /* ---- vector ---- */
@@ -681,54 +681,89 @@ const RTP_CSS = `
 }
 .rtp-t-bubble .rtp-fact:nth-child(5n) .rtp-fact-n { background: #f8fa55; color: #17284f; }
 
-/* A calm rise shared by the last four takes' sheets. */
-@keyframes rtp-fact-rise { from { opacity: 0; transform: translateY(1.4em); } }
+/* The last four sheets: die-cut paper slapped on each take's own ground. */
+@keyframes rtp-slap-in {
+  0% { opacity: 0; transform: translateY(1.8em) scale(.86) rotate(calc(var(--r, 0deg) * 3)); }
+  55% { opacity: 1; }
+  100% { opacity: 1; transform: rotate(var(--r, 0deg)); }
+}
 .rtp-t-script .rtp-fact, .rtp-t-stretch .rtp-fact, .rtp-t-vector .rtp-fact, .rtp-t-cutout .rtp-fact {
-  animation-name: rtp-fact-rise; animation-duration: 760ms; animation-timing-function: cubic-bezier(.16,1,.3,1);
+  position: relative; border: 0; transform: rotate(var(--r, 0deg));
+  animation: rtp-slap-in 1100ms cubic-bezier(.22,1.2,.36,1) both; animation-delay: calc(var(--i) * 140ms + 700ms);
 }
+.rtp-t-script .rtp-fact dd, .rtp-t-stretch .rtp-fact dd, .rtp-t-vector .rtp-fact dd { font-family: var(--rtp-text); }
 
-/* process: one white sheet, four numbered steps on a rail */
-.rtp-t-script .rtp-facts {
-  grid-template-columns: repeat(4, 1fr); gap: 0; counter-reset: step; padding: 2.2em .4em 1.6em;
-  background: #fff; border-radius: 1.4em; box-shadow: 0 1.6em 3.2em -1.2em rgba(23,40,79,.55), 0 0 0 1px rgba(23,40,79,.06);
-  animation: rtp-fact-rise 820ms cubic-bezier(.16,1,.3,1) both 520ms;
-}
+/* process: four numbered stickers on a stitched line, numbers in the title's outlined script */
+.rtp-t-script .rtp-facts { grid-template-columns: repeat(4, 1fr); gap: 2.6cqw; counter-reset: step; align-items: stretch; }
 .rtp-t-script .rtp-facts::before {
-  content: ""; position: absolute; left: 2.2em; right: 2.2em; top: 2.95em; height: 2px;
-  background: linear-gradient(90deg, #5b8dfb, #e43468 55%, #f3d061);
+  content: ""; position: absolute; left: 3%; right: 3%; top: 55%; z-index: -1; border-top: 3px dashed rgba(255,255,255,.75);
 }
-.rtp-t-script .rtp-fact { position: relative; counter-increment: step; border: 0; padding: 0 1.6em; color: #17284f; }
-.rtp-t-script .rtp-fact + .rtp-fact { border-left: 1px solid rgba(23,40,79,.1); }
+.rtp-t-script .rtp-fact {
+  counter-increment: step; padding: 2.5em 1.3em 1.35em; border-radius: 1.4em; background: var(--c); color: var(--t);
+  box-shadow: 0 0 0 5px #fff, 0 1.3em 2.4em -.9em rgba(23,40,79,.6);
+}
 .rtp-t-script .rtp-fact::before {
-  content: counter(step, decimal-leading-zero); position: relative; z-index: 1; display: inline-grid; place-items: center;
-  width: 2.6em; height: 2.6em; border-radius: 50%; background: #17284f; color: #f8fa55; box-shadow: 0 0 0 .4em #fff;
-  font: 400 clamp(9px, .8cqw, 12px)/1 var(--rtp-heavy);
+  content: counter(step, decimal-leading-zero); position: absolute; left: .5em; top: -.6em; rotate: -8deg;
+  font: 400 clamp(30px, 3.4cqw, 54px)/1 var(--rtp-script); color: #17284f;
+  -webkit-text-stroke: .17em #fff; paint-order: stroke fill;
 }
-.rtp-t-script .rtp-fact dt {
-  margin-top: 1.4em; font: 800 clamp(13px, 1.5cqw, 22px)/1.05 var(--rtp-felt); letter-spacing: -.01em; text-transform: none; opacity: 1;
+.rtp-t-script .rtp-fact dt { font: 400 clamp(15px, 1.65cqw, 24px)/1.05 var(--rtp-heavy); letter-spacing: -.01em; text-transform: none; opacity: 1; }
+.rtp-t-script .rtp-fact dd { margin-top: .55em; font-size: clamp(12px, 1.05cqw, 16px); font-weight: 700; line-height: 1.35; opacity: .86; }
+
+/* education: masking-tape labels with torn ends, laid across the navy band */
+.rtp-t-stretch .rtp-facts { grid-template-columns: repeat(3, 1fr); gap: 2.4cqh 1.6cqw; align-items: start; }
+.rtp-t-stretch .rtp-fact {
+  padding: .75em 1.4em .8em; background: var(--c); color: var(--t);
+  clip-path: polygon(0 0, 100% 0, 97% 18%, 100% 36%, 97% 54%, 100% 72%, 97% 88%, 100% 100%, 0 100%, 3% 84%, 0 66%, 3% 48%, 0 30%, 3% 14%);
 }
-.rtp-t-script .rtp-fact dd { margin-top: .55em; font: 500 clamp(11px, 1cqw, 15px)/1.45 var(--rtp-text); color: rgba(23,40,79,.66); }
+.rtp-t-stretch .rtp-fact:nth-child(5n) { --c: #5b8dfb; --t: #fff; }
+.rtp-t-stretch .rtp-fact dt { font: 400 clamp(9px, .8cqw, 12px)/1 var(--rtp-heavy); letter-spacing: .12em; text-transform: uppercase; opacity: .72; }
+.rtp-t-stretch .rtp-fact dd { margin-top: .4em; font-size: clamp(13px, 1.35cqw, 20px); font-weight: 700; line-height: 1.2; }
 
-/* education: a transcript ruled into columns */
-.rtp-t-stretch .rtp-facts { grid-template-columns: repeat(3, 1fr); gap: 2.4cqh 0; }
-.rtp-t-stretch .rtp-fact { border-top: 0; border-left: 1px solid rgba(255,255,255,.16); padding: .1em 1.4em .1em 1.2em; }
-.rtp-t-stretch .rtp-fact dt { color: #f8fa55; opacity: .9; }
-.rtp-t-stretch .rtp-fact dd { margin-top: .5em; font: 600 clamp(12px, 1.35cqw, 19px)/1.3 var(--rtp-text); letter-spacing: -.01em; }
-
-/* certificates: credential cards, each with its seal */
-.rtp-t-vector .rtp-facts { gap: 1.6cqh 1.2cqw; }
+/* certificates: white stickers with a star seal; one sits selected, like a layer in Figma */
+.rtp-t-vector .rtp-facts { gap: 2.4cqh 1.8cqw; }
 .rtp-t-vector .rtp-fact {
-  position: relative; border: 1px solid rgba(255,255,255,.14); border-radius: 1em; padding: 1.1em 1.1em 1.1em 3.6em;
-  background: linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.03)); color: #fff;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 1em 2em -1em rgba(0,0,0,.5);
+  padding: 1em 1.6em 1.05em 1.1em; border-radius: .9em; background: #fff; color: #17284f;
+  box-shadow: 0 0 0 4px #fff, 0 1.2em 2.2em -.8em rgba(0,0,0,.65);
+}
+.rtp-t-vector .rtp-fact:nth-child(2) { outline: 1.5px solid #5b8dfb; outline-offset: 7px; }
+.rtp-t-vector .rtp-fact:nth-child(2)::after {
+  content: ""; position: absolute; inset: -11.5px; pointer-events: none;
+  background:
+    linear-gradient(#fff, #fff) left 2px top 2px / 5px 5px no-repeat, linear-gradient(#fff, #fff) right 2px top 2px / 5px 5px no-repeat,
+    linear-gradient(#fff, #fff) left 2px bottom 2px / 5px 5px no-repeat, linear-gradient(#fff, #fff) right 2px bottom 2px / 5px 5px no-repeat,
+    linear-gradient(#5b8dfb, #5b8dfb) left top / 9px 9px no-repeat, linear-gradient(#5b8dfb, #5b8dfb) right top / 9px 9px no-repeat,
+    linear-gradient(#5b8dfb, #5b8dfb) left bottom / 9px 9px no-repeat, linear-gradient(#5b8dfb, #5b8dfb) right bottom / 9px 9px no-repeat;
 }
 .rtp-t-vector .rtp-fact::before {
-  content: "✓"; position: absolute; left: 1.05em; top: 1.1em; display: grid; place-items: center; width: 1.9em; height: 1.9em;
-  border-radius: 50%; background: #f8fa55; color: #17284f; font: 400 clamp(10px, .9cqw, 13px)/1 var(--rtp-heavy);
-  box-shadow: 0 0 0 .3em rgba(248,250,85,.16);
+  content: "✓"; position: absolute; right: -1em; top: -1.15em; z-index: 1; display: grid; place-items: center; width: 2.7em; height: 2.7em;
+  background: var(--s, #f8fa55); color: #17284f; font: 400 clamp(11px, 1cqw, 15px)/1 var(--rtp-heavy); rotate: 12deg;
+  clip-path: polygon(50% 0%, 59.8% 13.3%, 75% 6.7%, 76.9% 23.1%, 93.3% 25%, 86.7% 40.2%, 100% 50%, 86.7% 59.8%, 93.3% 75%, 76.9% 76.9%, 75% 93.3%, 59.8% 86.7%, 50% 100%, 40.2% 86.7%, 25% 93.3%, 23.1% 76.9%, 6.7% 75%, 13.3% 59.8%, 0% 50%, 13.3% 40.2%, 6.7% 25%, 23.1% 23.1%, 25% 6.7%, 40.2% 13.3%);
 }
-.rtp-t-vector .rtp-fact dt { color: #9db9fd; opacity: 1; letter-spacing: .12em; }
-.rtp-t-vector .rtp-fact dd { margin-top: .45em; font: 600 clamp(12px, 1.2cqw, 17px)/1.3 var(--rtp-text); letter-spacing: -.01em; }
+.rtp-t-vector .rtp-fact:nth-child(3n+2) { --s: #e43468; }
+.rtp-t-vector .rtp-fact:nth-child(3n) { --s: #f3d061; }
+.rtp-t-vector .rtp-fact:nth-child(3n+2)::before { color: #fff; }
+.rtp-t-vector .rtp-fact dt { font: 400 clamp(9px, .78cqw, 12px)/1 var(--rtp-heavy); color: #5b8dfb; letter-spacing: .1em; text-transform: uppercase; opacity: 1; }
+.rtp-t-vector .rtp-fact dd { margin-top: .45em; font-size: clamp(13px, 1.25cqw, 18px); font-weight: 700; line-height: 1.25; }
+
+/* résumé: torn paper scraps taped down, tools cut out like ransom-note words */
+.rtp-t-cutout .rtp-facts { grid-template-columns: repeat(4, 1fr); gap: 2.2cqw; align-items: start; }
+.rtp-t-cutout .rtp-fact {
+  padding: 1.7em 1.1em 1.25em; background: var(--c); color: var(--t);
+  clip-path: polygon(1% 4%, 18% 0, 41% 3%, 63% 0, 86% 4%, 100% 1%, 98% 32%, 100% 64%, 99% 100%, 71% 96%, 45% 100%, 21% 96%, 0 100%, 2% 66%, 0 34%);
+}
+.rtp-t-cutout .rtp-fact::before {
+  content: ""; position: absolute; left: 50%; top: .25em; width: 4.6em; height: 1.1em; translate: -50% 0; rotate: -4deg;
+  background: rgba(255,255,255,.6); box-shadow: inset 0 0 0 1px rgba(23,40,79,.08);
+}
+.rtp-t-cutout .rtp-fact dt { font: 400 clamp(16px, 1.7cqw, 26px)/1 var(--rtp-cond); letter-spacing: .02em; text-transform: uppercase; opacity: 1; }
+.rtp-t-cutout .rtp-fact dd { display: flex; flex-wrap: wrap; gap: .45em .35em; margin-top: .75em; }
+.rtp-chip {
+  padding: .4em .6em .45em; border-radius: .2em; background: #17284f; color: #fff; white-space: nowrap;
+  font: 700 clamp(11px, 1cqw, 15px)/1 var(--rtp-text); rotate: -2deg;
+}
+.rtp-chip:nth-child(even) { background: #fff; color: #17284f; box-shadow: inset 0 0 0 1.5px #17284f; rotate: 2deg; font-family: var(--rtp-heavy); font-weight: 400; }
+.rtp-chip:nth-child(3n) { rotate: -4deg; }
 
 /* phones: the same materials, packed two to a row */
 @container (max-width: 560px) {
@@ -741,38 +776,33 @@ const RTP_CSS = `
   /* Clear of the page's bottom shortcut bar on phones. */
   .rtp-t-bubble .rtp-facts { gap: 2.2cqh 3cqw; bottom: calc(2cqh + 58px); }
   .rtp-t-bubble .rtp-fact { padding: .55em .8em .65em; border-radius: 1.4em; }
-  .rtp-t-script .rtp-facts, .rtp-t-cutout .rtp-facts { grid-template-columns: 1fr 1fr; row-gap: 1.4em; padding: 1.2em .2em; }
-  .rtp-t-script .rtp-facts::before { display: none; }
-  .rtp-t-script .rtp-fact, .rtp-t-cutout .rtp-fact { padding: 0 .9em; }
-  .rtp-t-script .rtp-fact:nth-child(odd), .rtp-t-cutout .rtp-fact:nth-child(odd) { border-left: 0; }
-  .rtp-t-script .rtp-fact dt { margin-top: .7em; font-size: 13px; }
-  .rtp-t-script .rtp-fact dd { font-size: 11px; }
-  .rtp-t-stretch .rtp-facts { grid-template-columns: 1fr 1fr; gap: 1.6cqh 0; }
-  .rtp-t-stretch .rtp-fact dd { font-size: 12px; }
-  .rtp-t-vector .rtp-facts { grid-template-columns: 1fr 1fr; gap: 1.2cqh 2cqw; }
-  .rtp-t-vector .rtp-fact { padding: .8em .8em .8em 2.9em; }
-  .rtp-t-vector .rtp-fact::before { left: .7em; top: .8em; }
-  .rtp-t-vector .rtp-fact dd { font-size: 11px; }
-  .rtp-chip { font-size: 10px; }
   .rtp-decal { left: var(--mx) !important; top: var(--my) !important; width: calc(min(11cqw, 17cqh) * var(--ds) * .9) !important; }
 }
 
-/* résumé: the toolkit, one labelled row of chips per kind */
-.rtp-t-cutout .rtp-facts {
-  grid-template-columns: repeat(4, 1fr); gap: 0; padding: 1.4em .4em; border-radius: 1.3em;
-  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12);
-  animation: rtp-fact-rise 820ms cubic-bezier(.16,1,.3,1) both 700ms;
-}
-.rtp-t-cutout .rtp-fact { border: 0; padding: 0 1.3em; color: #fff; }
-.rtp-t-cutout .rtp-fact + .rtp-fact { border-left: 1px solid rgba(255,255,255,.12); }
-.rtp-t-cutout .rtp-fact dt { color: #f8fa55; opacity: 1; }
-.rtp-t-cutout .rtp-fact dd { display: flex; flex-wrap: wrap; gap: .4em; margin-top: .8em; }
-.rtp-chip {
-  padding: .45em .8em .5em; border-radius: 99em; background: rgba(255,255,255,.1); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
-  font: 500 clamp(10px, .95cqw, 14px)/1 var(--rtp-text); white-space: nowrap;
-}
+
 .rtp-take[data-still="true"] .rtp-facts { display: none; }
-@container (max-width: 560px) { .rtp-facts[data-at="band"] { left: 4cqw; bottom: 3cqh; } .rtp-t-stretch .rtp-stretch-name { bottom: auto; top: 73cqh; } }
+@container (max-width: 560px) { .rtp-facts[data-at="band"] { left: 4cqw; bottom: 3cqh; } .rtp-t-stretch .rtp-stretch-name { display: none; } }
+/* Phones: the four sheets pack two to a row (after the base rules, so these win). */
+@container (max-width: 560px) {
+  .rtp-t-script .rtp-facts, .rtp-t-stretch .rtp-facts, .rtp-t-vector .rtp-facts, .rtp-t-cutout .rtp-facts { grid-template-columns: 1fr 1fr; gap: 2.4cqh 3.6cqw; bottom: calc(1.5cqh + 60px); }
+  .rtp-t-stretch .rtp-facts { gap: 1.4cqh 3.6cqw; }
+  .rtp-t-script .rtp-facts::before { display: none; }
+  .rtp-t-script .rtp-fact { padding: 1.9em .9em .95em; box-shadow: 0 0 0 4px #fff, 0 1em 2em -.8em rgba(23,40,79,.6); }
+  .rtp-t-script .rtp-fact::before { font-size: 26px; }
+  .rtp-t-script .rtp-fact dt { font-size: 14px; }
+  .rtp-t-script .rtp-fact dd { font-size: 11px; }
+  .rtp-t-stretch .rtp-fact { padding: .6em 1em .65em; }
+  .rtp-t-stretch .rtp-fact dt { font-size: 8px; }
+  .rtp-t-stretch .rtp-fact dd { font-size: 12px; }
+  .rtp-t-vector .rtp-fact { padding: .8em 1.2em .85em .8em; }
+  .rtp-t-vector .rtp-fact:nth-child(2) { outline-offset: 5px; }
+  .rtp-t-vector .rtp-fact:nth-child(2)::after { inset: -9.5px; }
+  .rtp-t-vector .rtp-fact::before { font-size: 10px; }
+  .rtp-t-vector .rtp-fact dd { font-size: 12px; }
+  .rtp-t-cutout .rtp-fact { padding: 1.4em .8em .9em; }
+  .rtp-t-cutout .rtp-fact dt { font-size: 15px; }
+  .rtp-chip { font-size: 10px; }
+}
 
 /* ---- stickers you drop ---- */
 .rtp-drops { position: absolute; inset: 0; z-index: 3; pointer-events: none; container-type: size; transition: opacity 400ms ease, transform 600ms cubic-bezier(.7,0,.3,1); }
@@ -2296,11 +2326,11 @@ export default function TypeRemixPreloader({
         '--rtp-round': '"Titan One", "Arial Rounded MT Bold", "Arial Black", sans-serif',
         '--rtp-script': 'Shrikhand, "Cooper Black", "Georgia", serif',
         '--rtp-felt': 'Rubik, "Arial Black", system-ui, sans-serif',
-        '--rtp-text': 'system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
+        '--rtp-text': 'var(--font-sans)',
         '--rtp-serif': '"DM Serif Display", "Bodoni 72", Didot, Georgia, serif',
         '--rtp-fat': '"Abril Fatface", "Bodoni 72", Didot, Georgia, serif',
-        '--rtp-hand': 'Caveat, "Segoe Print", "Bradley Hand", cursive',
-        '--rtp-mono': '"Space Mono", ui-monospace, Menlo, Consolas, monospace',
+        '--rtp-hand': 'var(--font-sans)',
+        '--rtp-mono': 'var(--font-sans)',
       })}
     >
       <style>{RTP_CSS}</style>

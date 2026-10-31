@@ -44,24 +44,12 @@ export function InnerHeader({
         </span>
       </Link>
       <div className="row-span-2">
-        <p className="mb-6 text-[10px] text-ink/75">Menu</p>
         <nav
           aria-label="Pages"
           className="flex flex-col text-xl leading-[.95] font-semibold tracking-[-.06em] uppercase"
         >
           <Link href="/" prefetch={false} className={linkClass}>
             Home
-          </Link>
-          <Link
-            href="/#work-viewer"
-            prefetch={false}
-            aria-current={current === 'work' ? 'page' : undefined}
-            className={linkClass}
-          >
-            {mark('work')}Work
-          </Link>
-          <Link href="/#cv" prefetch={false} className={linkClass}>
-            About
           </Link>
           <TransitionLink
             href="/playground"

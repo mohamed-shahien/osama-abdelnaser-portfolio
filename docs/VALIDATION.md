@@ -499,3 +499,24 @@ Lighthouse 12.8.2 on the production build (localhost:3002):
 | `/work/truepath` | 93          | 100          | 100                               | 100            | 100 |
 
 Observed (unthrottled) LCP equals first paint on every page; the mobile score is held back by the simulated cost of the shared JavaScript (React/Next runtime, GSAP, the footer).
+
+## CV scene stickers and page share cards — 2026-10-31
+
+- Eight image stickers from the user (`public/cv/stickers/`: magnifier, puzzle, grad-cap, chip, certificate, pen-tool, paper-stack, download; trimmed, ≤480px webp) sit in the empty band above the title on the Process, Education, Certificates and Résumé takes, with phone positions (`src/content/cv.ts`).
+- Playground and contact have their own share cards (`opengraph-image.jpg` / `twitter-image.jpg`, 1200×630, with alt text), from the user's two banners.
+- `type-remix-preloader.tsx` (layout fix only): on phones the Résumé toolkit now folds to two columns (the four-column base rule came later in the stylesheet and won), and the Education take hides its title line, which overlapped the facts that repeat it.
+
+## Sticker fact sheets, one text face, smoother motion — 2026-10-31
+
+Supplied-component changes (scope widened by the user):
+
+- `type-remix-preloader.tsx`: the Process, Education, Certificates and Résumé sheets are redesigned in the site's sticker language, each its own material — numbered die-cut stickers on a stitched line (numbers in the title's outlined script), masking-tape labels with torn ends, white certificate stickers with star seals (one shown selected like a Figma layer), and taped paper scraps with ransom-note tool chips. They slap in one by one (`rtp-slap-in`, 1.1s). Phones pack two per row above the bottom bar. `--rtp-text`, `--rtp-mono` and `--rtp-hand` now resolve to the site's hand face; the display faces are unchanged.
+- `amour-sunrise-preloader.tsx`, `tangle-footer.tsx`, `waving-portfolio-landing.tsx`: their small mono/sans labels use the site's hand face (`--font-sans`). Geometry and timing unchanged; the tangle's scrub moves from 0.65 to 1.
+- The booking form and the sticker footer receive the hand face through their existing font props. Geist Mono is no longer loaded.
+
+Integration changes:
+
+- Motion: the work section's closing avatar walk runs over ~1.5 screens instead of ~0.55 with a scrub of 1 (the push too); the Skills section's overlap and reveal follow (`-mt-[270svh]`, `REVEAL = 1.7`, 690svh runway). Page transitions, the dock's jump curtain and the work counter's blur are slower and use symmetric eases.
+- The work section's motion mounts through a ScrollTrigger, so a dock jump straight past its start (to Skills) no longer leaves the Solution plate on screen.
+- Section dock: rows faded by closing the index had kept `opacity: 0`, which hid the rail's dots; they are cleared now. Opening and closing morph the panel's size between rail and index.
+- Inner pages' header drops the "Menu" label and the Work/About links (they only pointed at home-page anchors).

@@ -279,7 +279,7 @@ export function TangleFooter({
               trigger: root,
               start: 'clamp(top 90%)',
               end: 'clamp(bottom 72%)',
-              scrub: 0.65,
+              scrub: 1,
               invalidateOnRefresh: true,
             },
           });
@@ -478,11 +478,11 @@ export function TangleFooter({
                   />
                   <text
                     fontSize={ring.fontSize}
-                    fontFamily="ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
                     fontWeight={700}
                     letterSpacing="0.05em"
                     dominantBaseline="central"
                     style={{
+                      fontFamily: 'var(--font-sans)',
                       fill: ring.isCta ? 'var(--secondary)' : textColor,
                       userSelect: 'none',
                       pointerEvents: 'none',

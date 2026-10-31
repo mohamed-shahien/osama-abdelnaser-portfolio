@@ -24,13 +24,15 @@ const CV_TAKES: readonly RemixTake[] = [
 ];
 const CV_TAKE_SPAN = 0.7 / CV_TAKES.length;
 
-type Stop = { id: string; label: string; selector?: string; take?: number };
+/** `lead` is how many screens past the section's top it is read best. */
+type Stop = { id: string; label: string; selector?: string; take?: number; lead?: number };
 // The solution opens the work section; the gallery comes in further down.
 const stops: readonly Stop[] = [
   { id: 'intro', label: 'Intro', selector: '[data-hero]' },
   { id: 'solution', label: 'Solution', selector: '#work' },
   { id: 'work', label: 'Work', selector: '#work-viewer' },
-  { id: 'skills', label: 'Skills', selector: '#skills' },
+  // Skills starts beneath the avatar's closing walk, uncovered about two screens on.
+  { id: 'skills', label: 'Skills', selector: '#skills', lead: 2.2 },
   ...CV_TAKES.map((take, index) => ({
     id: 'cv-' + take,
     label: cvContent.labels[take],
@@ -64,7 +66,7 @@ const measureStops = () => {
     }
     const element = stop.selector ? document.querySelector(stop.selector) : null;
     if (!element) return { at: Number.POSITIVE_INFINITY, from: Number.POSITIVE_INFINITY };
-    const top = element.getBoundingClientRect().top + window.scrollY;
+    const top = element.getBoundingClientRect().top + window.scrollY + (stop.lead ?? 0) * vh;
     previous = Math.min(end, Math.max(top, previous + vh * 0.75));
     return { at: previous, from: previous - vh * 0.45 };
   });
@@ -87,6 +89,7 @@ export function SectionDock() {
   const panelRef = useRef<HTMLDivElement>(null);
   const shapedRef = useRef(false);
   const closingRef = useRef(false);
+  const sizeRef = useRef<DOMRect | null>(null);
   const [active, setActive] = useState(0);
   const [open, setOpen] = useState(false);
 
@@ -132,31 +135,36 @@ export function SectionDock() {
         shapedRef.current = true;
         return;
       }
+      const rows = panel.querySelectorAll('[data-index-row]');
+      // Rows faded by the close keep no inline opacity, or the rail's dots vanish.
+      if (!open) gsap.set(rows, { clearProps: 'opacity,transform' });
+      const from = sizeRef.current;
+      sizeRef.current = null;
       const media = gsap.matchMedia();
       media.add(motionConfig.queries.full, () => {
-        const phone = window.matchMedia('(max-width: 639px)').matches;
-        gsap.fromTo(
-          panel,
-          { x: phone ? 0 : 10, y: phone ? 10 : 0, scale: 0.98, opacity: 0 },
-          {
-            x: 0,
-            y: 0,
-            scale: 1,
-            opacity: 1,
-            duration: open ? 0.55 : 0.45,
-            ease: 'expo.out',
-            transformOrigin: phone ? '50% 100%' : '100% 50%',
-            clearProps: 'transform,opacity',
-          },
-        );
+        // The panel grows from the size it had into the size it has now.
+        if (from) {
+          const to = panel.getBoundingClientRect();
+          gsap.fromTo(
+            panel,
+            { width: from.width, height: from.height, overflow: 'hidden' },
+            {
+              width: to.width,
+              height: to.height,
+              duration: 0.75,
+              ease: 'power3.inOut',
+              clearProps: 'width,height,overflow',
+            },
+          );
+        }
         if (open)
-          gsap.from(panel.querySelectorAll('[data-index-row]'), {
-            y: 6,
+          gsap.from(rows, {
+            y: 8,
             opacity: 0,
-            duration: 0.45,
+            duration: 0.6,
             ease: 'power3.out',
-            stagger: 0.016,
-            delay: 0.06,
+            stagger: 0.03,
+            delay: 0.3,
             clearProps: 'transform,opacity',
           });
       });
@@ -174,33 +182,25 @@ export function SectionDock() {
     }
     if (closingRef.current) return;
     closingRef.current = true;
-    const phone = window.matchMedia('(max-width: 639px)').matches;
-    gsap
-      .timeline({
-        onComplete: () => {
-          closingRef.current = false;
-          setOpen(false);
-        },
-      })
-      .to(panel.querySelectorAll('[data-index-row]'), {
-        opacity: 0,
-        duration: 0.14,
-        ease: 'power1.out',
-      })
-      .to(
-        panel,
-        {
-          x: phone ? 0 : 8,
-          y: phone ? 8 : 0,
-          scale: 0.98,
-          opacity: 0,
-          duration: 0.24,
-          ease: 'power2.inOut',
-          transformOrigin: phone ? '50% 100%' : '100% 50%',
-        },
-        0.04,
-      );
+    gsap.to(panel.querySelectorAll('[data-index-row]'), {
+      opacity: 0,
+      y: 4,
+      duration: 0.3,
+      ease: 'power2.in',
+      stagger: { each: 0.015, from: 'end' },
+      onComplete: () => {
+        closingRef.current = false;
+        sizeRef.current = panel.getBoundingClientRect();
+        setOpen(false);
+      },
+    });
   }, []);
+
+  const toggle = () => {
+    if (open) return close();
+    if (panelRef.current) sizeRef.current = panelRef.current.getBoundingClientRect();
+    setOpen(true);
+  };
 
   // The open index closes on Escape or a press anywhere else.
   useEffect(() => {
@@ -236,10 +236,10 @@ export function SectionDock() {
     gsap
       .timeline()
       .set(curtain, { display: 'block', transformOrigin: '50% 100%' })
-      .fromTo(curtain, { scaleY: 0 }, { scaleY: 1, duration: 0.4, ease: 'power2.inOut' })
+      .fromTo(curtain, { scaleY: 0 }, { scaleY: 1, duration: 0.65, ease: 'power3.inOut' })
       .call(go)
-      .set(curtain, { transformOrigin: '50% 0%' }, '+=0.08')
-      .to(curtain, { scaleY: 0, duration: 0.55, ease: 'expo.out' })
+      .set(curtain, { transformOrigin: '50% 0%' }, '+=0.15')
+      .to(curtain, { scaleY: 0, duration: 0.9, ease: 'power3.inOut' })
       .set(curtain, { display: 'none' });
   };
 
@@ -277,7 +277,7 @@ export function SectionDock() {
             type="button"
             aria-expanded={open}
             aria-controls="section-index"
-            onClick={() => (open ? close() : setOpen(true))}
+            onClick={toggle}
             className={cn(
               'group/stop relative flex h-[26px] min-w-[26px] cursor-pointer items-center justify-center gap-[8px] rounded-full bg-transparent px-[6px] text-[12px] font-semibold [border:0] focus-visible:outline-2 focus-visible:outline-accent-rose',
               open && 'justify-between px-[8px]',
@@ -321,7 +321,7 @@ export function SectionDock() {
                     className={cn(
                       'group/stop relative grid cursor-pointer place-items-center rounded-full bg-transparent [border:0] focus-visible:outline-2 focus-visible:outline-accent-rose',
                       open
-                        ? 'flex w-full items-center gap-[10px] rounded-[10px] px-[8px] py-[5px] text-start text-[13px] [transition:background-color_200ms_ease] hover:bg-[#ffffff14]'
+                        ? 'flex w-full items-center gap-[10px] rounded-[10px] px-[8px] py-[5px] text-start text-[13px] whitespace-nowrap [transition:background-color_200ms_ease] hover:bg-[#ffffff14]'
                         : child
                           ? 'size-[18px]'
                           : 'size-[26px]',

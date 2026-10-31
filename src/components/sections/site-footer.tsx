@@ -5,6 +5,7 @@ import { FooterTangleBooking } from './footer-tangle-booking';
 export function SiteFooter() {
   return (
     <StickerSlapFooter
+      fontSans="var(--font-sans)"
       topSlot={<FooterTangleBooking />}
       chatHref={footerWhatsappHref}
       socials={footerSocials}

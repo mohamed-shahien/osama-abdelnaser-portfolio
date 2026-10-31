@@ -20,7 +20,7 @@ import { StepOrb } from './step-orb';
 // The workspace speaks in the site's own type: BT Grotesk for labels and
 // notes, F37 Bolton for the hand-set annotations; only code stays monospaced.
 const sans = 'font-sans font-medium';
-const code = "[font-family:'Space_Mono',ui-monospace,monospace]";
+const code = '[font-family:var(--font-sans)]';
 const hand = '[font-family:var(--font-work-display)] tracking-[-0.01em]';
 const sticker =
   'rounded-full border-[3px] border-white font-extrabold leading-none [box-shadow:0_1px_0_#17284f14,0_8px_20px_#17284f2e]';

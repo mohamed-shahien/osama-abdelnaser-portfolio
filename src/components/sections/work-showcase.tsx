@@ -46,19 +46,21 @@ export function WorkShowcase({
   const [assembly] = useState<GalleryAssembly>(() => ({ progress: 0, apply: () => {} }));
   const mounted = nearby && introDone;
 
+  // Mounts a screen before the push, and also after any jump straight past it
+  // (a dock jump to Skills), which an IntersectionObserver would never see.
   useEffect(() => {
     const marker = rootRef.current?.querySelector('[data-push-start]');
     if (!marker) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return;
+    const trigger = ScrollTrigger.create({
+      trigger: marker,
+      start: 'top bottom+=100%',
+      end: 'max',
+      onEnter: () => {
         setNearby(true);
-        observer.disconnect();
+        trigger.kill();
       },
-      { rootMargin: '100% 0px' },
-    );
-    observer.observe(marker);
-    return () => observer.disconnect();
+    });
+    return () => trigger.kill();
   }, []);
 
   useGSAP(
@@ -168,7 +170,7 @@ export function WorkShowcase({
             animation: timeline,
             start: () => `top -${window.innerHeight * 10.65}px`,
             end: () => `top -${window.innerHeight * 11.4}px`,
-            scrub: 0.4,
+            scrub: 1,
             invalidateOnRefresh: true,
             onRefresh: paint,
             onLeave: () => {
@@ -225,18 +227,18 @@ export function WorkShowcase({
             })
             .catch(() => {});
           const exitTimeline = gsap.timeline({ paused: true, onUpdate: paintExit });
-          // The close is one unbroken walk over a short runway, so the next
-          // section follows the last card without a long wait.
+          // The close is one unbroken walk over about a screen and a half of
+          // scroll, slow enough to watch the avatar draw the gallery away.
           exitTimeline
-            .to(exitPosition, { value: 0.45, duration: 0.6, ease: 'sine.in' })
-            .to(exitPosition, { value: finish, duration: 1, ease: 'power2.out' });
+            .to(exitPosition, { value: 0.45, duration: 0.9, ease: 'sine.inOut' })
+            .to(exitPosition, { value: finish, duration: 1.3, ease: 'sine.inOut' });
           const exitTrigger = ScrollTrigger.create({
             id: 'selected-work-close',
             trigger: root,
             animation: exitTimeline,
             start: () => `top -${window.innerHeight * 11.4}px`,
-            end: () => `top -${window.innerHeight * 11.95}px`,
-            scrub: 0.4,
+            end: () => `top -${window.innerHeight * 12.9}px`,
+            scrub: 1,
             invalidateOnRefresh: true,
             onRefresh: paintExit,
           });
@@ -346,7 +348,7 @@ export function WorkShowcase({
       >
         {children}
       </div>
-      <div aria-hidden="true" className="order-3 h-[150svh] shrink-0 motion-reduce:hidden" />
+      <div aria-hidden="true" className="order-3 h-[245svh] shrink-0 motion-reduce:hidden" />
     </div>
   );
 }

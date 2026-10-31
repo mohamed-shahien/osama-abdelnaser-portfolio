@@ -11,7 +11,7 @@ export function Skills() {
     <section
       id="skills"
       aria-label={skillsContent.label}
-      className={`${workDisplay.variable} relative z-0 -mt-[175svh] bg-black motion-reduce:mt-0`}
+      className={`${workDisplay.variable} relative z-0 -mt-[270svh] bg-black motion-reduce:mt-0`}
     >
       <h2 className="sr-only">{skillsContent.title}</h2>
       <SkillsShowcase />

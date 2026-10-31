@@ -53,6 +53,9 @@ export function ContactInquiry() {
 
   return (
     <WireboundInquiry
+      textFont="var(--font-sans)"
+      monoFont="var(--font-sans)"
+      handFont="var(--font-sans)"
       kicker={content.kicker}
       headline={content.headline}
       intro={content.intro}

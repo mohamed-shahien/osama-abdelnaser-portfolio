@@ -157,7 +157,6 @@ export const cvContent = {
     cutout: 'Résumé',
   } satisfies RemixLabelMap,
   // Stickers laid out per take, in each one's free corners (the About take has its own four).
-  // The last four takes stay clean until their image stickers arrive.
   decals: {
     felt: [
       { kind: 'star', x: 22, y: 40, rot: -12, mx: 14, my: 62 },
@@ -197,6 +196,95 @@ export const cvContent = {
     bubble: [
       { kind: 'flower', x: 10, y: 64, rot: -10, mx: 14, my: 24 },
       { kind: 'bolt', x: 88, y: 60, rot: 12, mx: 86, my: 26 },
+    ],
+    // The four fact-sheet takes keep their stickers in the empty band above the title.
+    script: [
+      {
+        kind: 'image',
+        src: '/cv/stickers/magnifier.webp',
+        x: 17,
+        y: 20,
+        rot: -10,
+        size: 1.2,
+        mx: 22,
+        my: 24,
+      },
+      {
+        kind: 'image',
+        src: '/cv/stickers/puzzle.webp',
+        x: 82,
+        y: 18,
+        rot: 9,
+        size: 1.1,
+        mx: 78,
+        my: 30,
+      },
+    ],
+    stretch: [
+      {
+        kind: 'image',
+        src: '/cv/stickers/grad-cap.webp',
+        x: 60,
+        y: 13,
+        rot: -8,
+        size: 1.1,
+        mx: 72,
+        my: 14,
+      },
+      {
+        kind: 'image',
+        src: '/cv/stickers/chip.webp',
+        x: 83,
+        y: 14,
+        rot: 10,
+        size: 1,
+        mx: 86,
+        my: 26,
+      },
+    ],
+    vector: [
+      {
+        kind: 'image',
+        src: '/cv/stickers/pen-tool.webp',
+        x: 52,
+        y: 20,
+        rot: 8,
+        size: 1,
+        mx: 80,
+        my: 12,
+      },
+      {
+        kind: 'image',
+        src: '/cv/stickers/certificate.webp',
+        x: 86,
+        y: 18,
+        rot: -10,
+        size: 1.2,
+        mx: 80,
+        my: 30,
+      },
+    ],
+    cutout: [
+      {
+        kind: 'image',
+        src: '/cv/stickers/paper-stack.webp',
+        x: 14,
+        y: 15,
+        rot: -9,
+        size: 1.1,
+        mx: 20,
+        my: 26,
+      },
+      {
+        kind: 'image',
+        src: '/cv/stickers/download.webp',
+        x: 84,
+        y: 15,
+        rot: 8,
+        size: 1.1,
+        mx: 80,
+        my: 32,
+      },
     ],
   } satisfies { [K in RemixTake]?: RemixDecal[] },
   // The work groups each Services fact counts, in fact order; null shows no count.

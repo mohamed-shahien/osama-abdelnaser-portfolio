@@ -41,7 +41,7 @@ const palette = {
 
 // The track starts under the avatar's closing curtain (see WorkShowcase): the
 // stage is revealed behind it over this much of the runway, then the title draws.
-const REVEAL = 0.75;
+const REVEAL = 1.7;
 
 /** The title card: the bubbles fall past it and never pile into it. */
 function keepOut(root: HTMLElement): BubbleKeepOut[] {
@@ -78,7 +78,7 @@ function halo(root: HTMLElement): BubbleHalo | null {
 }
 
 /**
- * A 595svh runway with a sticky stage; its first 75svh run under the avatar's
+ * A 690svh runway with a sticky stage; its first 170svh run under the avatar's
  * closing curtain, so the stage is uncovered behind it. Scroll then drives
  * the animator title both ways: the title is roughed, inked and painted while the hands reach in, they
  * grip and fling away, thirty skills rain past the haloed glasses at the foot,
@@ -138,7 +138,7 @@ export function SkillsShowcase() {
   );
 
   return (
-    <div ref={trackRef} className="h-[595svh] motion-reduce:h-[520svh]">
+    <div ref={trackRef} className="h-[690svh] motion-reduce:h-[520svh]">
       <div className="sticky top-0 h-svh overflow-hidden bg-black [--skills-card-top:30%] max-md:[--skills-card-top:24%]">
         {mounted ? (
           <AnimatorTitlePreloader
@@ -155,7 +155,7 @@ export function SkillsShowcase() {
             palette={palette}
             irisColor="#17284f"
             displayFamily="var(--font-work-display), 'Helvetica Neue', Arial, sans-serif"
-            monoFamily="var(--font-geist-mono), ui-monospace, Menlo, Consolas, monospace"
+            monoFamily="var(--font-sans)"
             cardTop="var(--skills-card-top)"
             wordMax={19}
             lettering="marker"

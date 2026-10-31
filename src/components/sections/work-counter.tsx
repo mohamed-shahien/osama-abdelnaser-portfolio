@@ -20,8 +20,8 @@ export function WorkCounter({ value }: { value: string }) {
       media.add(motionConfig.queries.full, () => {
         const timeline = gsap.timeline();
         timeline
-          .to(node, { filter: 'blur(9.73px)', duration: 0.14, ease: 'power2.out' })
-          .to(node, { filter: 'blur(0px)', duration: 0.85, ease: 'power2.out' });
+          .to(node, { filter: 'blur(9.73px)', duration: 0.3, ease: 'power2.out' })
+          .to(node, { filter: 'blur(0px)', duration: 1.1, ease: 'power2.out' });
         let inView = true;
         const visibility = () => {
           if (document.hidden || !inView) timeline.pause();

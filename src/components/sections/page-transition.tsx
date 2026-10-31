@@ -110,13 +110,13 @@ export function PageTransitionLayer() {
         .fromTo(
           panel,
           { yPercent: 100 },
-          { yPercent: 0, duration: 0.75, ease: bezier(0.42, 0, 0.1, 1) },
+          { yPercent: 0, duration: 0.95, ease: bezier(0.65, 0, 0.35, 1) },
         )
         .fromTo(
           text,
           { yPercent: 60, opacity: 0 },
-          { yPercent: 0, opacity: 1, duration: 0.55, ease: 'power3.out' },
-          0.3,
+          { yPercent: 0, opacity: 1, duration: 0.8, ease: 'power3.out' },
+          0.4,
         );
       const visibility = () => {
         if (document.hidden) timeline.pause();
@@ -149,12 +149,12 @@ export function PageTransitionLayer() {
         .to('[data-transition-panel]', {
           scaleY: 0,
           transformOrigin: '50% 0%',
-          duration: 0.85,
-          ease: bezier(0.76, 0, 0.24, 1),
+          duration: 1.1,
+          ease: bezier(0.65, 0, 0.35, 1),
         })
         .to(
           '[data-transition-text]',
-          { yPercent: -60, opacity: 0, duration: 0.45, ease: 'power2.in' },
+          { yPercent: -40, opacity: 0, duration: 0.6, ease: 'power2.inOut' },
           0,
         );
       const visibility = () => {

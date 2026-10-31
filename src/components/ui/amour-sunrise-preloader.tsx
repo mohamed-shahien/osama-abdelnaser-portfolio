@@ -80,7 +80,7 @@ const DEFAULT_PALETTE: AmourPalette = {
 
 const SERIF_STACK =
   '"Fraunces", "Playfair Display", "Iowan Old Style", Georgia, "Times New Roman", serif';
-const MONO_STACK = '"JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace';
+const MONO_STACK = 'var(--font-sans)';
 
 // #region geometry
 // Pure helpers retained from the supplied component.

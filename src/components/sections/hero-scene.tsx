@@ -255,7 +255,7 @@ export function HeroScene() {
               trigger: root,
               start: 'top top',
               end: 'bottom top',
-              scrub: 0.8,
+              scrub: 1,
               invalidateOnRefresh: true,
             },
           });
